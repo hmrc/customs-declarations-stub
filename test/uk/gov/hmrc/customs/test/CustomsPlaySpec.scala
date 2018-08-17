@@ -24,13 +24,15 @@ import org.scalatestplus.play.{OneAppPerSuite, PlaySpec}
 import play.api.Logger
 import play.api.http.Status
 import play.api.libs.concurrent.Execution.Implicits
-import play.api.mvc.{AnyContentAsEmpty, AnyContentAsText, Result}
+import play.api.mvc.{AnyContentAsXml, AnyContentAsEmpty, AnyContentAsText, Result}
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
 
 import scala.concurrent.duration._
 import scala.concurrent.{ExecutionContext, Future}
 import scala.reflect.ClassTag
+import scala.util.{Success, Try}
+import scala.xml.{Elem, NodeSeq}
 
 trait CustomsPlaySpec extends PlaySpec with OneAppPerSuite  with MockitoSugar with ScalaFutures {
 
@@ -42,7 +44,13 @@ trait CustomsPlaySpec extends PlaySpec with OneAppPerSuite  with MockitoSugar wi
   protected val contextPath: String = ""
 
   class RequestScenario(method: String = "POST", uri: String = s"/$contextPath/", headers: Map[String, String] = Map.empty, body:String) {
-    val req: FakeRequest[AnyContentAsText] = basicRequest(method, uri, headers).withTextBody(body)
+
+        val req : FakeRequest[AnyContentAsXml] = basicRequest(method, uri, headers).withXmlBody(scala.xml.XML.loadString(body))
+ }
+
+  class InvalidRequestScenario(method: String = "POST", uri: String = s"/$contextPath/", headers: Map[String, String] = Map.empty, body:String) {
+
+         val req: FakeRequest[String] = basicRequest(method, uri, headers).withBody(body)
   }
 
   protected def component[T: ClassTag]: T = app.injector.instanceOf[T]
@@ -57,9 +65,17 @@ trait CustomsPlaySpec extends PlaySpec with OneAppPerSuite  with MockitoSugar wi
                                 uri: String = s"/$contextPath/",
                                 headers: Map[String, String] = Map.empty,
                                  body:String)(test: Future[Result] => Unit): Unit = {
-    new RequestScenario(method, uri, headers,body) {
-      test(route(app, req).get)
+
+    val req = Try(scala.xml.XML.loadString(body)) match {
+      case Success(_) => new RequestScenario(method, uri, headers,body) {
+        test(route(app, req).get)
+      }
+      case _ => new InvalidRequestScenario(method, uri, headers,body) {
+        test(route(app, req).get)
+      }
     }
+
+
   }
 
 

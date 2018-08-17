@@ -22,11 +22,23 @@ class SubmissionControllerSpec extends CustomsPlaySpec {
 
   val method = "POST"
   val uri = uriWithContextPath("/")
+  val cancelUri = uriWithContextPath("/cancellation-requests")
+  val validXML = <MetaData xmlns="urn:wco:datamodel:WCO:DocumentMetaData-DMS:2"><wstxns1:Declaration xmlns:wstxns1="urn:wco:datamodel:WCO:DEC-DMS:2"/></MetaData>
 
   s"$method $uri" should {
 
     "return 202" in  {
-      requestScenario(method, uri, body="<declaration>testme</declaration>") { wasOk }
+      requestScenario(method, uri, body=validXML.toString) { wasOk }
+    }
+
+    "return 400 for an invalid XML" in {
+      requestScenario(method, uri,body="<declaration></nodeclaration>") { res=> wasBadRequest(res) }
+    }
+  }
+  s"$method $cancelUri" should {
+
+    "return 202" in  {
+      requestScenario(method, uri, body=validXML.toString) { wasOk }
     }
 
     "return 400 for an invalid XML" in {

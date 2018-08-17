@@ -16,6 +16,8 @@
 
 package controllers
 
+import java.util.UUID
+
 import config.AppConfig
 import javax.inject.{Inject, Singleton}
 import play.api.Logger
@@ -24,18 +26,31 @@ import play.api.mvc._
 import uk.gov.hmrc.play.bootstrap.controller.BaseController
 
 import scala.concurrent.Future
-import scala.util.{Try, Random}
+import scala.xml.NodeSeq
 
 @Singleton
 class SubmissionsController @Inject()(implicit val appConfig: AppConfig) extends BaseController {
 
-  def post: Action[AnyContent] = Action.async { implicit request =>
+  def submit: Action[AnyContent] = Action.async { implicit request =>
+      processRequest()
+  }
 
-    Logger.debug(s"Request received. Payload = ${request.body.toString} headers = ${request.headers.headers}")
-    if(validateXml(request.body.asText.getOrElse("")).isSuccess) Future.successful(Accepted.as(MimeTypes.XML).withHeaders( "X-Conversation-ID" -> Random.nextLong.toString))
+  def cancel() :Action[AnyContent] = Action.async { implicit request =>
+    processRequest()
+  }
+
+  def validateXml(data:Option[NodeSeq]) = {
+    data  match {
+      case Some(xml) => true
+      case None => false
+    }
+  }
+
+  def processRequest()(implicit request: Request[AnyContent]) :  Future[Result] =  {
+    Logger.debug(s"Request received. Payload = ${request.body.asXml}")
+    if(validateXml(request.body.asXml))
+      Future.successful(Accepted.as(MimeTypes.XML).withHeaders( "X-Conversation-ID" -> UUID.randomUUID.toString))
     else
       Future.successful(BadRequest("Invalid XML"))
   }
-  def validateXml(data:String) =  Try(scala.xml.XML.loadString(data))
-
 }
