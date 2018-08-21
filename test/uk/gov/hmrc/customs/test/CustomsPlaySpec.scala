@@ -27,6 +27,7 @@ import play.api.libs.concurrent.Execution.Implicits
 import play.api.mvc.{AnyContentAsXml, AnyContentAsEmpty, AnyContentAsText, Result}
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
+import play.mvc.Http.Status._
 
 import scala.concurrent.duration._
 import scala.concurrent.{ExecutionContext, Future}
@@ -74,12 +75,13 @@ trait CustomsPlaySpec extends PlaySpec with OneAppPerSuite  with MockitoSugar wi
         test(route(app, req).get)
       }
     }
-
-
   }
 
-
   protected def wasOk(resp: Future[Result]): Unit = status(resp) must be (Status.ACCEPTED)
+
+  protected def wasNotAcceptable(resp: Future[Result]): Unit = status(resp) must be (Status.NOT_ACCEPTABLE)
+  protected def wasUnsupported(resp: Future[Result]): Unit = status(resp) must be (Status.UNSUPPORTED_MEDIA_TYPE)
+
 
   protected def wasBadRequest(resp: Future[Result]): Unit = status(resp) must be (Status.BAD_REQUEST)
 
