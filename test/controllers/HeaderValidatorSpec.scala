@@ -42,7 +42,7 @@ class HeaderValidatorSpec extends CustomsPlaySpec with HeaderValidator{
     "validate request for CONTENT_TYPE header" in {
       wasUnsupported(validateHeaders()(block).apply(request.withHeaders(HeaderNames.ACCEPT -> s"application/vnd.hmrc.${2.0}+xml")))
     }
-    "should be process request if headers are available" in {
+    "process request if headers are available" in {
       wasOk(validateHeaders()(block).apply(request.withHeaders(validHeaders.toSeq: _*)))
     }
 

@@ -24,16 +24,14 @@ import org.scalatestplus.play.{OneAppPerSuite, PlaySpec}
 import play.api.Logger
 import play.api.http.Status
 import play.api.libs.concurrent.Execution.Implicits
-import play.api.mvc.{AnyContentAsXml, AnyContentAsEmpty, AnyContentAsText, Result}
+import play.api.mvc.{AnyContentAsXml, AnyContentAsEmpty, Result}
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
-import play.mvc.Http.Status._
 
 import scala.concurrent.duration._
 import scala.concurrent.{ExecutionContext, Future}
 import scala.reflect.ClassTag
 import scala.util.{Success, Try}
-import scala.xml.{Elem, NodeSeq}
 
 trait CustomsPlaySpec extends PlaySpec with OneAppPerSuite  with MockitoSugar with ScalaFutures {
 
