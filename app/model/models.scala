@@ -16,11 +16,7 @@
 
 package model
 
-import java.util.UUID
-
-import org.joda.time.DateTime
 import play.api.libs.json._
-import uk.gov.hmrc.customs.api.common.controllers.ErrorResponse
 
 
 sealed trait ApiVersion {
@@ -41,55 +37,10 @@ object VersionThree extends ApiVersion{
   override val configPrefix: String = "v3."
 }
 
-case class ConversationId(id: UUID) extends AnyVal {
-  override def toString(): String = id.toString
-}
-
-object ConversationId {
-  implicit val conversationIdJF = new Format[ConversationId] {
-    def writes(conversationId: ConversationId) = JsString(conversationId.id.toString)
-    def reads(json: JsValue) = json match {
-      case JsNull => JsError()
-      case _ => JsSuccess(ConversationId(json.as[UUID]))
-    }
-  }
-}
 case class Header(name: String, value: String)
 
 object Header {
   implicit val jsonFormat: OFormat[Header] = Json.format[Header]
-}
-
-case class DeclarantCallbackData(callbackUrl: String, securityToken: String)
-object DeclarantCallbackData {
-  implicit val jsonFormat = Json.format[DeclarantCallbackData]
-}
-
-case class ClientSubscriptionId(id: UUID) extends AnyVal {
-  override def toString(): String = id.toString
-}
-object ClientSubscriptionId {
-  implicit val clientSubscriptionIdJF = new Format[ClientSubscriptionId] {
-    def writes(csid: ClientSubscriptionId) = JsString(csid.id.toString)
-    def reads(json: JsValue) = json match {
-      case JsNull => JsError()
-      case _ => JsSuccess(ClientSubscriptionId(json.as[UUID]))
-    }
-  }
-}
-
-
-case class Notification(conversationId: ConversationId, headers: Seq[Header], payload: String, contentType: String)
-object Notification {
-  implicit val notificationJF = Json.format[Notification]
-}
-case class ClientNotification(csid: ClientSubscriptionId,
-                              notification: Notification,
-                              timeReceived: Option[DateTime] = None,
-                              id: UUID = UUID.randomUUID())
-
-object ClientNotification {
-  implicit val clientNotificationJF = Json.format[ClientNotification]
 }
 
 case class PushNotificationRequestBody(

@@ -25,6 +25,7 @@ import play.api.Logger
 import play.api.http.MimeTypes
 import play.api.http.HeaderNames._
 import play.api.mvc._
+import services.PushClientNotificationService
 import uk.gov.hmrc.play.bootstrap.controller.BaseController
 import uk.gov.hmrc.customs.api.common.controllers.ErrorResponse._
 
@@ -33,7 +34,7 @@ import scala.xml.NodeSeq
 
 
 @Singleton
-class SubmissionsController @Inject()(implicit val appConfig: AppConfig) extends BaseController with HeaderValidator {
+class SubmissionsController @Inject()(implicit val appConfig: AppConfig, pushClientNotificationService:PushClientNotificationService) extends BaseController with HeaderValidator {
 
   def submit: Action[AnyContent] = validateHeaders.async { implicit request =>
       processRequest()
@@ -52,7 +53,15 @@ class SubmissionsController @Inject()(implicit val appConfig: AppConfig) extends
   def processRequest()(implicit request: Request[AnyContent]) :  Future[Result] =  {
     Logger.debug(s"Request received. Payload = ${request.body.asXml}")
     if(validateXml(request.body.asXml))
-      Future.successful(Accepted.as(MimeTypes.XML).withHeaders( "X-Conversation-ID" -> UUID.randomUUID.toString))
+      {
+        val conversationId = "X-Conversation-ID" -> UUID.randomUUID.toString
+/*
+        val headers :Map[String,String] = request.headers.toSimpleMap
+          headers + (hc.authorization.get.value) + conversationId
+*/
+
+        //TODO: invoke Service to send reuqest to frontend
+        Future.successful(Accepted.as(MimeTypes.XML).withHeaders( conversationId))}
     else
       Future.successful(BadRequest("Invalid XML"))
   }
@@ -73,6 +82,7 @@ trait HeaderValidator extends Results{
   private lazy val xClientIdRegex = "^\\S+$".r
 
   def validateHeaders() = new ActionBuilder[Request] {
+
 
     def invokeBlock[A](request: Request[A], block: (Request[A]) => Future[Result]) = {
 

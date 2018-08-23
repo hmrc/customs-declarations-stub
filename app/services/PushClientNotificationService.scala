@@ -19,7 +19,7 @@ package services
 import java.util.concurrent.TimeUnit
 import javax.inject.{Inject, Singleton}
 
-import model.{PushNotificationRequestBody, PushNotificationRequest, ClientNotification, DeclarantCallbackData}
+import model._
 import play.api.Logger
 import play.api.http.HeaderNames._
 import play.api.http.MimeTypes
@@ -35,41 +35,49 @@ import scala.concurrent.ExecutionContext.Implicits.global
 @Singleton
 class PushClientNotificationService @Inject() (pushNotificationServiceConnector: PushNotificationServiceConnector) {
 
-  private implicit val hc = HeaderCarrier()
+  //callbackUrl: String, securityToken: String,conversationId:UUID,ClientSubscriptionId, headers, payload
 
-  def send(declarantCallbackData: DeclarantCallbackData, clientNotification: ClientNotification): Boolean = {
+  def send(requestHeaders:Map[String,String])(implicit hc:HeaderCarrier): Boolean = {
 
-    val pushNotificationRequest = pushNotificationRequestFrom(declarantCallbackData, clientNotification)
+    val pushNotificationRequest = pushNotificationRequestFrom(requestHeaders)
+      Logger.debug("Header Carrier extra headers are ------> " + hc.extraHeaders.mkString("**"))
 
-    val result = scala.concurrent.blocking {
-      Await.ready(pushNotificationServiceConnector.send(pushNotificationRequest), Duration.apply(25, TimeUnit.SECONDS)).value.get.isSuccess
+    try {
+      scala.concurrent.blocking {
+        Await.ready(pushNotificationServiceConnector.send(pushNotificationRequest), Duration.apply(25, TimeUnit.SECONDS)).value.get.isSuccess
+      }
     }
-    if (result) {
-      Logger.debug("Notification has been pushed")
-    } else {
-      Logger.error("Notification push failed")
+    catch {
+      case ex:Throwable => Logger.error("Notification push failed" + ex.getMessage)
+        false
     }
-    result
   }
 
-  private def pushNotificationRequestFrom(declarantCallbackData: DeclarantCallbackData,
-                                            clientNotification: ClientNotification): PushNotificationRequest = {
+  private def getHcExtraHeader(key:String)(implicit hc: HeaderCarrier) = hc.extraHeaders.seq.filter(_._1 == key).headOption.map{_._2}.getOrElse("")
+
+  //TODO Needs Implmentation
+  private def getCallbackUrl(key:String) = "URL"
+
+  //TODO: getCallbackUrl and createPayload methods to be implmented
+  private def pushNotificationRequestFrom(requestHeaders:Map[String,String])(implicit hc:HeaderCarrier): PushNotificationRequest = {
 
     PushNotificationRequest(
-      clientNotification.csid.id.toString,
+      requestHeaders.get("X-Client-ID").get,
       PushNotificationRequestBody(
-        declarantCallbackData.callbackUrl,
-        declarantCallbackData.securityToken,
-        clientNotification.notification.conversationId.id.toString,
-        clientNotification.notification.headers,
-        clientNotification.notification.payload
+        getCallbackUrl("imports"),
+        hc.authorization.get.value,
+        requestHeaders.get("X-Conversation-ID").get,
+        Seq(Header(name ="X-Badge-Identifier", value= requestHeaders.get("X-Badge-Identifier").get)),
+        createPayload("imports")
       ))
   }
 
+  //TODO Implementation required
+  private def createPayload(key:String):String= {"PAYLOAD_ONE"}
+
 }
 @Singleton
-class PushNotificationServiceConnector @Inject()(http: HttpClient,
-                                                 serviceConfigProvider: ServiceConfigProvider) {
+class PushNotificationServiceConnector @Inject()(http: HttpClient, serviceConfigProvider: ServiceConfigProvider) {
 
   private val outboundHeaders = Seq(
     (ACCEPT, MimeTypes.JSON),
@@ -87,8 +95,7 @@ class PushNotificationServiceConnector @Inject()(http: HttpClient,
     val msg = "Calling push notification service"
     Logger.debug(s"msg is $msg, url is $url, payload = $pushNotificationRequest.body.toString")
 
-    val postFuture = http
-      .POST[PushNotificationRequestBody, HttpResponse](url, pushNotificationRequest.body)
+    val postFuture = http.POST[PushNotificationRequestBody, HttpResponse](url, pushNotificationRequest.body)
       .recoverWith {
         case httpError: HttpException => Future.failed(new RuntimeException(httpError))
       }

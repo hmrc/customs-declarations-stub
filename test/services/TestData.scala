@@ -27,18 +27,19 @@ import play.api.libs.json.{JsValue, Json}
 import play.api.mvc.AnyContentAsXml
 import services.TestData._
 import play.api.test.FakeRequest
+import uk.gov.hmrc.http.HeaderCarrier
+import uk.gov.hmrc.http.logging.Authorization
 import scala.xml.{Elem, NodeSeq}
 
 object TestData extends RequestHeaders{
 
   val validConversationId: String = "eaca01f9-ec3b-4ede-b263-61b626dde232"
-  val validConversationIdUUID = UUID.fromString(validConversationId)
-  val conversationId = ConversationId(validConversationIdUUID)
+  val conversationId = validConversationId
   val invalidConversationId: String = "I-am-not-a-valid-uuid"
 
   val validFieldsId = "ffff01f9-ec3b-4ede-b263-61b626dde232"
   val someFieldsId = "ccc9f676-c752-4e77-b86a-b27a3b33fceb"
-  val clientSubscriptionId = ClientSubscriptionId(UUID.fromString(validFieldsId))
+  val clientSubscriptionId = validFieldsId
   val invalidFieldsId = "I-am-not-a-valid-type-4-uuid"
 
   val basicAuthTokenValue = "YmFzaWN1c2VyOmJhc2ljcGFzc3dvcmQ="
@@ -52,8 +53,11 @@ object TestData extends RequestHeaders{
   val callbackUrl = "http://callback"
   val invalidCallbackUrl = "Im-Invalid"
   val securityToken = "securityToken"
+/*
   val callbackData = DeclarantCallbackData(callbackUrl, securityToken)
   val invalidCallbackData = DeclarantCallbackData(invalidCallbackUrl, securityToken)
+*/
+
 
   val url = "http://some-url"
   val errorMsg = "ERROR"
@@ -67,24 +71,7 @@ object TestData extends RequestHeaders{
   lazy val somePushNotificationRequest: Option[PushNotificationRequest] = Some(pushNotificationRequest)
   lazy val pushNotificationRequest: PushNotificationRequest = pushNotificationRequest(ValidXML)
 
-  def clientNotification(withBadgeId: Boolean = true): ClientNotification = {
-
-    val headers: Seq[Header] = if (withBadgeId) {
-      Seq[Header](Header(X_BADGE_ID_HEADER_NAME, badgeId))
-    } else Seq[Header]()
-
-    ClientNotification(
-      csid = clientSubscriptionId,
-      Notification(
-        conversationId = conversationId,
-        headers = headers,
-        payload = ValidXML.toString(),
-        contentType = MimeTypes.XML
-      )
-    )
-  }
-
-  def createPushNotificationRequestPayload(outboundUrl: String = callbackData.callbackUrl, securityToken: String = callbackData.securityToken,
+  def createPushNotificationRequestPayload(outboundUrl: String = callbackUrl, securityToken: String = securityToken,
                                            mayBeBadgeId: Option[String] = Some(badgeId), notificationPayload: NodeSeq = ValidXML,
                                            conversationId: String = validConversationId): JsValue = Json.parse(
     s"""
@@ -101,12 +88,12 @@ object TestData extends RequestHeaders{
     """.stripMargin)
 
   def pushNotificationRequest(xml: NodeSeq): PushNotificationRequest = {
-    val body = PushNotificationRequestBody(callbackData.callbackUrl, callbackData.securityToken, validConversationId, Seq(Header(X_BADGE_ID_HEADER_NAME, badgeId)), xml.toString())
+    val body = PushNotificationRequestBody(callbackUrl, securityToken, validConversationId, Seq(Header(X_BADGE_ID_HEADER_NAME, badgeId)), xml.toString())
     PushNotificationRequest(validFieldsId, body)
   }
 
   def failedPushNotificationRequest(xml: NodeSeq): PushNotificationRequest = {
-    val body = PushNotificationRequestBody(invalidCallbackData.callbackUrl, callbackData.securityToken, validConversationId, Seq(Header(X_BADGE_ID_HEADER_NAME, badgeId)), xml.toString())
+    val body = PushNotificationRequestBody(invalidCallbackUrl, securityToken, validConversationId, Seq(Header(X_BADGE_ID_HEADER_NAME, badgeId)), xml.toString())
     PushNotificationRequest(validFieldsId, body)
   }
 
@@ -263,27 +250,30 @@ trait RequestHeaders {
   val NoHeaders: Map[String, String] = Map[String, String]()
 }
 trait ClientTestData {
+  implicit val hc: HeaderCarrier = HeaderCarrier(authorization = Some(Authorization("SECURITY_TOKEN")))
+/*
   val CsidOne = ClientSubscriptionId(UUID.fromString("eaca01f9-ec3b-4ede-b263-61b626dde231"))
   val CsidTwo = ClientSubscriptionId(UUID.fromString("eaca01f9-ec3b-4ede-b263-61b626dde232"))
   val ConversationIdOne = ConversationId(UUID.fromString("caca01f9-ec3b-4ede-b263-61b626dde231"))
   val ConversationIdTwo = ConversationId(UUID.fromString("caca01f9-ec3b-4ede-b263-61b626dde232"))
+*/
  // val CsidOneLockOwnerId = LockOwnerId(CsidOne.id.toString)
 
-  val Headers = Seq(Header("h1", "v1"))
+  val Headers = Seq(Header("X-Badge-Identifier", "1234"))
   val PayloadOne = "PAYLOAD_ONE"
   val PayloadTwo = "PAYLOAD_TWO"
   val ContentType = "CONTENT_TYPE"
-  val NotificationOne = Notification(ConversationIdOne, Headers, PayloadOne, ContentType)
-  val NotificationTwo = Notification(ConversationIdTwo, Headers, PayloadTwo, ContentType)
+  //val NotificationOne = Notification(ConversationIdOne, Headers, PayloadOne, ContentType)
+ // val NotificationTwo = Notification(ConversationIdTwo, Headers, PayloadTwo, ContentType)
   val TimeStampOne = DateTime.now
   private val oneThousand = 1000
   val TimeStampTwo = TimeStampOne.plus(oneThousand)
-  val ClientNotificationOne = ClientNotification(CsidOne, NotificationOne, Some(TimeStampOne))
-  val ClientNotificationTwo = ClientNotification(CsidOne, NotificationTwo, Some(TimeStampTwo))
+ // val ClientNotificationOne = ClientNotification(CsidOne, NotificationOne, Some(TimeStampOne))
+ // val ClientNotificationTwo = ClientNotification(CsidOne, NotificationTwo, Some(TimeStampTwo))
 
-  val DeclarantCallbackDataOne = DeclarantCallbackData("URL", "SECURITY_TOKEN")
-  val DeclarantCallbackDataOneWithEmptyUrl = DeclarantCallbackDataOne.copy(callbackUrl = "")
-  val DeclarantCallbackDataTwo = DeclarantCallbackData("URL2", "SECURITY_TOKEN2")
-  val pnrOne = PushNotificationRequest(CsidOne.id.toString, PushNotificationRequestBody("URL", "SECURITY_TOKEN", ConversationIdOne.id.toString, Headers, PayloadOne))
-  val pnrTwo = PushNotificationRequest(CsidOne.id.toString, PushNotificationRequestBody("URL2", "SECURITY_TOKEN2", ConversationIdTwo.id.toString, Headers, PayloadTwo))
+ // val DeclarantCallbackDataOne = DeclarantCallbackData("URL", "SECURITY_TOKEN")
+//  val DeclarantCallbackDataOneWithEmptyUrl = DeclarantCallbackDataOne.copy(callbackUrl = "")
+ // val DeclarantCallbackDataTwo = DeclarantCallbackData("URL2", "SECURITY_TOKEN2")
+  val pnrOne = PushNotificationRequest("eaca01f9-ec3b-4ede-b263-61b626dde231", PushNotificationRequestBody("URL", "SECURITY_TOKEN", "caca01f9-ec3b-4ede-b263-61b626dde231", Headers, PayloadOne))
+  val pnrTwo = PushNotificationRequest("eaca01f9-ec3b-4ede-b263-61b626dde232", PushNotificationRequestBody("URL2", "SECURITY_TOKEN2", "caca01f9-ec3b-4ede-b263-61b626dde232", Headers, PayloadTwo))
 }

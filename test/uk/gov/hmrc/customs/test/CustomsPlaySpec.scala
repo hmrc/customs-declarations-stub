@@ -27,6 +27,7 @@ import play.api.libs.concurrent.Execution.Implicits
 import play.api.mvc.{AnyContentAsXml, AnyContentAsEmpty, Result}
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
+import services.PushClientNotificationService
 
 import scala.concurrent.duration._
 import scala.concurrent.{ExecutionContext, Future}
@@ -38,6 +39,7 @@ trait CustomsPlaySpec extends PlaySpec with OneAppPerSuite  with MockitoSugar wi
   implicit val mat: Materializer = app.materializer
   implicit val ec: ExecutionContext = Implicits.defaultContext
   implicit val appConfig: AppConfig = app.injector.instanceOf[AppConfig]
+  implicit val pushClientNotificationService: PushClientNotificationService = app.injector.instanceOf[PushClientNotificationService]
   implicit val patience: PatienceConfig = PatienceConfig(timeout = 5.seconds, interval = 50.milliseconds) // be more patient than the default
 
   protected val contextPath: String = ""

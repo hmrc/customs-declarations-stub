@@ -16,7 +16,7 @@
 
 package services
 
-import model.{Header, PushNotificationRequestBody, DeclarantCallbackData, PushNotificationRequest}
+import model.PushNotificationRequestBody
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito._
 import org.mockito.{ArgumentCaptor, ArgumentMatchers}
@@ -24,6 +24,7 @@ import org.scalatest.mockito.MockitoSugar
 import play.api.libs.json.Writes
 import uk.gov.hmrc.customs.api.common.config.{ServiceConfig, ServiceConfigProvider}
 import uk.gov.hmrc.customs.test.CustomsPlaySpec
+import uk.gov.hmrc.http.logging.Authorization
 import uk.gov.hmrc.http.{HeaderCarrier, HttpReads, HttpResponse}
 import uk.gov.hmrc.play.bootstrap.http.HttpClient
 
@@ -44,7 +45,7 @@ class PushNotificationServiceConnectorSpec extends CustomsPlaySpec with MockitoS
 
   private val emulatedHttpVerbsException = new RuntimeException("FooBar")
 
-  private implicit val hc: HeaderCarrier = HeaderCarrier()
+  private implicit val hc: HeaderCarrier = HeaderCarrier(authorization = Some(Authorization("1234")))
 
   "PushNotificationServiceConnector" should {
     when(serviceConfigProvider.getConfig("public-notification")).thenReturn(ServiceConfig(url, None, "default"))
