@@ -19,6 +19,7 @@ package config
 import javax.inject.{Inject, Singleton}
 import play.api.Mode.Mode
 import play.api.{Configuration, Environment}
+import repositories.Client
 import uk.gov.hmrc.play.config.{AppName, ServicesConfig}
 
 @Singleton
@@ -29,5 +30,11 @@ class AppConfig @Inject()(val runModeConfiguration: Configuration, val environme
   override protected def appNameConfiguration: Configuration = runModeConfiguration
 
   private def loadConfig(key: String): String = runModeConfiguration.getString(key).getOrElse(throw new Exception(s"Missing configuration key: $key"))
+
+  val defaultClient: Client = Client(
+    clientId = loadConfig("microservice.services.client.id"),
+    callbackUrl = baseUrl("client") + loadConfig("microservice.services.client.uri"),
+    token = loadConfig("microservice.services.client.token")
+  )
 
 }
