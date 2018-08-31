@@ -22,24 +22,22 @@ import java.util.UUID
 import config.AppConfig
 import javax.inject.{Inject, Singleton}
 import javax.xml.XMLConstants
-import javax.xml.transform.{Source => XmlSource}
 import javax.xml.transform.stream.StreamSource
+import javax.xml.transform.{Source => XmlSource}
 import javax.xml.validation.{Schema, SchemaFactory}
 import play.api.Logger
 import play.api.http.{ContentTypes, HeaderNames}
 import play.api.libs.json.Json
-import play.api.libs.ws.WSResponse
 import play.api.mvc._
 import reactivemongo.bson.BSONObjectID
 import repositories._
 import uk.gov.hmrc.auth.core.{AuthConnector, AuthorisedFunctions, Enrolment}
-import uk.gov.hmrc.http.{HeaderCarrier, HttpResponse}
+import uk.gov.hmrc.http.{HeaderCarrier, HttpReads, HttpResponse}
 import uk.gov.hmrc.play.bootstrap.controller.BaseController
 import uk.gov.hmrc.play.bootstrap.http.HttpClient
 import uk.gov.hmrc.wco.dec.MetaData
 
-import scala.concurrent.duration._
-import scala.concurrent.duration.Duration
+import scala.concurrent.duration.{Duration, _}
 import scala.concurrent.{ExecutionContext, Future}
 import scala.io.Source
 import scala.xml.NodeSeq
@@ -190,9 +188,9 @@ class DeclarationStubController @Inject()(auth: AuthConnector, http: HttpClient,
     }
 
   private def sendNotificationWithDelay(client: Client, conversationId: String, xml: String, delay: Duration = 5.seconds)
-                                       (implicit hc: HeaderCarrier): Future[HttpResponse] = {
+                                       (implicit rds: HttpReads[HttpResponse], ec: ExecutionContext): Future[HttpResponse] = {
     Thread.sleep(delay.toMillis) // TODO use actor and scheduler, rather than blocking thread
-    http.POSTString(client.callbackUrl, xml, Seq(HeaderNames.AUTHORIZATION -> s"Bearer ${client.token}"))
+    http.POSTString(client.callbackUrl, xml, Seq(HeaderNames.AUTHORIZATION -> s"Bearer ${client.token}", HeaderNames.CONTENT_TYPE -> ContentTypes.XML))(rds, HeaderCarrier(), ec)
   }
 
 }
