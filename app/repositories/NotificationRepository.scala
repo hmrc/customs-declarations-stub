@@ -24,7 +24,7 @@ import reactivemongo.api.indexes.{Index, IndexType}
 import reactivemongo.bson.BSONObjectID
 import uk.gov.hmrc.mongo.ReactiveRepository
 import uk.gov.hmrc.mongo.json.ReactiveMongoFormats.objectIdFormats
-import uk.gov.hmrc.wco.dec.MetaData
+import uk.gov.hmrc.wco.dec.{Declaration, MetaData}
 
 import scala.concurrent.{ExecutionContext, Future}
 
@@ -45,8 +45,11 @@ class NotificationRepository @Inject()(implicit mc: ReactiveMongoComponent, ec: 
     )
   )
 
-  def findByClientAndOperationAndMetaData(clientId: String, operation: String, meta: MetaData): Future[Option[Notification]] =
-    findByClientAndOperationAndLrn(clientId, operation, meta.declaration.functionalReferenceId.getOrElse(""))
+  def findByClientAndOperationAndMetaData(clientId: String, operation: String, meta: MetaData): Future[Option[Notification]] = {
+    val declaration = meta.declaration.getOrElse(Declaration())
+
+    findByClientAndOperationAndLrn(clientId, operation, declaration.functionalReferenceId.getOrElse(""))
+  }
 
   def findByClientAndOperationAndLrn(clientId: String, operation: String, lrn: String): Future[Option[Notification]] =
     find("clientId" -> JsString(clientId), "operation" -> JsString(operation), "lrn" -> JsString(lrn)).map(_.headOption)

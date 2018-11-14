@@ -44,7 +44,7 @@ class NotificationRepositorySpec extends CustomsDeclarationsStubBase with Before
   val lrn = "lrn"
   val xml = "xml"
   val declaration = Declaration(functionalReferenceId = Some(lrn))
-  val metaData = MetaData(declaration = declaration)
+  val metaData = MetaData(declaration = Some(declaration))
 
   "Notification repository" should {
     "find by client and operation and metadata" in {

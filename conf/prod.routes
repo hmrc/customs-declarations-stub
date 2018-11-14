@@ -1,14 +1,26 @@
 # Add all the application routes to the app.routes file
 ->            /                                                                              health.Routes
 
+# Declarations
+
 POST          /                                                                              controllers.DeclarationStubController.submit()
+
 POST          /cancellation-requests                                                         controllers.DeclarationStubController.cancel()
 
+# Clients
+
 GET           /customs-declarations-stub/admin/client                                        controllers.DeclarationStubController.listClients()
+
 POST          /customs-declarations-stub/admin/client                                        controllers.DeclarationStubController.addClient()
+
 DELETE        /customs-declarations-stub/admin/client/:id                                    controllers.DeclarationStubController.deleteClient(id)
 
+# Notifications
+
 GET           /customs-declarations-stub/admin/notification                                  controllers.DeclarationStubController.listNotifications()
+
 GET           /customs-declarations-stub/admin/notification/:clientId/:operation/:lrn        controllers.DeclarationStubController.displayNotification(clientId, operation, lrn)
+
 POST          /customs-declarations-stub/admin/notification/:clientId/:operation/:lrn        controllers.DeclarationStubController.addNotification(clientId, operation, lrn)
+
 DELETE        /customs-declarations-stub/admin/notification/:id                              controllers.DeclarationStubController.deleteNotification(id)
