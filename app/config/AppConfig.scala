@@ -17,9 +17,9 @@
 package config
 
 import javax.inject.{Inject, Singleton}
+import models.Client
 import play.api.Mode.Mode
 import play.api.{Configuration, Environment}
-import repositories.Client
 import uk.gov.hmrc.play.config.{AppName, ServicesConfig}
 
 @Singleton

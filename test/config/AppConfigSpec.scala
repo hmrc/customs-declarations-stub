@@ -16,12 +16,11 @@
 
 package config
 
-import org.scalatest.{MustMatchers, WordSpec}
-import org.scalatestplus.play.guice.GuiceOneAppPerSuite
+import base.CustomsDeclarationsStubBase
 import play.api.Application
 import play.api.inject.guice.GuiceApplicationBuilder
 
-class AppConfigSpec extends WordSpec with MustMatchers with GuiceOneAppPerSuite {
+class AppConfigSpec extends CustomsDeclarationsStubBase {
 
   override lazy val app: Application = GuiceApplicationBuilder().build()
 

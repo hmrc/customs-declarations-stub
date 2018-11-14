@@ -25,6 +25,7 @@ import javax.xml.XMLConstants
 import javax.xml.transform.stream.StreamSource
 import javax.xml.transform.{Source => XmlSource}
 import javax.xml.validation.{Schema, SchemaFactory}
+import models.{Client, ClientWrapper, Notification}
 import play.api.Logger
 import play.api.http.{ContentTypes, HeaderNames}
 import play.api.libs.json.Json

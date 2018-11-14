@@ -17,12 +17,13 @@
 package repositories
 
 import javax.inject.{Inject, Singleton}
-import play.api.libs.json.{JsString, Json}
+import models.Notification
+import play.api.libs.json.JsString
 import play.modules.reactivemongo.ReactiveMongoComponent
 import reactivemongo.api.indexes.{Index, IndexType}
 import reactivemongo.bson.BSONObjectID
 import uk.gov.hmrc.mongo.ReactiveRepository
-import uk.gov.hmrc.mongo.json.ReactiveMongoFormats.{mongoEntity, objectIdFormats}
+import uk.gov.hmrc.mongo.json.ReactiveMongoFormats.objectIdFormats
 import uk.gov.hmrc.wco.dec.MetaData
 
 import scala.concurrent.{ExecutionContext, Future}
@@ -49,15 +50,5 @@ class NotificationRepository @Inject()(implicit mc: ReactiveMongoComponent, ec: 
 
   def findByClientAndOperationAndLrn(clientId: String, operation: String, lrn: String): Future[Option[Notification]] =
     find("clientId" -> JsString(clientId), "operation" -> JsString(operation), "lrn" -> JsString(lrn)).map(_.headOption)
-
-}
-
-case class Notification(clientId: String, operation: String, lrn: String, xml: String, id: BSONObjectID = BSONObjectID.generate())
-
-object Notification {
-
-  implicit val formats = mongoEntity {
-    Json.format[Notification]
-  }
 
 }

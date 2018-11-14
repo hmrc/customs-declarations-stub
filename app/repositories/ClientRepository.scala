@@ -17,12 +17,13 @@
 package repositories
 
 import javax.inject.{Inject, Singleton}
-import play.api.libs.json.{JsString, Json}
+import models.Client
+import play.api.libs.json.JsString
 import play.modules.reactivemongo.ReactiveMongoComponent
 import reactivemongo.api.indexes.{Index, IndexType}
 import reactivemongo.bson.BSONObjectID
 import uk.gov.hmrc.mongo.ReactiveRepository
-import uk.gov.hmrc.mongo.json.ReactiveMongoFormats.{mongoEntity, objectIdFormats}
+import uk.gov.hmrc.mongo.json.ReactiveMongoFormats.objectIdFormats
 
 import scala.concurrent.{ExecutionContext, Future}
 
@@ -36,22 +37,4 @@ class ClientRepository @Inject()(implicit mc: ReactiveMongoComponent, ec: Execut
 
   def findByClientId(clientId: String): Future[Option[Client]] =
     find("clientId" -> JsString(clientId)).map(_.headOption)
-}
-
-case class Client(clientId: String, callbackUrl: String, token: String, id: BSONObjectID = BSONObjectID.generate())
-
-object Client {
-
-  implicit val formats = mongoEntity {
-    Json.format[Client]
-  }
-
-}
-
-case class ClientWrapper(clientId: String, callbackUrl: String, token: String) {
-  def toClient: Client = Client(clientId, callbackUrl, token)
-}
-
-object ClientWrapper {
-  implicit val formats = Json.format[ClientWrapper]
 }
