@@ -17,11 +17,23 @@
 package config
 
 import org.scalatest.{MustMatchers, WordSpec}
+import org.scalatestplus.play.guice.GuiceOneAppPerSuite
+import play.api.Application
+import play.api.inject.guice.GuiceApplicationBuilder
 
-class AppConfigSpec extends WordSpec with MustMatchers {
+class AppConfigSpec extends WordSpec with MustMatchers with GuiceOneAppPerSuite {
 
-  "it" should {
-    "pass" in {}
+  override lazy val app: Application = GuiceApplicationBuilder().build()
+
+  val config = app.injector.instanceOf[AppConfig]
+
+  "Application configuration" should {
+    "contains correct client information" in {
+      val client = config.defaultClient
+
+      client.clientId must be("customs-declare-exports-frontend")
+      client.callbackUrl must be("http://localhost:6789/customs-declare-exports/notify")
+      client.token must be("abc59609za2q")
+    }
   }
-
 }

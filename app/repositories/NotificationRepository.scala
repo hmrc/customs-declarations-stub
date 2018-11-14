@@ -33,12 +33,22 @@ class NotificationRepository @Inject()(implicit mc: ReactiveMongoComponent, ec: 
 
   // clientId, lrn, and operation constitute a natural key for notification; i.e. 1 notification per operation per client
   override def indexes: Seq[Index] = Seq(
-    Index(Seq("clientId" -> IndexType.Ascending, "operation" -> IndexType.Ascending, "lrn" -> IndexType.Ascending), unique = true, name = Some("notificationIdx"))
+    Index(
+      Seq(
+        "clientId" -> IndexType.Ascending,
+        "operation" -> IndexType.Ascending,
+        "lrn" -> IndexType.Ascending
+      ),
+      unique = true,
+      name = Some("notificationIdx")
+    )
   )
 
-  def findByClientAndOperationAndMetaData(clientId: String, operation: String, meta: MetaData): Future[Option[Notification]] = findByClientAndOperationAndLrn(clientId, operation, meta.declaration.functionalReferenceId.getOrElse(""))
+  def findByClientAndOperationAndMetaData(clientId: String, operation: String, meta: MetaData): Future[Option[Notification]] =
+    findByClientAndOperationAndLrn(clientId, operation, meta.declaration.functionalReferenceId.getOrElse(""))
 
-  def findByClientAndOperationAndLrn(clientId: String, operation: String, lrn: String): Future[Option[Notification]] = find("clientId" -> JsString(clientId), "operation" -> JsString(operation), "lrn" -> JsString(lrn)).map(_.headOption)
+  def findByClientAndOperationAndLrn(clientId: String, operation: String, lrn: String): Future[Option[Notification]] =
+    find("clientId" -> JsString(clientId), "operation" -> JsString(operation), "lrn" -> JsString(lrn)).map(_.headOption)
 
 }
 
