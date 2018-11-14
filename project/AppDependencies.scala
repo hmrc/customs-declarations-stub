@@ -1,6 +1,4 @@
-import play.core.PlayVersion
 import play.sbt.PlayImport._
-import sbt.Keys.libraryDependencies
 import sbt._
 
 object AppDependencies {
@@ -17,6 +15,7 @@ object AppDependencies {
 
   def test(scope: String = "test") = Seq(
     "org.scalatest" %% "scalatest" % "3.0.4" % scope,
+    "org.scalatestplus.play" %% "scalatestplus-play" % "2.0.1" % "test",
     "org.pegdown" % "pegdown" % "1.6.0" % scope
   )
 

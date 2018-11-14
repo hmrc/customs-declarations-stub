@@ -34,8 +34,8 @@ class ClientRepository @Inject()(implicit mc: ReactiveMongoComponent, ec: Execut
     Index(Seq("clientId" -> IndexType.Ascending), unique = true, name = Some("clientIdx"))
   )
 
-  def findByClientId(clientId: String): Future[Option[Client]] = find("clientId" -> JsString(clientId)).map(_.headOption)
-
+  def findByClientId(clientId: String): Future[Option[Client]] =
+    find("clientId" -> JsString(clientId)).map(_.headOption)
 }
 
 case class Client(clientId: String, callbackUrl: String, token: String, id: BSONObjectID = BSONObjectID.generate())

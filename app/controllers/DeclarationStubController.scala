@@ -43,10 +43,15 @@ import scala.io.Source
 import scala.xml.NodeSeq
 
 @Singleton
-class DeclarationStubController @Inject()(auth: AuthConnector, http: HttpClient, clientRepo: ClientRepository, notificationRepo: NotificationRepository)
-                                         (implicit val appConfig: AppConfig, ec: ExecutionContext) extends BaseController with AuthorisedFunctions {
+class DeclarationStubController @Inject()(
+  auth: AuthConnector,
+  http: HttpClient,
+  clientRepo: ClientRepository,
+  notificationRepo: NotificationRepository
+)(implicit val appConfig: AppConfig, ec: ExecutionContext) extends BaseController with AuthorisedFunctions {
 
-  private val permissibleAcceptHeaders: Set[String] = Set("application/vnd.hmrc.1.0+xml", "application/vnd.hmrc.2.0+xml", "application/vnd.hmrc.3.0+xml")
+  private val permissibleAcceptHeaders: Set[String] =
+    Set("application/vnd.hmrc.1.0+xml", "application/vnd.hmrc.2.0+xml", "application/vnd.hmrc.3.0+xml")
 
   private val permissibleContentTypes: Set[String] = Set(ContentTypes.XML(Codec.utf_8))
 
@@ -54,7 +59,10 @@ class DeclarationStubController @Inject()(auth: AuthConnector, http: HttpClient,
 
   private val cancelSchemas = Seq("/schemas/CANCEL_METADATA.xsd","/schemas/CANCEL.xsd")
 
-  private val defaultNotification = Source.fromInputStream(getClass.getResourceAsStream("/messages/example_accepted_import_notification.xml")).getLines().mkString
+  private val defaultNotification =
+    Source.fromInputStream(
+      getClass.getResourceAsStream("/messages/example_accepted_import_notification.xml")
+    ).getLines().mkString
 
   override def authConnector: AuthConnector = auth
 
@@ -102,17 +110,19 @@ class DeclarationStubController @Inject()(auth: AuthConnector, http: HttpClient,
     }
   }
 
-  def displayNotification(clientId: String, operation: String, lrn: String): Action[AnyContent] = Action.async { implicit req =>
-    notificationRepo.findByClientAndOperationAndLrn(clientId, operation, lrn).map { found =>
-      Ok(Json.toJson(found))
+  def displayNotification(clientId: String, operation: String, lrn: String): Action[AnyContent] =
+    Action.async { implicit req =>
+      notificationRepo.findByClientAndOperationAndLrn(clientId, operation, lrn).map { found =>
+        Ok(Json.toJson(found))
+      }
     }
-  }
 
-  def addNotification(clientId: String, operation: String, lrn: String): Action[NodeSeq] = Action.async(parse.xml) { implicit req =>
-    notificationRepo.insert(Notification(clientId, operation, lrn, req.body.mkString)).map { result =>
-      if (result.ok) Created else InternalServerError
+  def addNotification(clientId: String, operation: String, lrn: String): Action[NodeSeq] =
+    Action.async(parse.xml) { implicit req =>
+      notificationRepo.insert(Notification(clientId, operation, lrn, req.body.mkString)).map { result =>
+        if (result.ok) Created else InternalServerError
+      }
     }
-  }
 
   def deleteNotification(id: String): Action[NodeSeq] = Action.async(parse.xml) { implicit req =>
     notificationRepo.removeById(BSONObjectID.parse(id).get).map { result =>
@@ -121,7 +131,8 @@ class DeclarationStubController @Inject()(auth: AuthConnector, http: HttpClient,
   }
 
   // a dirty approximation of the header validation process implemented by customs declarations API
-  private def validateHeaders()(f: ApiHeaders => Future[Result])(implicit req: Request[NodeSeq], hc: HeaderCarrier): Future[Result] = {
+  private def validateHeaders()(f: ApiHeaders => Future[Result])
+                               (implicit req: Request[NodeSeq], hc: HeaderCarrier): Future[Result] = {
     val accept = req.headers.get(HeaderNames.ACCEPT)
     val contentType = req.headers.get(HeaderNames.CONTENT_TYPE)
     val clientId = req.headers.get("X-Client-ID")
@@ -138,28 +149,35 @@ class DeclarationStubController @Inject()(auth: AuthConnector, http: HttpClient,
     f(ApiHeaders(accept.get, contentType.get, clientId.get, badgeId))
   }
 
-  private def authenticate(hdrs: ApiHeaders)(f: Client => Future[Result])(implicit req: Request[NodeSeq], hc: HeaderCarrier): Future[Result] = try {
-    // we only care about whether the client request can be authorised via the implicit header carrier
-    authorised(Enrolment("HMRC-CUS-ORG")) {
-      clientRepo.findByClientId(hdrs.clientId).flatMap { maybeClient =>
-        val client = maybeClient.getOrElse {
-          if (hdrs.clientId == appConfig.defaultClient.clientId) appConfig.defaultClient
-          else throw new IllegalArgumentException(s"Unauthorized client: ${hdrs.clientId}")
+  private def authenticate(hdrs: ApiHeaders)(f: Client => Future[Result])
+                          (implicit req: Request[NodeSeq], hc: HeaderCarrier): Future[Result] =
+    try {
+      // we only care about whether the client request can be authorised via the implicit header carrier
+      authorised(Enrolment("HMRC-CUS-ORG")) {
+        clientRepo.findByClientId(hdrs.clientId).flatMap { maybeClient =>
+          val client = maybeClient.getOrElse {
+            if (hdrs.clientId == appConfig.defaultClient.clientId) appConfig.defaultClient
+            else throw new IllegalArgumentException(s"Unauthorized client: ${hdrs.clientId}")
+          }
+          f(client)
         }
-        f(client)
       }
+    } catch {
+      case _: Exception => Future.successful(Unauthorized)
     }
-  } catch {
-    case _: Exception => Future.successful(Unauthorized)
-  }
 
-  private def validatePayload(schemas: Seq[String])(f: MetaData => Future[Result])(implicit req: Request[NodeSeq], hc: HeaderCarrier): Future[Result] = {
+  private def validatePayload(schemas: Seq[String])(f: MetaData => Future[Result])
+                             (implicit req: Request[NodeSeq], hc: HeaderCarrier): Future[Result] = {
     val schema: Schema = {
-      val sources = schemas.map(res => getClass.getResource(res).toString).map(systemId => new StreamSource(systemId)).toArray[XmlSource]
+      val sources = schemas.map{res => getClass.getResource(res).toString}.map{systemId =>
+        new StreamSource(systemId)
+      }.toArray[XmlSource]
+
       SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI).newSchema(sources)
     }
     val xml = req.body.mkString
     val validator = schema.newValidator()
+
     try {
       validator.validate(new StreamSource(new StringReader(xml)))
     } catch {
@@ -168,6 +186,7 @@ class DeclarationStubController @Inject()(auth: AuthConnector, http: HttpClient,
         return Future.successful(BadRequest)
       }
     }
+
     try {
       f(MetaData.fromXml(xml)) // additionally, catch failure to deserialize as WCO domain case class for the sake of visibility on this kind of error
     } catch {
@@ -190,9 +209,15 @@ class DeclarationStubController @Inject()(auth: AuthConnector, http: HttpClient,
   private def sendNotificationWithDelay(client: Client, conversationId: String, xml: String, delay: Duration = 5.seconds)
                                        (implicit rds: HttpReads[HttpResponse], ec: ExecutionContext): Future[HttpResponse] = {
     Thread.sleep(delay.toMillis) // TODO use actor and scheduler, rather than blocking thread
-    http.POSTString(client.callbackUrl, xml, Seq(HeaderNames.AUTHORIZATION -> s"Bearer ${client.token}", HeaderNames.CONTENT_TYPE -> ContentTypes.XML))(rds, HeaderCarrier(), ec)
+    http.POSTString(
+      client.callbackUrl,
+      xml,
+      Seq(
+        HeaderNames.AUTHORIZATION -> s"Bearer ${client.token}",
+        HeaderNames.CONTENT_TYPE -> ContentTypes.XML
+      )
+    )(rds, HeaderCarrier(), ec)
   }
-
 }
 
 case class ApiHeaders(accept: String, contentType: String, clientId: String, badgeId: Option[String])
