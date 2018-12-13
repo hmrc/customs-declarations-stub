@@ -29,10 +29,11 @@ import play.api.Logger
 import play.api.http.{ContentTypes, HeaderNames}
 import play.api.libs.json.Json
 import play.api.mvc._
-import reactivemongo.bson.BSONObjectID
+import reactivemongo.bson.{BSONDocument, BSONObjectID}
 import repositories._
 import uk.gov.hmrc.auth.core.{AuthConnector, AuthorisedFunctions, Enrolment}
 import uk.gov.hmrc.http.{HeaderCarrier, HttpReads, HttpResponse}
+import uk.gov.hmrc.mongo.BSONBuilderHelpers
 import uk.gov.hmrc.play.bootstrap.controller.BaseController
 import uk.gov.hmrc.play.bootstrap.http.HttpClient
 import uk.gov.hmrc.wco.dec.MetaData
@@ -48,7 +49,7 @@ class DeclarationStubController @Inject()(
   http: HttpClient,
   clientRepo: ClientRepository,
   notificationRepo: NotificationRepository
-)(implicit val appConfig: AppConfig, ec: ExecutionContext) extends BaseController with AuthorisedFunctions {
+)(implicit val appConfig: AppConfig, ec: ExecutionContext) extends BaseController with AuthorisedFunctions with BSONBuilderHelpers {
 
   private val permissibleAcceptHeaders: Set[String] =
     Set("application/vnd.hmrc.1.0+xml", "application/vnd.hmrc.2.0+xml", "application/vnd.hmrc.3.0+xml")
@@ -93,8 +94,9 @@ class DeclarationStubController @Inject()(
   }
 
   def addClient(): Action[ClientWrapper] = Action.async(parse.json[ClientWrapper]) { implicit req =>
-    clientRepo.insert(req.body.toClient).map { res =>
-      if (res.ok) Created else InternalServerError
+    val client = req.body.toClient
+    clientRepo.atomicUpsert(BSONDocument("clientId" -> client.clientId), setOnInsert(BSONDocument("clientId" -> client.clientId, "callbackUrl" -> client.callbackUrl, "token" -> client.token))).map { res =>
+      if (res.writeResult.ok) Created else InternalServerError
     }
   }
 
