@@ -1,5 +1,5 @@
 /*
- * Copyright 2018 HM Revenue & Customs
+ * Copyright 2019 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -45,7 +45,7 @@ class NotificationRepository @Inject()(implicit mc: ReactiveMongoComponent, ec: 
   )
 
   def findByClientAndOperationAndMetaData(clientId: String, operation: String, meta: MetaData): Future[Option[Notification]] =
-    findByClientAndOperationAndLrn(clientId, operation, meta.declaration.functionalReferenceId.getOrElse(""))
+    findByClientAndOperationAndLrn(clientId, operation, meta.declaration.flatMap(_.functionalReferenceId).getOrElse(""))
 
   def findByClientAndOperationAndLrn(clientId: String, operation: String, lrn: String): Future[Option[Notification]] =
     find("clientId" -> JsString(clientId), "operation" -> JsString(operation), "lrn" -> JsString(lrn)).map(_.headOption)
