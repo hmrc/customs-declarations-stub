@@ -18,7 +18,9 @@ package controllers
 
 import java.io.StringReader
 import java.util.UUID
+import java.util.concurrent.TimeUnit
 
+import akka.actor.ActorSystem
 import config.AppConfig
 import javax.inject.{Inject, Singleton}
 import javax.xml.XMLConstants
@@ -47,6 +49,7 @@ import scala.xml.NodeSeq
 class DeclarationStubController @Inject()(
   auth: AuthConnector,
   http: HttpClient,
+  actorSystem: ActorSystem,
   clientRepo: ClientRepository,
   notificationRepo: NotificationRepository
 )(implicit val appConfig: AppConfig, ec: ExecutionContext) extends BaseController with AuthorisedFunctions with BSONBuilderHelpers {
@@ -200,23 +203,35 @@ class DeclarationStubController @Inject()(
   }
 
   private def notifyInDueCourse(operation: String, headers: ApiHeaders, client: Client, meta: MetaData)
-                               (implicit req: Request[NodeSeq], hc: HeaderCarrier): Future[Result] =
-    notificationRepo.findByClientAndOperationAndMetaData(client.clientId, operation, meta).map { maybeNotification =>
-      val conversationId = UUID.randomUUID().toString
-      val xml = maybeNotification.map(_.xml).getOrElse(defaultNotification)
-      sendNotificationWithDelay(client, conversationId, xml)
-      Accepted.withHeaders("X-Conversation-ID" -> conversationId).as(ContentTypes.XML)
-    }
+                               (implicit req: Request[NodeSeq], hc: HeaderCarrier): Future[Result] = {
+    val conversationId = UUID.randomUUID().toString
+    scheduleEachOnce(operation, headers, conversationId, client,  meta)
+    Future.successful(Accepted.withHeaders("X-Conversation-ID" -> conversationId).as(ContentTypes.XML))
+  }
+
+  def scheduleEachOnce(operation: String, headers: ApiHeaders, conversationId: String, client: Client, meta: MetaData)
+  (implicit req: Request[NodeSeq], hc: HeaderCarrier): Unit =
+
+      actorSystem.scheduler.scheduleOnce(new FiniteDuration(2, TimeUnit.SECONDS)) {
+        notificationRepo.findByClientAndOperationAndMetaData(client.clientId, operation, meta).map { maybeNotification =>
+        Logger.info("Entering async request notification")
+        val xml = maybeNotification.map(_.xml).getOrElse(defaultNotification)
+        Logger.debug(s"scheduling one notification call ${xml.toString()}")
+        sendNotificationWithDelay(client, conversationId, xml).onComplete { _ =>
+          Logger.info("Exiting async request notification")
+        }
+      }
+  }
 
   private def sendNotificationWithDelay(client: Client, conversationId: String, xml: String, delay: Duration = 5.seconds)
                                        (implicit rds: HttpReads[HttpResponse], ec: ExecutionContext): Future[HttpResponse] = {
-    Thread.sleep(delay.toMillis) // TODO use actor and scheduler, rather than blocking thread
     http.POSTString(
       client.callbackUrl,
       xml,
       Seq(
         HeaderNames.AUTHORIZATION -> s"Bearer ${client.token}",
-        HeaderNames.CONTENT_TYPE -> ContentTypes.XML
+        HeaderNames.CONTENT_TYPE -> ContentTypes.XML,
+        "X-Conversation-ID" -> conversationId
       )
     )(rds, HeaderCarrier(), ec)
   }
