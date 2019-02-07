@@ -14,14 +14,14 @@
  * limitations under the License.
  */
 
-package controllers
+package uk.gov.hmrc.customs.declarations.stub.controllers
 
 import java.io.StringReader
 import java.util.UUID
 import java.util.concurrent.TimeUnit
 
 import akka.actor.ActorSystem
-import config.AppConfig
+import uk.gov.hmrc.customs.declarations.stub.config.AppConfig
 import javax.inject.{Inject, Singleton}
 import javax.xml.XMLConstants
 import javax.xml.transform.stream.StreamSource
@@ -32,7 +32,7 @@ import play.api.http.{ContentTypes, HeaderNames}
 import play.api.libs.json.Json
 import play.api.mvc._
 import reactivemongo.bson.{BSONDocument, BSONObjectID}
-import repositories._
+import uk.gov.hmrc.customs.declarations.stub.repositories._
 import uk.gov.hmrc.auth.core.{AuthConnector, AuthorisedFunctions, Enrolment}
 import uk.gov.hmrc.http.{HeaderCarrier, HttpReads, HttpResponse}
 import uk.gov.hmrc.mongo.BSONBuilderHelpers
@@ -61,7 +61,7 @@ class DeclarationStubController @Inject()(
 
   private val submitSchemas = Seq("/schemas/DocumentMetaData_2_DMS.xsd", "/schemas/WCO_DEC_2_DMS.xsd")
 
-  private val cancelSchemas = Seq("/schemas/CANCEL_METADATA.xsd","/schemas/CANCEL.xsd")
+  private val cancelSchemas = Seq("/schemas/CANCEL_METADATA.xsd", "/schemas/CANCEL.xsd")
 
   private val defaultNotification =
     Source.fromInputStream(

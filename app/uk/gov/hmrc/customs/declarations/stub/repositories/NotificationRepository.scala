@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package repositories
+package uk.gov.hmrc.customs.declarations.stub.repositories
 
 import javax.inject.{Inject, Singleton}
 import play.api.libs.json.{JsString, Json}
