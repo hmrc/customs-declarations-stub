@@ -25,4 +25,17 @@ lazy val microservice = Project(appName, file("."))
   )
   .settings(
     resolvers ++= Seq(Resolver.jcenterRepo, Resolver.bintrayRepo("hmrc", "releases"))
-  )
+  ).settings(scoverageSettings)
+
+lazy val scoverageSettings: Seq[Setting[_]] = Seq(
+  coverageExcludedPackages := List(
+    "<empty>"
+    ,"Reverse.*"
+    ,"metrics\\..*"
+    ,".*(BuildInfo|Routes|Options).*"
+  ).mkString(";"),
+  coverageMinimum := 95,
+  coverageFailOnMinimum := true,
+  coverageHighlighting := true,
+  parallelExecution in Test := false
+)

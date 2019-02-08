@@ -14,12 +14,12 @@
  * limitations under the License.
  */
 
-package config
+package uk.gov.hmrc.customs.declarations.stub.config
 
 import javax.inject.{Inject, Singleton}
 import play.api.Mode.Mode
 import play.api.{Configuration, Environment}
-import repositories.Client
+import uk.gov.hmrc.customs.declarations.stub.repositories.Client
 import uk.gov.hmrc.play.config.{AppName, ServicesConfig}
 
 @Singleton
