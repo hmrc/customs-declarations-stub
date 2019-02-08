@@ -8,7 +8,7 @@ GET           /customs-declarations-stub/admin/client                           
 POST          /customs-declarations-stub/admin/client                                        uk.gov.hmrc.customs.declarations.stub.controllers.DeclarationStubController.addClient()
 DELETE        /customs-declarations-stub/admin/client/:id                                    uk.gov.hmrc.customs.declarations.stub.controllers.DeclarationStubController.deleteClient(id)
 
-GET           /customs-declarations-stub/admin/notification                                  uk.gov.hmrc.customs.declarations.stub.controllers.DeclarationStubController.listNotifications()
-GET           /customs-declarations-stub/admin/notification/:clientId/:operation/:lrn        uk.gov.hmrc.customs.declarations.stub.controllers.DeclarationStubController.displayNotification(clientId, operation, lrn)
-POST          /customs-declarations-stub/admin/notification/:clientId/:operation/:lrn        uk.gov.hmrc.customs.declarations.stub.controllers.DeclarationStubController.addNotification(clientId, operation, lrn)
-DELETE        /customs-declarations-stub/admin/notification/:id                              uk.gov.hmrc.customs.declarations.stub.controllers.DeclarationStubController.deleteNotification(id)
+GET           /customs-declarations-stub/admin/notification                                  uk.gov.hmrc.customs.declarations.stub.controllers.NotificationController.listNotifications()
+GET           /customs-declarations-stub/admin/notification/:clientId/:operation/:lrn        uk.gov.hmrc.customs.declarations.stub.controllers.NotificationController.displayNotification(clientId, operation, lrn)
+POST          /customs-declarations-stub/admin/notification/:clientId/:operation/:lrn        uk.gov.hmrc.customs.declarations.stub.controllers.NotificationController.addNotification(clientId, operation, lrn)
+DELETE        /customs-declarations-stub/admin/notification/:id                              uk.gov.hmrc.customs.declarations.stub.controllers.NotificationController.deleteNotification(id)

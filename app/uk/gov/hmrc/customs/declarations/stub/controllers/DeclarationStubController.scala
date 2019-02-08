@@ -34,6 +34,8 @@ import play.api.mvc._
 import reactivemongo.bson.{BSONDocument, BSONObjectID}
 import uk.gov.hmrc.customs.declarations.stub.repositories._
 import uk.gov.hmrc.auth.core.{AuthConnector, AuthorisedFunctions, Enrolment}
+import uk.gov.hmrc.customs.declarations.stub.connector.NotificationConnector
+import uk.gov.hmrc.customs.declarations.stub.models.ApiHeaders
 import uk.gov.hmrc.http.{HeaderCarrier, HttpReads, HttpResponse}
 import uk.gov.hmrc.mongo.BSONBuilderHelpers
 import uk.gov.hmrc.play.bootstrap.controller.BaseController
@@ -51,7 +53,7 @@ class DeclarationStubController @Inject()(
   http: HttpClient,
   actorSystem: ActorSystem,
   clientRepo: ClientRepository,
-  notificationRepo: NotificationRepository
+  notificationConnector: NotificationConnector
 )(implicit val appConfig: AppConfig, ec: ExecutionContext) extends BaseController with AuthorisedFunctions with BSONBuilderHelpers {
 
   private val permissibleAcceptHeaders: Set[String] =
@@ -63,10 +65,7 @@ class DeclarationStubController @Inject()(
 
   private val cancelSchemas = Seq("/schemas/CANCEL_METADATA.xsd", "/schemas/CANCEL.xsd")
 
-  private val defaultNotification =
-    Source.fromInputStream(
-      getClass.getResourceAsStream("/messages/example_accepted_import_notification.xml")
-    ).getLines().mkString
+
 
   override def authConnector: AuthConnector = auth
 
@@ -74,7 +73,7 @@ class DeclarationStubController @Inject()(
     validateHeaders() { hdrs =>
       authenticate(hdrs) { client =>
         validatePayload(submitSchemas) { meta =>
-          notifyInDueCourse("submit", hdrs, client, meta)
+          notificationConnector.notifyInDueCourse("submit", hdrs, client, meta)
         }
       }
     }
@@ -84,7 +83,7 @@ class DeclarationStubController @Inject()(
     validateHeaders() { hdrs =>
       authenticate(hdrs) { client =>
         validatePayload(cancelSchemas) { meta =>
-          notifyInDueCourse("cancel", hdrs, client, meta)
+          notificationConnector.notifyInDueCourse("cancel", hdrs, client, meta)
         }
       }
     }
@@ -109,31 +108,7 @@ class DeclarationStubController @Inject()(
     }
   }
 
-  def listNotifications(): Action[AnyContent] = Action.async { implicit req =>
-    notificationRepo.findAll().map { found =>
-      Ok(Json.toJson(found))
-    }
-  }
 
-  def displayNotification(clientId: String, operation: String, lrn: String): Action[AnyContent] =
-    Action.async { implicit req =>
-      notificationRepo.findByClientAndOperationAndLrn(clientId, operation, lrn).map { found =>
-        Ok(Json.toJson(found))
-      }
-    }
-
-  def addNotification(clientId: String, operation: String, lrn: String): Action[NodeSeq] =
-    Action.async(parse.xml) { implicit req =>
-      notificationRepo.insert(Notification(clientId, operation, lrn, req.body.mkString)).map { result =>
-        if (result.ok) Created else InternalServerError
-      }
-    }
-
-  def deleteNotification(id: String): Action[NodeSeq] = Action.async(parse.xml) { implicit req =>
-    notificationRepo.removeById(BSONObjectID.parse(id).get).map { result =>
-      if (result.ok) NoContent else InternalServerError
-    }
-  }
 
   // a dirty approximation of the header validation process implemented by customs declarations API
   private def validateHeaders()(f: ApiHeaders => Future[Result])
@@ -202,39 +177,5 @@ class DeclarationStubController @Inject()(
     }
   }
 
-  private def notifyInDueCourse(operation: String, headers: ApiHeaders, client: Client, meta: MetaData)
-                               (implicit req: Request[NodeSeq], hc: HeaderCarrier): Future[Result] = {
-    val conversationId = UUID.randomUUID().toString
-    scheduleEachOnce(operation, headers, conversationId, client,  meta)
-    Future.successful(Accepted.withHeaders("X-Conversation-ID" -> conversationId).as(ContentTypes.XML))
-  }
 
-  def scheduleEachOnce(operation: String, headers: ApiHeaders, conversationId: String, client: Client, meta: MetaData)
-  (implicit req: Request[NodeSeq], hc: HeaderCarrier): Unit =
-
-      actorSystem.scheduler.scheduleOnce(new FiniteDuration(2, TimeUnit.SECONDS)) {
-        notificationRepo.findByClientAndOperationAndMetaData(client.clientId, operation, meta).map { maybeNotification =>
-        Logger.info("Entering async request notification")
-        val xml = maybeNotification.map(_.xml).getOrElse(defaultNotification)
-        Logger.debug(s"scheduling one notification call ${xml.toString()}")
-        sendNotificationWithDelay(client, conversationId, xml).onComplete { _ =>
-          Logger.info("Exiting async request notification")
-        }
-      }
-  }
-
-  private def sendNotificationWithDelay(client: Client, conversationId: String, xml: String, delay: Duration = 5.seconds)
-                                       (implicit rds: HttpReads[HttpResponse], ec: ExecutionContext): Future[HttpResponse] = {
-    http.POSTString(
-      client.callbackUrl,
-      xml,
-      Seq(
-        HeaderNames.AUTHORIZATION -> s"Bearer ${client.token}",
-        HeaderNames.CONTENT_TYPE -> ContentTypes.XML,
-        "X-Conversation-ID" -> conversationId
-      )
-    )(rds, HeaderCarrier(), ec)
-  }
 }
-
-case class ApiHeaders(accept: String, contentType: String, clientId: String, badgeId: Option[String])
