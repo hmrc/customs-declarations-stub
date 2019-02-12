@@ -74,7 +74,20 @@ class DeclarationStubController @Inject()(
     validateHeaders() { hdrs =>
       authenticate(hdrs) { client =>
         validatePayload(submitSchemas) { meta =>
-          notifyInDueCourse("submit", hdrs, client, meta)
+          val conversationId = UUID.randomUUID().toString
+          notifyInDueCourse("submit", hdrs, client, meta, conversationId)
+          Future.successful(Accepted.withHeaders("X-Conversation-ID" -> conversationId).as(ContentTypes.XML))
+        }
+      }
+    }
+  }
+
+  def submitNoNotification(): Action[NodeSeq] = Action.async(parse.xml) { implicit req =>
+    validateHeaders() { hdrs =>
+      authenticate(hdrs) { client =>
+        validatePayload(submitSchemas) { meta =>
+          val conversationId = UUID.randomUUID().toString
+          Future.successful(Accepted.withHeaders("X-Conversation-ID" -> conversationId).as(ContentTypes.XML))
         }
       }
     }
@@ -84,7 +97,20 @@ class DeclarationStubController @Inject()(
     validateHeaders() { hdrs =>
       authenticate(hdrs) { client =>
         validatePayload(cancelSchemas) { meta =>
-          notifyInDueCourse("cancel", hdrs, client, meta)
+          val conversationId = UUID.randomUUID().toString
+          notifyInDueCourse("cancel", hdrs, client, meta, conversationId)
+          Future.successful(Accepted.withHeaders("X-Conversation-ID" -> conversationId).as(ContentTypes.XML))
+        }
+      }
+    }
+  }
+
+  def cancelNoNotification(): Action[NodeSeq] = Action.async(parse.xml) { implicit req =>
+    validateHeaders() { hdrs =>
+      authenticate(hdrs) { client =>
+        validatePayload(cancelSchemas) { meta =>
+          val conversationId = UUID.randomUUID().toString
+          Future.successful(Accepted.withHeaders("X-Conversation-ID" -> conversationId).as(ContentTypes.XML))
         }
       }
     }
@@ -202,11 +228,9 @@ class DeclarationStubController @Inject()(
     }
   }
 
-  private def notifyInDueCourse(operation: String, headers: ApiHeaders, client: Client, meta: MetaData)
-                               (implicit req: Request[NodeSeq], hc: HeaderCarrier): Future[Result] = {
-    val conversationId = UUID.randomUUID().toString
+  private def notifyInDueCourse(operation: String, headers: ApiHeaders, client: Client, meta: MetaData, conversationId: String)
+                               (implicit req: Request[NodeSeq], hc: HeaderCarrier): Unit = {
     scheduleEachOnce(operation, headers, conversationId, client,  meta)
-    Future.successful(Accepted.withHeaders("X-Conversation-ID" -> conversationId).as(ContentTypes.XML))
   }
 
   def scheduleEachOnce(operation: String, headers: ApiHeaders, conversationId: String, client: Client, meta: MetaData)

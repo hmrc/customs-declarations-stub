@@ -4,6 +4,9 @@
 POST          /                                                                              controllers.DeclarationStubController.submit()
 POST          /cancellation-requests                                                         controllers.DeclarationStubController.cancel()
 
+POST          /customs-declare-imports/                                                      controllers.DeclarationStubController.submitNoNotification()
+POST          /customs-declare-imports/cancellation-requests                                 controllers.DeclarationStubController.cancelNoNotification()
+
 GET           /customs-declarations-stub/admin/client                                        controllers.DeclarationStubController.listClients()
 POST          /customs-declarations-stub/admin/client                                        controllers.DeclarationStubController.addClient()
 DELETE        /customs-declarations-stub/admin/client/:id                                    controllers.DeclarationStubController.deleteClient(id)
