@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 
-package repositories
+package uk.gov.hmrc.customs.declarations.stub.repositories
 
 import javax.inject.{Inject, Singleton}
-import play.api.libs.json.{JsString, Json}
+import play.api.libs.json.{Format, JsString, Json}
 import play.modules.reactivemongo.ReactiveMongoComponent
 import reactivemongo.api.indexes.{Index, IndexType}
 import reactivemongo.bson.BSONObjectID
@@ -56,7 +56,7 @@ case class Notification(clientId: String, operation: String, lrn: String, xml: S
 
 object Notification {
 
-  implicit val formats = mongoEntity {
+  implicit val formats: Format[Notification] = mongoEntity {
     Json.format[Notification]
   }
 

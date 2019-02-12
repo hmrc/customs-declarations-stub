@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 
-package repositories
+package uk.gov.hmrc.customs.declarations.stub.repositories
 
 import javax.inject.{Inject, Singleton}
-import play.api.libs.json.{JsString, Json}
+import play.api.libs.json.{Format, JsString, Json, OFormat}
 import play.modules.reactivemongo.ReactiveMongoComponent
 import reactivemongo.api.indexes.{Index, IndexType}
 import reactivemongo.bson.BSONObjectID
@@ -45,7 +45,7 @@ case class Client(clientId: String, callbackUrl: String, token: String, id: BSON
 
 object Client {
 
-  implicit val formats = mongoEntity {
+  implicit val formats: Format[Client] = mongoEntity {
     Json.format[Client]
   }
 
@@ -56,5 +56,5 @@ case class ClientWrapper(clientId: String, callbackUrl: String, token: String) {
 }
 
 object ClientWrapper {
-  implicit val formats = Json.format[ClientWrapper]
+  implicit val formats: OFormat[ClientWrapper] = Json.format[ClientWrapper]
 }

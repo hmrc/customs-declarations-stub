@@ -1,5 +1,5 @@
 /*
- * Copyright 2018 HM Revenue & Customs
+ * Copyright 2019 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package config
+package uk.gov.hmrc.customs.declarations.stub.config
 
 import org.scalatest.{MustMatchers, WordSpec}
 import org.scalatestplus.play.guice.GuiceOneAppPerSuite
@@ -25,7 +25,7 @@ class AppConfigSpec extends WordSpec with MustMatchers with GuiceOneAppPerSuite 
 
   override lazy val app: Application = GuiceApplicationBuilder().build()
 
-  val config = app.injector.instanceOf[AppConfig]
+  val config: AppConfig = app.injector.instanceOf[AppConfig]
 
   "Application configuration" should {
     "contains correct client information" in {
