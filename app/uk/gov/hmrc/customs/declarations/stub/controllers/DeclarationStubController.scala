@@ -18,10 +18,7 @@ package uk.gov.hmrc.customs.declarations.stub.controllers
 
 import java.io.StringReader
 import java.util.UUID
-import java.util.concurrent.TimeUnit
 
-import akka.actor.ActorSystem
-import uk.gov.hmrc.customs.declarations.stub.config.AppConfig
 import javax.inject.{Inject, Singleton}
 import javax.xml.XMLConstants
 import javax.xml.transform.stream.StreamSource
@@ -32,26 +29,22 @@ import play.api.http.{ContentTypes, HeaderNames}
 import play.api.libs.json.Json
 import play.api.mvc._
 import reactivemongo.bson.{BSONDocument, BSONObjectID}
-import uk.gov.hmrc.customs.declarations.stub.repositories._
 import uk.gov.hmrc.auth.core.{AuthConnector, AuthorisedFunctions, Enrolment}
+import uk.gov.hmrc.customs.declarations.stub.config.AppConfig
 import uk.gov.hmrc.customs.declarations.stub.connector.NotificationConnector
 import uk.gov.hmrc.customs.declarations.stub.models.ApiHeaders
-import uk.gov.hmrc.http.{HeaderCarrier, HttpReads, HttpResponse}
+import uk.gov.hmrc.customs.declarations.stub.repositories._
+import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.mongo.BSONBuilderHelpers
 import uk.gov.hmrc.play.bootstrap.controller.BaseController
-import uk.gov.hmrc.play.bootstrap.http.HttpClient
 import uk.gov.hmrc.wco.dec.MetaData
 
-import scala.concurrent.duration.{Duration, _}
 import scala.concurrent.{ExecutionContext, Future}
-import scala.io.Source
 import scala.xml.NodeSeq
 
 @Singleton
 class DeclarationStubController @Inject()(
   auth: AuthConnector,
-  http: HttpClient,
-  actorSystem: ActorSystem,
   clientRepo: ClientRepository,
   notificationConnector: NotificationConnector
 )(implicit val appConfig: AppConfig, ec: ExecutionContext) extends BaseController with AuthorisedFunctions with BSONBuilderHelpers {
@@ -73,7 +66,20 @@ class DeclarationStubController @Inject()(
     validateHeaders() { hdrs =>
       authenticate(hdrs) { client =>
         validatePayload(submitSchemas) { meta =>
-          notificationConnector.notifyInDueCourse("submit", hdrs, client, meta)
+          val conversationId = UUID.randomUUID().toString
+          notificationConnector.notifyInDueCourse("submit", hdrs, client, meta, conversationId = conversationId)
+          Future.successful(Accepted.withHeaders("X-Conversation-ID" -> conversationId).as(ContentTypes.XML))
+        }
+      }
+    }
+  }
+
+  def submitNoNotification(): Action[NodeSeq] = Action.async(parse.xml) { implicit req =>
+    validateHeaders() { hdrs =>
+      authenticate(hdrs) { client =>
+        validatePayload(submitSchemas) { meta =>
+          val conversationId = UUID.randomUUID().toString
+          Future.successful(Accepted.withHeaders("X-Conversation-ID" -> conversationId).as(ContentTypes.XML))
         }
       }
     }
@@ -83,7 +89,20 @@ class DeclarationStubController @Inject()(
     validateHeaders() { hdrs =>
       authenticate(hdrs) { client =>
         validatePayload(cancelSchemas) { meta =>
-          notificationConnector.notifyInDueCourse("cancel", hdrs, client, meta)
+          val conversationId = UUID.randomUUID().toString
+          notificationConnector.notifyInDueCourse("cancel", hdrs, client, meta, conversationId = conversationId)
+          Future.successful(Accepted.withHeaders("X-Conversation-ID" -> conversationId).as(ContentTypes.XML))
+        }
+      }
+    }
+  }
+
+  def cancelNoNotification(): Action[NodeSeq] = Action.async(parse.xml) { implicit req =>
+    validateHeaders() { hdrs =>
+      authenticate(hdrs) { client =>
+        validatePayload(cancelSchemas) { meta =>
+          val conversationId = UUID.randomUUID().toString
+          Future.successful(Accepted.withHeaders("X-Conversation-ID" -> conversationId).as(ContentTypes.XML))
         }
       }
     }
@@ -161,21 +180,18 @@ class DeclarationStubController @Inject()(
     try {
       validator.validate(new StreamSource(new StringReader(xml)))
     } catch {
-      case e: Exception => {
-        Logger.warn(s"Invalid XML: ${e.getMessage}\n${xml}", e)
+      case e: Exception =>
+        Logger.warn(s"Invalid XML: ${e.getMessage}\n$xml", e)
         return Future.successful(BadRequest)
-      }
     }
 
     try {
       f(MetaData.fromXml(xml)) // additionally, catch failure to deserialize as WCO domain case class for the sake of visibility on this kind of error
     } catch {
-      case e: Exception => {
+      case e: Exception =>
         Logger.warn(s"Cannot deserialize XML: ${e.getMessage}", e)
-        return Future.successful(BadRequest)
-      }
+        Future.successful(BadRequest)
     }
   }
-
 
 }

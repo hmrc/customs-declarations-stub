@@ -25,7 +25,7 @@ class AppConfigSpec extends WordSpec with MustMatchers with GuiceOneAppPerSuite 
 
   override lazy val app: Application = GuiceApplicationBuilder().build()
 
-  val config = app.injector.instanceOf[AppConfig]
+  val config: AppConfig = app.injector.instanceOf[AppConfig]
 
   "Application configuration" should {
     "contains correct client information" in {

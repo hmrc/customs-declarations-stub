@@ -4,6 +4,9 @@
 POST          /                                                                              uk.gov.hmrc.customs.declarations.stub.controllers.DeclarationStubController.submit()
 POST          /cancellation-requests                                                         uk.gov.hmrc.customs.declarations.stub.controllers.DeclarationStubController.cancel()
 
+POST          /customs-declare-imports/                                                      uk.gov.hmrc.customs.declarations.stub.controllers.DeclarationStubController.submitNoNotification()
+POST          /customs-declare-imports/cancellation-requests                                 uk.gov.hmrc.customs.declarations.stub.controllers.DeclarationStubController.cancelNoNotification()
+
 GET           /customs-declarations-stub/admin/client                                        uk.gov.hmrc.customs.declarations.stub.controllers.DeclarationStubController.listClients()
 POST          /customs-declarations-stub/admin/client                                        uk.gov.hmrc.customs.declarations.stub.controllers.DeclarationStubController.addClient()
 DELETE        /customs-declarations-stub/admin/client/:id                                    uk.gov.hmrc.customs.declarations.stub.controllers.DeclarationStubController.deleteClient(id)

@@ -16,26 +16,22 @@
 
 package uk.gov.hmrc.customs.declarations.stub.connector
 
-import java.util.UUID
 import java.util.concurrent.TimeUnit
 
 import akka.actor.ActorSystem
 import javax.inject.{Inject, Singleton}
 import play.api.Logger
 import play.api.http.{ContentTypes, HeaderNames}
-import play.api.mvc.Results._
-import play.api.mvc._
 import uk.gov.hmrc.customs.declarations.stub.config.AppConfig
 import uk.gov.hmrc.customs.declarations.stub.models.ApiHeaders
-import uk.gov.hmrc.customs.declarations.stub.repositories.{Client, ClientRepository, NotificationRepository}
+import uk.gov.hmrc.customs.declarations.stub.repositories.{Client, NotificationRepository}
 import uk.gov.hmrc.http.{HeaderCarrier, HttpReads, HttpResponse}
 import uk.gov.hmrc.play.bootstrap.http.HttpClient
 import uk.gov.hmrc.wco.dec.MetaData
 
-import scala.concurrent.{ExecutionContext, Future}
 import scala.concurrent.duration.{Duration, _}
+import scala.concurrent.{ExecutionContext, Future}
 import scala.io.Source
-import scala.xml.NodeSeq
 
 
 @Singleton
@@ -54,10 +50,9 @@ class NotificationConnector @Inject()( http: HttpClient,
                         headers: ApiHeaders,
                         client: Client,
                         meta: MetaData,
-                        duration: FiniteDuration =  new FiniteDuration(2, TimeUnit.SECONDS)): Future[Result] = {
-    val conversationId = UUID.randomUUID().toString
+                        duration: FiniteDuration =  new FiniteDuration(2, TimeUnit.SECONDS),
+                        conversationId: String): Unit = {
     scheduleEachOnce(operation, headers, conversationId, client,  meta, duration)
-    Future.successful(Accepted.withHeaders("X-Conversation-ID" -> conversationId).as(ContentTypes.XML))
   }
 
   def scheduleEachOnce(operation: String,
