@@ -25,6 +25,7 @@ import play.api.http.{ContentTypes, HeaderNames}
 import uk.gov.hmrc.customs.declarations.stub.config.AppConfig
 import uk.gov.hmrc.customs.declarations.stub.models.ApiHeaders
 import uk.gov.hmrc.customs.declarations.stub.repositories.{Client, NotificationRepository}
+import uk.gov.hmrc.customs.declarations.stub.utils.XmlPayloads
 import uk.gov.hmrc.http.{HeaderCarrier, HttpReads, HttpResponse}
 import uk.gov.hmrc.play.bootstrap.http.HttpClient
 import uk.gov.hmrc.wco.dec.MetaData
@@ -36,15 +37,12 @@ import scala.io.Source
 
 @Singleton
 class NotificationConnector @Inject()( http: HttpClient,
-                                       notificationRepo: NotificationRepository)
+                                       notificationRepo: NotificationRepository,
+                                       notificationValueGenerator: NotificationValueGenerator)
                                      (implicit val appConfig: AppConfig,
                                       ec: ExecutionContext,
                                       actorSystem: ActorSystem){
 
-  private val defaultNotification =
-    Source.fromInputStream(
-      getClass.getResourceAsStream("/messages/example_accepted_import_notification.xml")
-    ).getLines().mkString
 
   def notifyInDueCourse(operation: String,
                         headers: ApiHeaders,
@@ -65,7 +63,7 @@ class NotificationConnector @Inject()( http: HttpClient,
     actorSystem.scheduler.scheduleOnce(duration) {
       notificationRepo.findByClientAndOperationAndMetaData(client.clientId, operation, meta).map { maybeNotification =>
         Logger.info("Entering async request notification")
-        val xml = maybeNotification.map(_.xml).getOrElse(defaultNotification)
+        val xml = maybeNotification.map(_.xml).getOrElse(XmlPayloads.acceptedImportNotification(notificationValueGenerator.generateMRN).toString)
         Logger.debug(s"scheduling one notification call ${xml.toString}")
         sendNotificationWithDelay(client, conversationId, xml).onComplete { _ =>
           Logger.info("Exiting async request notification")
@@ -85,4 +83,6 @@ class NotificationConnector @Inject()( http: HttpClient,
       )
     )(rds, HeaderCarrier(), ec)
   }
+
+
 }

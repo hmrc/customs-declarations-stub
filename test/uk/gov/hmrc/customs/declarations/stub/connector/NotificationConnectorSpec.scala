@@ -26,13 +26,14 @@ import org.scalatest.{MustMatchers, WordSpec}
 import org.scalatest.mockito.MockitoSugar
 import org.mockito.ArgumentCaptor
 import org.mockito.Mockito._
-import org.mockito.ArgumentMatchers._
+import org.mockito.ArgumentMatchers.{any, anyString, eq => meq}
 import play.api.mvc.Results._
 import play.api.http.Status.ACCEPTED
 import org.scalatest.concurrent.ScalaFutures
 import uk.gov.hmrc.customs.declarations.stub.config.AppConfig
 import uk.gov.hmrc.customs.declarations.stub.models.ApiHeaders
 import uk.gov.hmrc.customs.declarations.stub.repositories.{Client, Notification, NotificationRepository}
+import uk.gov.hmrc.customs.declarations.stub.utils.XmlPayloads
 import uk.gov.hmrc.http.{HeaderCarrier, HttpReads, HttpResponse}
 import uk.gov.hmrc.play.bootstrap.http.HttpClient
 import uk.gov.hmrc.play.test.UnitSpec
@@ -47,24 +48,28 @@ class NotificationConnectorSpec extends UnitSpec with MockitoSugar with ScalaFut
   val mockHttpClient: HttpClient = mock[HttpClient]
 
   trait SetUp {
-    reset(mockHttpClient)
+
     implicit val mockAppConfig: AppConfig = mock[AppConfig]
     val mockNotificationRepository = mock[NotificationRepository]
+    val mockNotificationValueGenerator = mock[NotificationValueGenerator]
     implicit val system: ActorSystem = ActorSystem("test")
 
     val testObj = new NotificationConnector(mockHttpClient,
-                                              mockNotificationRepository)
+                                            mockNotificationRepository,
+                                            mockNotificationValueGenerator)
+    reset(mockHttpClient, mockNotificationRepository, mockNotificationValueGenerator)
   }
 
   "NotificationConnector" should {
-    "return Accepted and call the notification repository" in new SetUp{
+    "return Accepted ands send the notification body from the repo" in new SetUp{
       val client = Client("clientId", "callBackUrl", "token")
       val apiHeaders = ApiHeaders("Accept", "contentType", "clientId", badgeId = None)
       val metaData: MetaData = mock[MetaData]
+      val xmlBody = "<xml></xml>"
 
       returnResponseForRequest(Future.successful(mock[HttpResponse]))
       when(mockNotificationRepository.findByClientAndOperationAndMetaData(any(), any(), any()))
-        .thenReturn(Future.successful(Some(Notification("clientId", "operation", "lrn", "<xml></xml>"))))
+        .thenReturn(Future.successful(Some(Notification("clientId", "operation", "lrn", xmlBody))))
       val conversationId: String = UUID.randomUUID().toString
       val result: Unit = await(testObj.notifyInDueCourse("operation", apiHeaders, client, metaData, new FiniteDuration(500, TimeUnit.MILLISECONDS), conversationId))
        Thread.sleep(750)
@@ -72,7 +77,27 @@ class NotificationConnectorSpec extends UnitSpec with MockitoSugar with ScalaFut
         verify(mockNotificationRepository, times(1))
           .findByClientAndOperationAndMetaData(any(), any(), any())
 
-      verify(mockHttpClient, times(1)).POSTString(any(), any(), any())(any(), any(), any())
+      verify(mockHttpClient, times(1)).POSTString(any(), meq(xmlBody), any())(any(), any(), any())
+    }
+
+    "return Accepted and call use the default notification Body" in new SetUp{
+      val client = Client("clientId", "callBackUrl", "token")
+      val apiHeaders = ApiHeaders("Accept", "contentType", "clientId", badgeId = None)
+      val metaData: MetaData = mock[MetaData]
+      val generatedMrn = "MRN7878787"
+
+      returnResponseForRequest(Future.successful(mock[HttpResponse]))
+      when(mockNotificationRepository.findByClientAndOperationAndMetaData(any(), any(), any()))
+        .thenReturn(Future.successful(None))
+      when(mockNotificationValueGenerator.generateMRN).thenReturn(generatedMrn)
+      val conversationId: String = UUID.randomUUID().toString
+      val result: Unit = await(testObj.notifyInDueCourse("operation", apiHeaders, client, metaData, new FiniteDuration(500, TimeUnit.MILLISECONDS), conversationId))
+      Thread.sleep(750)
+      result shouldBe ()
+      verify(mockNotificationRepository, times(1))
+        .findByClientAndOperationAndMetaData(any(), any(), any())
+
+      verify(mockHttpClient, times(1)).POSTString(any(), meq(XmlPayloads.acceptedImportNotification(generatedMrn).toString), any())(any(), any(), any())
     }
   }
 

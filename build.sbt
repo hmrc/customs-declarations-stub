@@ -32,6 +32,7 @@ lazy val scoverageSettings: Seq[Setting[_]] = Seq(
     "<empty>"
     ,"Reverse.*"
     ,"metrics\\..*"
+    ,"uk\\.gov\\.hmrc\\.customs\\.declarations\\.stub\\.utils\\..*"
     ,".*(BuildInfo|Routes|Options).*"
   ).mkString(";"),
 
