@@ -18,7 +18,7 @@ package uk.gov.hmrc.customs.declarations.stub.controllers
 
 import java.io.StringReader
 import java.util.UUID
-
+import java.util.concurrent.atomic.AtomicReference
 import javax.inject.{Inject, Singleton}
 import javax.xml.XMLConstants
 import javax.xml.transform.stream.StreamSource
@@ -38,7 +38,6 @@ import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.mongo.BSONBuilderHelpers
 import uk.gov.hmrc.play.bootstrap.controller.BaseController
 import uk.gov.hmrc.wco.dec.MetaData
-
 import scala.concurrent.{ExecutionContext, Future}
 import scala.xml.NodeSeq
 
@@ -59,6 +58,7 @@ class DeclarationStubController @Inject()(
   private val cancelSchemas = Seq("/schemas/CANCEL_METADATA.xsd", "/schemas/CANCEL.xsd")
 
 
+  private var lastSubmission: AtomicReference[Option[NodeSeq]] = new AtomicReference[Option[NodeSeq]](None)
 
   override def authConnector: AuthConnector = auth
 
@@ -66,12 +66,19 @@ class DeclarationStubController @Inject()(
     validateHeaders() { hdrs =>
       authenticate(hdrs) { client =>
         validatePayload(submitSchemas) { meta =>
+
+          lastSubmission.set(Some(req.body))
+
           val conversationId = UUID.randomUUID().toString
           notificationConnector.notifyInDueCourse("submit", hdrs, client, meta, conversationId = conversationId)
           Future.successful(Accepted.withHeaders("X-Conversation-ID" -> conversationId).as(ContentTypes.XML))
         }
       }
     }
+  }
+
+  def lastSubmit(): Action[AnyContent] = Action { implicit req =>
+    lastSubmission.get().fold[Result](NotFound)(Ok(_)).as(ContentTypes.XML)
   }
 
   def submitNoNotification(): Action[NodeSeq] = Action.async(parse.xml) { implicit req =>
@@ -193,5 +200,4 @@ class DeclarationStubController @Inject()(
         Future.successful(BadRequest)
     }
   }
-
 }

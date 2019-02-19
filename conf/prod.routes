@@ -4,6 +4,8 @@
 POST          /                                                                              uk.gov.hmrc.customs.declarations.stub.controllers.DeclarationStubController.submit()
 POST          /cancellation-requests                                                         uk.gov.hmrc.customs.declarations.stub.controllers.DeclarationStubController.cancel()
 
+GET           /last-submission                                                               uk.gov.hmrc.customs.declarations.stub.controllers.DeclarationStubController.lastSubmit()
+
 POST          /customs-declare-imports/                                                      uk.gov.hmrc.customs.declarations.stub.controllers.DeclarationStubController.submitNoNotification()
 POST          /customs-declare-imports/cancellation-requests                                 uk.gov.hmrc.customs.declarations.stub.controllers.DeclarationStubController.cancelNoNotification()
 
