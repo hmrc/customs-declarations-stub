@@ -73,7 +73,7 @@ class NotificationConnectorSpec extends UnitSpec with MockitoSugar with ScalaFut
       val conversationId: String = UUID.randomUUID().toString
       val result: Unit = await(testObj.notifyInDueCourse("operation", apiHeaders, client, metaData, new FiniteDuration(500, TimeUnit.MILLISECONDS), conversationId))
        Thread.sleep(850)
-        result shouldBe ()
+        result shouldBe((): Unit)
         verify(mockNotificationRepository, times(1))
           .findByClientAndOperationAndMetaData(any(), any(), any())
 
@@ -93,7 +93,7 @@ class NotificationConnectorSpec extends UnitSpec with MockitoSugar with ScalaFut
       val conversationId: String = UUID.randomUUID().toString
       val result: Unit = await(testObj.notifyInDueCourse("operation", apiHeaders, client, metaData, new FiniteDuration(500, TimeUnit.MILLISECONDS), conversationId))
       Thread.sleep(750)
-      result shouldBe ()
+      result shouldBe((): Unit)
       verify(mockNotificationRepository, times(1))
         .findByClientAndOperationAndMetaData(any(), any(), any())
 

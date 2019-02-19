@@ -25,7 +25,7 @@ import javax.xml.transform.stream.StreamSource
 import javax.xml.transform.{Source => XmlSource}
 import javax.xml.validation.{Schema, SchemaFactory}
 import play.api.Logger
-import play.api.http.{ContentTypes, HeaderNames}
+import play.api.http.{ContentTypes, HeaderNames, MimeTypes}
 import play.api.libs.json.Json
 import play.api.mvc._
 import reactivemongo.bson.{BSONDocument, BSONObjectID}
@@ -52,7 +52,7 @@ class DeclarationStubController @Inject()(
   private val permissibleAcceptHeaders: Set[String] =
     Set("application/vnd.hmrc.1.0+xml", "application/vnd.hmrc.2.0+xml", "application/vnd.hmrc.3.0+xml")
 
-  private val permissibleContentTypes: Set[String] = Set(ContentTypes.XML(Codec.utf_8))
+  private val permissibleContentTypes: Seq[String] = Seq(MimeTypes.XML, MimeTypes.XML + ";charset=utf-8", MimeTypes.XML + "; charset=utf-8")
 
   private val submitSchemas = Seq("/schemas/DocumentMetaData_2_DMS.xsd", "/schemas/WCO_DEC_2_DMS.xsd")
 
