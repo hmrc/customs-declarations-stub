@@ -85,6 +85,9 @@ class DeclarationStubController @Inject()(
     validateHeaders() { hdrs =>
       authenticate(hdrs) { client =>
         validatePayload(submitSchemas) { meta =>
+
+          lastSubmission.set(Some(req.body))
+
           val conversationId = UUID.randomUUID().toString
           Future.successful(Accepted.withHeaders("X-Conversation-ID" -> conversationId).as(ContentTypes.XML))
         }
