@@ -65,14 +65,12 @@
                         </xs:documentation>
                     </xs:annotation>
                 </xs:element>
-                <xs:element name="AgencyAssignedCustomizationCode" type="ds:MetaDataAgencyAssignedCustomizationCodeType"
-                            minOccurs="0">
+                <xs:element name="AgencyAssignedCustomizationCode" type="ds:MetaDataAgencyAssignedCustomizationCodeType" minOccurs="0">
                     <xs:annotation>
                         <xs:documentation>
                             <WCOFormat>an..6</WCOFormat>
                             <WCOCodeRemarks>User codes</WCOCodeRemarks>
-                            <DictionaryEntryName>Document Meta Data. Agency Assigned Customization. Code
-                            </DictionaryEntryName>
+                            <DictionaryEntryName>Document Meta Data. Agency Assigned Customization. Code</DictionaryEntryName>
                             <NamedComplexType>DocumentMetaDataAgencyAssignedCustomizationCodeType</NamedComplexType>
                             <XMLTag>AgencyAssignedCustomizationCode</XMLTag>
                             <WCOName>Agency Assigned Customization</WCOName>
@@ -80,16 +78,13 @@
                         </xs:documentation>
                     </xs:annotation>
                 </xs:element>
-                <xs:element name="AgencyAssignedCustomizationVersionCode"
-                            type="ds:MetaDataAgencyAssignedCustomizationVersionCodeType" minOccurs="0">
+                <xs:element name="AgencyAssignedCustomizationVersionCode" type="ds:MetaDataAgencyAssignedCustomizationVersionCodeType" minOccurs="0">
                     <xs:annotation>
                         <xs:documentation>
                             <WCOFormat>an..3</WCOFormat>
                             <WCOCodeRemarks>User codes</WCOCodeRemarks>
-                            <DictionaryEntryName>Document Meta Data. Agency Assigned Customization Version. Code
-                            </DictionaryEntryName>
-                            <NamedComplexType>DocumentMetaDataAgencyAssignedCustomizationVersionCodeType
-                            </NamedComplexType>
+                            <DictionaryEntryName>Document Meta Data. Agency Assigned Customization Version. Code</DictionaryEntryName>
+                            <NamedComplexType>DocumentMetaDataAgencyAssignedCustomizationVersionCodeType</NamedComplexType>
                             <XMLTag>AgencyAssignedCustomizationVersionCode</XMLTag>
                             <WCOName>Agency Assigned Customization Version</WCOName>
                             <UniquePositionID>9017</UniquePositionID>
