@@ -10,7 +10,7 @@ object AppDependencies {
     "uk.gov.hmrc" %% "bootstrap-play-25" % "4.8.0",
     "uk.gov.hmrc" %% "auth-client" % "2.19.0-play-25",
     "uk.gov.hmrc" %% "play-reactivemongo" % "6.4.0",
-    "uk.gov.hmrc" %% "wco-dec" % "0.28.0"
+    "uk.gov.hmrc" %% "wco-dec" % "0.31.0"
   )
 
   def test(scope: String = "test"): Seq[ModuleID] = Seq(
