@@ -29,22 +29,27 @@ import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
 class NotificationRepository @Inject()(implicit mc: ReactiveMongoComponent, ec: ExecutionContext)
-  extends ReactiveRepository[Notification, BSONObjectID]("clients", mc.mongoConnector.db, Notification.formats, objectIdFormats) {
+    extends ReactiveRepository[Notification, BSONObjectID](
+      "clients",
+      mc.mongoConnector.db,
+      Notification.formats,
+      objectIdFormats
+    ) {
 
   // clientId, lrn, and operation constitute a natural key for notification; i.e. 1 notification per operation per client
   override def indexes: Seq[Index] = Seq(
     Index(
-      Seq(
-        "clientId" -> IndexType.Ascending,
-        "operation" -> IndexType.Ascending,
-        "lrn" -> IndexType.Ascending
-      ),
+      Seq("clientId" -> IndexType.Ascending, "operation" -> IndexType.Ascending, "lrn" -> IndexType.Ascending),
       unique = true,
       name = Some("notificationIdx")
     )
   )
 
-  def findByClientAndOperationAndMetaData(clientId: String, operation: String, meta: MetaData): Future[Option[Notification]] =
+  def findByClientAndOperationAndMetaData(
+    clientId: String,
+    operation: String,
+    meta: MetaData
+  ): Future[Option[Notification]] =
     findByClientAndOperationAndLrn(clientId, operation, meta.declaration.flatMap(_.functionalReferenceId).getOrElse(""))
 
   def findByClientAndOperationAndLrn(clientId: String, operation: String, lrn: String): Future[Option[Notification]] =
@@ -52,7 +57,13 @@ class NotificationRepository @Inject()(implicit mc: ReactiveMongoComponent, ec: 
 
 }
 
-case class Notification(clientId: String, operation: String, lrn: String, xml: String, id: BSONObjectID = BSONObjectID.generate())
+case class Notification(
+  clientId: String,
+  operation: String,
+  lrn: String,
+  xml: String,
+  id: BSONObjectID = BSONObjectID.generate()
+)
 
 object Notification {
 

@@ -32,47 +32,53 @@ import uk.gov.hmrc.wco.dec.MetaData
 
 import scala.concurrent.duration.{Duration, _}
 import scala.concurrent.{ExecutionContext, Future}
-import scala.io.Source
-
 
 @Singleton
-class NotificationConnector @Inject()( http: HttpClient,
-                                       notificationRepo: NotificationRepository,
-                                       notificationValueGenerator: NotificationValueGenerator)
-                                     (implicit val appConfig: AppConfig,
-                                      ec: ExecutionContext,
-                                      actorSystem: ActorSystem){
+class NotificationConnector @Inject()(
+  http: HttpClient,
+  notificationRepo: NotificationRepository,
+  notificationValueGenerator: NotificationValueGenerator
+)(implicit val appConfig: AppConfig, ec: ExecutionContext, actorSystem: ActorSystem) {
 
+  def notifyInDueCourse(
+    operation: String,
+    headers: ApiHeaders,
+    client: Client,
+    meta: MetaData,
+    duration: FiniteDuration = new FiniteDuration(2, TimeUnit.SECONDS),
+    conversationId: String
+  ): Unit = scheduleEachOnce(operation, headers, conversationId, client, meta, duration)
 
-  def notifyInDueCourse(operation: String,
-                        headers: ApiHeaders,
-                        client: Client,
-                        meta: MetaData,
-                        duration: FiniteDuration =  new FiniteDuration(2, TimeUnit.SECONDS),
-                        conversationId: String): Unit = {
-    scheduleEachOnce(operation, headers, conversationId, client,  meta, duration)
-  }
-
-  def scheduleEachOnce(operation: String,
-                       headers: ApiHeaders,
-                       conversationId: String,
-                       client: Client,
-                       meta: MetaData,
-                       duration: FiniteDuration): Unit =
-
+  def scheduleEachOnce(
+    operation: String,
+    headers: ApiHeaders,
+    conversationId: String,
+    client: Client,
+    meta: MetaData,
+    duration: FiniteDuration
+  ): Unit =
     actorSystem.scheduler.scheduleOnce(duration) {
       notificationRepo.findByClientAndOperationAndMetaData(client.clientId, operation, meta).map { maybeNotification =>
         Logger.info("Entering async request notification")
-        val xml = maybeNotification.map(_.xml).getOrElse(XmlPayloads.acceptedImportNotification(notificationValueGenerator.generateMRN).toString)
+
+        val xml = maybeNotification
+          .map(_.xml)
+          .getOrElse(XmlPayloads.acceptedImportNotification(notificationValueGenerator.generateMRN).toString)
+
         Logger.debug(s"scheduling one notification call ${xml.toString}")
+
         sendNotificationWithDelay(client, conversationId, xml).onComplete { _ =>
           Logger.info("Exiting async request notification")
         }
       }
     }
 
-  private def sendNotificationWithDelay(client: Client, conversationId: String, xml: String, delay: Duration = 5.seconds)
-                                       (implicit rds: HttpReads[HttpResponse], ec: ExecutionContext): Future[HttpResponse] = {
+  private def sendNotificationWithDelay(
+    client: Client,
+    conversationId: String,
+    xml: String,
+    delay: Duration = 5.seconds
+  )(implicit rds: HttpReads[HttpResponse], ec: ExecutionContext): Future[HttpResponse] =
     http.POSTString(
       client.callbackUrl,
       xml,
@@ -82,7 +88,4 @@ class NotificationConnector @Inject()( http: HttpClient,
         "X-Conversation-ID" -> conversationId
       )
     )(rds, HeaderCarrier(), ec)
-  }
-
-
 }

@@ -18,26 +18,19 @@ package uk.gov.hmrc.customs.declarations.stub.connector
 
 class NotificationValueGenerator {
 
- def generateMRN()= {
-    "18GBJ" + randomAlphaNumeric(13)
-  }
-
-  private def generateRandomNumber(start: Int, end: Int): Int = {
-    val rnd = new scala.util.Random
-    start + rnd.nextInt( (end - start) + 1 )
-  }
+  def generateMRN(): String = "18GBJ" + randomAlphaNumeric(13)
 
   private val ALPHA_NUMERIC_STRING = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
 
-
   private def randomAlphaNumeric(count: Int): String = {
     val builder = new StringBuilder
-    for(x <- 1 to count){
+
+    (1 to count).foreach { _ =>
       val charPos = (Math.random * ALPHA_NUMERIC_STRING.length).toInt
       builder.append(ALPHA_NUMERIC_STRING.charAt(charPos))
     }
+
     builder.toString
   }
-
 
 }

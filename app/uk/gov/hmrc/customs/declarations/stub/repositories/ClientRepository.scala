@@ -28,7 +28,7 @@ import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
 class ClientRepository @Inject()(implicit mc: ReactiveMongoComponent, ec: ExecutionContext)
-  extends ReactiveRepository[Client, BSONObjectID]("clients", mc.mongoConnector.db, Client.formats, objectIdFormats)
+    extends ReactiveRepository[Client, BSONObjectID]("clients", mc.mongoConnector.db, Client.formats, objectIdFormats)
     with AtomicUpdate[Client] {
 
   override def indexes: Seq[Index] = Seq(
