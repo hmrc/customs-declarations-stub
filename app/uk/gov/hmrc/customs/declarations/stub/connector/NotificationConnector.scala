@@ -63,7 +63,7 @@ class NotificationConnector @Inject()(
 
         val xml = maybeNotification
           .map(_.xml)
-          .getOrElse(XmlPayloads.acceptedImportNotification(notificationValueGenerator.generateMRN).toString)
+          .getOrElse(XmlPayloads.acceptedExportNotification(notificationValueGenerator.generateMRN).toString)
 
         Logger.debug(s"scheduling one notification call ${xml.toString}")
 

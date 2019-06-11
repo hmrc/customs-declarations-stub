@@ -97,7 +97,7 @@ class NotificationConnectorSpec extends UnitSpec with MockitoSugar with ScalaFut
       verify(mockNotificationRepository, times(1))
         .findByClientAndOperationAndMetaData(any(), any(), any())
 
-      verify(mockHttpClient, times(1)).POSTString(any(), meq(XmlPayloads.acceptedImportNotification(generatedMrn).toString), any())(any(), any(), any())
+      verify(mockHttpClient, times(1)).POSTString(any(), meq(XmlPayloads.acceptedExportNotification(generatedMrn).toString), any())(any(), any(), any())
     }
   }
 
