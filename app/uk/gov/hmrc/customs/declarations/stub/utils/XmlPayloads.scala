@@ -18,7 +18,7 @@ package uk.gov.hmrc.customs.declarations.stub.utils
 
 object XmlPayloads {
 
-  def acceptedImportNotification(mrn: String = "18GBJCM3USAFD2WD51") = <md:MetaData xmlns:md="urn:wco:datamodel:WCO:DocumentMetaData-DMS:2">
+  def acceptedExportNotification(mrn: String = "18GBJCM3USAFD2WD51") = <md:MetaData xmlns:md="urn:wco:datamodel:WCO:DocumentMetaData-DMS:2">
     <md:WCODataModelVersionCode>3.6</md:WCODataModelVersionCode>
     <md:WCOTypeName>RES</md:WCOTypeName>
     <md:ResponsibleCountryCode/>
@@ -29,13 +29,13 @@ object XmlPayloads {
       <resp:FunctionCode>01</resp:FunctionCode>
       <resp:FunctionalReferenceID>a5b4aeb03a384a5faf1b9afeff5dac97</resp:FunctionalReferenceID>
       <resp:IssueDateTime>
-        <_2_2:DateTimeString formatCode="304" xmlns:_2_2="urn:wco:datamodel:WCO:Response_DS:DMS:2">20180119155357Z</_2_2:DateTimeString>
+        <_2_2:DateTimeString formatCode="304" xmlns:_2_2="urn:wco:datamodel:WCO:Response_DS:DMS:2">20190119155357Z</_2_2:DateTimeString>
       </resp:IssueDateTime>
       <resp:Declaration>
         <resp:AcceptanceDateTime>
-          <_2_2:DateTimeString formatCode="304" xmlns:_2_2="urn:wco:datamodel:WCO:Response_DS:DMS:2">20171001000000Z</_2_2:DateTimeString>
+          <_2_2:DateTimeString formatCode="304" xmlns:_2_2="urn:wco:datamodel:WCO:Response_DS:DMS:2">20181001000000Z</_2_2:DateTimeString>
         </resp:AcceptanceDateTime>
-        <resp:FunctionalReferenceID>Import_Accepted</resp:FunctionalReferenceID>
+        <resp:FunctionalReferenceID>Export_Accepted</resp:FunctionalReferenceID>
         <resp:ID>{mrn}</resp:ID>
         <resp:VersionID>1</resp:VersionID>
       </resp:Declaration>
@@ -44,7 +44,7 @@ object XmlPayloads {
       <resp:FunctionCode>13</resp:FunctionCode>
       <resp:FunctionalReferenceID>d5710483848740849ce7415470c2886a</resp:FunctionalReferenceID>
       <resp:IssueDateTime>
-        <_2_2:DateTimeString formatCode="304" xmlns:_2_2="urn:wco:datamodel:WCO:Response_DS:DMS:2">20180119155400Z</_2_2:DateTimeString>
+        <_2_2:DateTimeString formatCode="304" xmlns:_2_2="urn:wco:datamodel:WCO:Response_DS:DMS:2">20190119155400Z</_2_2:DateTimeString>
       </resp:IssueDateTime>
       <resp:AppealOffice>
         <resp:ID>GBLBA001</resp:ID>
@@ -68,7 +68,7 @@ object XmlPayloads {
         <resp:NameCode>4</resp:NameCode>
       </resp:Status>
       <resp:Declaration>
-        <resp:FunctionalReferenceID>Import_Accepted</resp:FunctionalReferenceID>
+        <resp:FunctionalReferenceID>Export_Accepted</resp:FunctionalReferenceID>
         <resp:ID>{mrn}</resp:ID>
         <resp:VersionID>1</resp:VersionID>
         <resp:GoodsShipment>
@@ -104,14 +104,14 @@ object XmlPayloads {
       <resp:FunctionCode>09</resp:FunctionCode>
       <resp:FunctionalReferenceID>f634f77719d546a7b0eb83092bb3a015</resp:FunctionalReferenceID>
       <resp:IssueDateTime>
-        <_2_2:DateTimeString formatCode="304" xmlns:_2_2="urn:wco:datamodel:WCO:Response_DS:DMS:2">20180119155400Z</_2_2:DateTimeString>
+        <_2_2:DateTimeString formatCode="304" xmlns:_2_2="urn:wco:datamodel:WCO:Response_DS:DMS:2">20190119155400Z</_2_2:DateTimeString>
       </resp:IssueDateTime>
       <resp:AdditionalInformation>
         <resp:StatementCode>A2</resp:StatementCode>
         <resp:StatementTypeCode>AFB</resp:StatementTypeCode>
       </resp:AdditionalInformation>
       <resp:Declaration>
-        <resp:FunctionalReferenceID>Import_Accepted</resp:FunctionalReferenceID>
+        <resp:FunctionalReferenceID>Export_Accepted</resp:FunctionalReferenceID>
         <resp:ID>{mrn}</resp:ID>
         <resp:VersionID>1</resp:VersionID>
       </resp:Declaration>

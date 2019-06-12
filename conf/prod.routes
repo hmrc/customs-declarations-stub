@@ -2,18 +2,25 @@
 ->            /                                                                              health.Routes
 
 POST          /                                                                              uk.gov.hmrc.customs.declarations.stub.controllers.DeclarationStubController.submit()
+
 POST          /cancellation-requests                                                         uk.gov.hmrc.customs.declarations.stub.controllers.DeclarationStubController.cancel()
 
 GET           /last-submission                                                               uk.gov.hmrc.customs.declarations.stub.controllers.DeclarationStubController.lastSubmit()
 
 POST          /customs-declare-imports/                                                      uk.gov.hmrc.customs.declarations.stub.controllers.DeclarationStubController.submitNoNotification()
+
 POST          /customs-declare-imports/cancellation-requests                                 uk.gov.hmrc.customs.declarations.stub.controllers.DeclarationStubController.cancelNoNotification()
 
 GET           /customs-declarations-stub/admin/client                                        uk.gov.hmrc.customs.declarations.stub.controllers.DeclarationStubController.listClients()
+
 POST          /customs-declarations-stub/admin/client                                        uk.gov.hmrc.customs.declarations.stub.controllers.DeclarationStubController.addClient()
+
 DELETE        /customs-declarations-stub/admin/client/:id                                    uk.gov.hmrc.customs.declarations.stub.controllers.DeclarationStubController.deleteClient(id)
 
 GET           /customs-declarations-stub/admin/notification                                  uk.gov.hmrc.customs.declarations.stub.controllers.NotificationController.listNotifications()
+
 GET           /customs-declarations-stub/admin/notification/:clientId/:operation/:lrn        uk.gov.hmrc.customs.declarations.stub.controllers.NotificationController.displayNotification(clientId, operation, lrn)
+
 POST          /customs-declarations-stub/admin/notification/:clientId/:operation/:lrn        uk.gov.hmrc.customs.declarations.stub.controllers.NotificationController.addNotification(clientId, operation, lrn)
+
 DELETE        /customs-declarations-stub/admin/notification/:id                              uk.gov.hmrc.customs.declarations.stub.controllers.NotificationController.deleteNotification(id)
