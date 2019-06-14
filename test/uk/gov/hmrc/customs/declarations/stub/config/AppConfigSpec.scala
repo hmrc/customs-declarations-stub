@@ -32,7 +32,7 @@ class AppConfigSpec extends WordSpec with MustMatchers with GuiceOneAppPerSuite 
       val client = config.defaultClient
 
       client.clientId must be("customs-declare-exports")
-      client.callbackUrl must be("http://localhost:6791/customs-declare-exports/notify")
+      client.callbackUrl must be("http://localhost:6792/customs-declare-exports/notify")
       client.token must be("abc59609za2q")
     }
   }
