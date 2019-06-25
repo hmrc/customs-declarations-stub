@@ -15,9 +15,17 @@
  */
 
 package uk.gov.hmrc.customs.declarations.stub.utils
+import java.time.LocalDateTime
+import java.time.format.DateTimeFormatter
 
 object XmlPayloads {
 
+  val firstDate = LocalDateTime.now()
+  val secondDate = firstDate.plusMinutes(5)
+  val thirdDate = firstDate.plusMinutes(10)
+
+  def adjustTime(time: LocalDateTime): String = DateTimeFormatter.ofPattern("yyyyMMddhhmmss").format(time) + "Z"
+  
   def acceptedExportNotification(mrn: String = "18GBJCM3USAFD2WD51") = <md:MetaData xmlns:md="urn:wco:datamodel:WCO:DocumentMetaData-DMS:2">
     <md:WCODataModelVersionCode>3.6</md:WCODataModelVersionCode>
     <md:WCOTypeName>RES</md:WCOTypeName>
@@ -29,7 +37,7 @@ object XmlPayloads {
       <resp:FunctionCode>01</resp:FunctionCode>
       <resp:FunctionalReferenceID>a5b4aeb03a384a5faf1b9afeff5dac97</resp:FunctionalReferenceID>
       <resp:IssueDateTime>
-        <_2_2:DateTimeString formatCode="304" xmlns:_2_2="urn:wco:datamodel:WCO:Response_DS:DMS:2">20190119155357Z</_2_2:DateTimeString>
+        <_2_2:DateTimeString formatCode="304" xmlns:_2_2="urn:wco:datamodel:WCO:Response_DS:DMS:2">{adjustTime(firstDate)}</_2_2:DateTimeString>
       </resp:IssueDateTime>
       <resp:Declaration>
         <resp:AcceptanceDateTime>
@@ -41,10 +49,10 @@ object XmlPayloads {
       </resp:Declaration>
     </resp:Response>
     <resp:Response xmlns:resp="urn:wco:datamodel:WCO:RES-DMS:2">
-      <resp:FunctionCode>13</resp:FunctionCode>
+      <resp:FunctionCode>16</resp:FunctionCode>
       <resp:FunctionalReferenceID>d5710483848740849ce7415470c2886a</resp:FunctionalReferenceID>
       <resp:IssueDateTime>
-        <_2_2:DateTimeString formatCode="304" xmlns:_2_2="urn:wco:datamodel:WCO:Response_DS:DMS:2">20190119155400Z</_2_2:DateTimeString>
+        <_2_2:DateTimeString formatCode="304" xmlns:_2_2="urn:wco:datamodel:WCO:Response_DS:DMS:2">{adjustTime(secondDate)}</_2_2:DateTimeString>
       </resp:IssueDateTime>
       <resp:AppealOffice>
         <resp:ID>GBLBA001</resp:ID>
@@ -104,7 +112,7 @@ object XmlPayloads {
       <resp:FunctionCode>09</resp:FunctionCode>
       <resp:FunctionalReferenceID>f634f77719d546a7b0eb83092bb3a015</resp:FunctionalReferenceID>
       <resp:IssueDateTime>
-        <_2_2:DateTimeString formatCode="304" xmlns:_2_2="urn:wco:datamodel:WCO:Response_DS:DMS:2">20190119155400Z</_2_2:DateTimeString>
+        <_2_2:DateTimeString formatCode="304" xmlns:_2_2="urn:wco:datamodel:WCO:Response_DS:DMS:2">{adjustTime(thirdDate)}</_2_2:DateTimeString>
       </resp:IssueDateTime>
       <resp:AdditionalInformation>
         <resp:StatementCode>A2</resp:StatementCode>
