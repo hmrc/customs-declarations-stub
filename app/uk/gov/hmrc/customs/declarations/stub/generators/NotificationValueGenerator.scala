@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.customs.declarations.stub.connector
+package uk.gov.hmrc.customs.declarations.stub.generators
 
 class NotificationValueGenerator {
 
