@@ -30,18 +30,21 @@ import org.mockito.ArgumentMatchers.{any, anyString, eq => meq}
 import play.api.mvc.Results._
 import play.api.http.Status.ACCEPTED
 import org.scalatest.concurrent.ScalaFutures
+import play.twirl.api.Xml
 import uk.gov.hmrc.customs.declarations.stub.config.AppConfig
+import uk.gov.hmrc.customs.declarations.stub.generators.{NotificationGenerator, NotificationValueGenerator}
 import uk.gov.hmrc.customs.declarations.stub.models.ApiHeaders
 import uk.gov.hmrc.customs.declarations.stub.repositories.{Client, Notification, NotificationRepository}
 import uk.gov.hmrc.customs.declarations.stub.utils.XmlPayloads
 import uk.gov.hmrc.http.{HeaderCarrier, HttpReads, HttpResponse}
 import uk.gov.hmrc.play.bootstrap.http.HttpClient
 import uk.gov.hmrc.play.test.UnitSpec
-import uk.gov.hmrc.wco.dec.MetaData
+import uk.gov.hmrc.wco.dec.{Declaration, MetaData}
 
 import scala.concurrent.{ExecutionContext, Future}
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.duration.FiniteDuration
+import scala.xml.Source
 
 class NotificationConnectorSpec extends UnitSpec with MockitoSugar with ScalaFutures{
 
@@ -51,13 +54,13 @@ class NotificationConnectorSpec extends UnitSpec with MockitoSugar with ScalaFut
 
     implicit val mockAppConfig: AppConfig = mock[AppConfig]
     val mockNotificationRepository = mock[NotificationRepository]
-    val mockNotificationValueGenerator = mock[NotificationValueGenerator]
+    val mockNotificationGenerator = new NotificationGenerator(new NotificationValueGenerator())
     implicit val system: ActorSystem = ActorSystem("test")
 
     val testObj = new NotificationConnector(mockHttpClient,
                                             mockNotificationRepository,
-                                            mockNotificationValueGenerator)
-    reset(mockHttpClient, mockNotificationRepository, mockNotificationValueGenerator)
+                                            mockNotificationGenerator)
+    reset(mockHttpClient, mockNotificationRepository)
   }
 
   "NotificationConnector" should {
@@ -72,7 +75,7 @@ class NotificationConnectorSpec extends UnitSpec with MockitoSugar with ScalaFut
         .thenReturn(Future.successful(Some(Notification("clientId", "operation", "lrn", xmlBody))))
       val conversationId: String = UUID.randomUUID().toString
       val result: Unit = await(testObj.notifyInDueCourse("operation", apiHeaders, client, metaData, new FiniteDuration(500, TimeUnit.MILLISECONDS), conversationId))
-       Thread.sleep(850)
+       Thread.sleep(2000)
         result shouldBe((): Unit)
         verify(mockNotificationRepository, times(1))
           .findByClientAndOperationAndMetaData(any(), any(), any())
@@ -83,21 +86,21 @@ class NotificationConnectorSpec extends UnitSpec with MockitoSugar with ScalaFut
     "return Accepted and call use the default notification Body" in new SetUp{
       val client = Client("clientId", "callBackUrl", "token")
       val apiHeaders = ApiHeaders("Accept", "contentType", "clientId", badgeId = None)
-      val metaData: MetaData = mock[MetaData]
+      val metaData: MetaData = MetaData(declaration = Some(Declaration(functionalReferenceId = Some("BLRN"))))
       val generatedMrn = "MRN7878787"
 
       returnResponseForRequest(Future.successful(mock[HttpResponse]))
       when(mockNotificationRepository.findByClientAndOperationAndMetaData(any(), any(), any()))
         .thenReturn(Future.successful(None))
-      when(mockNotificationValueGenerator.generateMRN).thenReturn(generatedMrn)
       val conversationId: String = UUID.randomUUID().toString
       val result: Unit = await(testObj.notifyInDueCourse("operation", apiHeaders, client, metaData, new FiniteDuration(500, TimeUnit.MILLISECONDS), conversationId))
       Thread.sleep(750)
       result shouldBe((): Unit)
       verify(mockNotificationRepository, times(1))
         .findByClientAndOperationAndMetaData(any(), any(), any())
-
-      verify(mockHttpClient, times(1)).POSTString(any(), meq(XmlPayloads.acceptedExportNotification(generatedMrn).toString), any())(any(), any(), any())
+      val payloadCaptor = ArgumentCaptor.forClass(classOf[String])
+      verify(mockHttpClient, times(1)).POSTString(any(), payloadCaptor.capture(), any())(any(), any(), any())
+      scala.xml.XML.load(Source.fromString(payloadCaptor.getValue))
     }
   }
 

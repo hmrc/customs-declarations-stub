@@ -16,6 +16,7 @@
 
 package uk.gov.hmrc.customs.declarations.stub.connector
 
+import uk.gov.hmrc.customs.declarations.stub.generators.NotificationValueGenerator
 import uk.gov.hmrc.play.test.UnitSpec
 
 class NotificationValueGeneratorSpec extends UnitSpec {
