@@ -75,7 +75,7 @@ class NotificationConnector @Inject()(
                 lrn.headOption match {
                   case Some('G') => generator.generate(lrn, Seq(NotificationGenerator.Accepted)).toString
                   case Some('B') => generator.generate(lrn, Seq(NotificationGenerator.Rejected)).toString
-                  case _ => default
+                  case _ => importsSpecificErrors(lrn, default)
                 }
               }
             }
@@ -90,6 +90,15 @@ class NotificationConnector @Inject()(
         case Failure(e) => Logger.error("Problem on sending notification back", e)
       }
     }
+  }
+
+  private def importsSpecificErrors(lrn: String, default: String): String = {
+   lrn match {
+     case lrnForTaxLiability if lrnForTaxLiability.startsWith("TAX_LIABILITY") => generator.generate(lrnForTaxLiability, Seq(NotificationGenerator.taxLiability)).toString
+     case lrnForBalance if lrnForBalance.startsWith("INSUFFICIENT") => generator.generate(lrnForBalance, Seq(NotificationGenerator.insufficientBalanceInDan)).toString
+     case lrnForBalanceReminder if lrnForBalanceReminder.startsWith("REMINDER") => generator.generate(lrnForBalanceReminder, Seq(NotificationGenerator.insufficientBalanceInDanReminder)).toString
+     case _ => default
+   }
   }
 
   private def sendNotificationWithDelay(
