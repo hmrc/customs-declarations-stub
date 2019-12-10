@@ -343,6 +343,27 @@ object NotificationGenerator {
     override def toString(): String = "Customs Position Denied"
   }
 
+  case object taxLiability extends FunctionCode {
+    val fullCode: String = "13"
+    val isError = false
+
+    override def toString(): String = "Please make a payment to cover taxes"
+  }
+
+  case object insufficientBalanceInDan extends FunctionCode {
+    val fullCode: String = "14"
+    val isError = false
+
+    override def toString(): String = "Your account does not have enough money in it. Please make a payment to release your goods"
+  }
+
+  case object insufficientBalanceInDanReminder extends FunctionCode {
+    val fullCode: String = "15"
+    val isError = false
+
+    override def toString(): String = "Your goods are waiting for you. Please make an immediate payment to release them"
+  }
+
   case object GoodsHaveExitedTheCommunity extends FunctionCode {
     val fullCode: String = "16"
     val isError = false
