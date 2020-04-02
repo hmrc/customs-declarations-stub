@@ -1,5 +1,5 @@
 /*
- * Copyright 2019 HM Revenue & Customs
+ * Copyright 2020 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,26 +16,19 @@
 
 package uk.gov.hmrc.customs.declarations.stub.connector
 
-import java.lang.Thread
 import java.util.UUID
 import java.util.concurrent.TimeUnit
 
 import akka.actor.ActorSystem
-import akka.stream.ActorMaterializer
-import org.scalatest.{MustMatchers, WordSpec}
 import org.scalatest.mockito.MockitoSugar
 import org.mockito.ArgumentCaptor
 import org.mockito.Mockito._
 import org.mockito.ArgumentMatchers.{any, anyString, eq => meq}
-import play.api.mvc.Results._
-import play.api.http.Status.ACCEPTED
 import org.scalatest.concurrent.ScalaFutures
-import play.twirl.api.Xml
 import uk.gov.hmrc.customs.declarations.stub.config.AppConfig
 import uk.gov.hmrc.customs.declarations.stub.generators.{NotificationGenerator, NotificationValueGenerator}
 import uk.gov.hmrc.customs.declarations.stub.models.ApiHeaders
 import uk.gov.hmrc.customs.declarations.stub.repositories.{Client, Notification, NotificationRepository}
-import uk.gov.hmrc.customs.declarations.stub.utils.XmlPayloads
 import uk.gov.hmrc.http.{HeaderCarrier, HttpReads, HttpResponse}
 import uk.gov.hmrc.play.bootstrap.http.HttpClient
 import uk.gov.hmrc.play.test.UnitSpec
@@ -64,7 +57,7 @@ class NotificationConnectorSpec extends UnitSpec with MockitoSugar with ScalaFut
   }
 
   "NotificationConnector" should {
-    "return Accepted ands send the notification body from the repo" in new SetUp{
+    "return Accepted and send the notification body from the repo" in new SetUp{
       val client = Client("clientId", "callBackUrl", "token")
       val apiHeaders = ApiHeaders("Accept", "contentType", "clientId", badgeId = None)
       val metaData: MetaData = mock[MetaData]

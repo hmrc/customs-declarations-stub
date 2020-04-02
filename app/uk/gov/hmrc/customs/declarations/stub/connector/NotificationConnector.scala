@@ -1,5 +1,5 @@
 /*
- * Copyright 2019 HM Revenue & Customs
+ * Copyright 2020 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,10 +23,10 @@ import javax.inject.{Inject, Singleton}
 import play.api.Logger
 import play.api.http.{ContentTypes, HeaderNames}
 import uk.gov.hmrc.customs.declarations.stub.config.AppConfig
-import uk.gov.hmrc.customs.declarations.stub.generators.{NotificationGenerator, NotificationValueGenerator}
+import uk.gov.hmrc.customs.declarations.stub.generators.NotificationGenerator
+import uk.gov.hmrc.customs.declarations.stub.generators.NotificationGenerator._
 import uk.gov.hmrc.customs.declarations.stub.models.ApiHeaders
 import uk.gov.hmrc.customs.declarations.stub.repositories.{Client, NotificationRepository}
-import uk.gov.hmrc.customs.declarations.stub.utils.XmlPayloads
 import uk.gov.hmrc.http.{HeaderCarrier, HttpReads, HttpResponse}
 import uk.gov.hmrc.play.bootstrap.http.HttpClient
 import uk.gov.hmrc.wco.dec.MetaData
@@ -73,8 +73,9 @@ class NotificationConnector @Inject()(
               declaration.functionalReferenceId.fold(default){ lrn =>
                 Logger.info(s"Dynamic generating for LNR $lrn ")
                 lrn.headOption match {
-                  case Some('G') => generator.generate(lrn, Seq(NotificationGenerator.Accepted)).toString
-                  case Some('B') => generator.generate(lrn, Seq(NotificationGenerator.Rejected)).toString
+                  case Some('G') => generator.generate(lrn, Seq(Accepted)).toString
+                  case Some('B') => generator.generate(lrn, Seq(Rejected)).toString
+                  case Some('D') => generator.generate(lrn, Seq(Accepted, AdditionalDocumentsRequired)).toString
                   case _ => importsSpecificErrors(lrn, default)
                 }
               }
