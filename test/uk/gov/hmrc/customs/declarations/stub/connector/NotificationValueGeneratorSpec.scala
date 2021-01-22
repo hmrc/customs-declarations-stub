@@ -16,10 +16,10 @@
 
 package uk.gov.hmrc.customs.declarations.stub.connector
 
+import org.scalatest.{Matchers, WordSpec}
 import uk.gov.hmrc.customs.declarations.stub.generators.NotificationValueGenerator
-import uk.gov.hmrc.play.test.UnitSpec
 
-class NotificationValueGeneratorSpec extends UnitSpec {
+class NotificationValueGeneratorSpec extends WordSpec with Matchers {
 
   val testObj = new NotificationValueGenerator
 

@@ -21,15 +21,14 @@ import play.api.libs.json.{Format, JsString, Json, OFormat}
 import play.modules.reactivemongo.ReactiveMongoComponent
 import reactivemongo.api.indexes.{Index, IndexType}
 import reactivemongo.bson.BSONObjectID
-import uk.gov.hmrc.mongo.{AtomicUpdate, ReactiveRepository}
+import uk.gov.hmrc.mongo.ReactiveRepository
 import uk.gov.hmrc.mongo.json.ReactiveMongoFormats.{mongoEntity, objectIdFormats}
 
 import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
-class ClientRepository @Inject()(implicit mc: ReactiveMongoComponent, ec: ExecutionContext)
-    extends ReactiveRepository[Client, BSONObjectID]("clients", mc.mongoConnector.db, Client.formats, objectIdFormats)
-    with AtomicUpdate[Client] {
+class ClientRepository @Inject()(mc: ReactiveMongoComponent)(implicit ec: ExecutionContext)
+    extends ReactiveRepository[Client, BSONObjectID]("clients", mc.mongoConnector.db, Client.formats, objectIdFormats) {
 
   override def indexes: Seq[Index] = Seq(
     Index(Seq("clientId" -> IndexType.Ascending), unique = true, name = Some("clientIdx"))
@@ -37,8 +36,6 @@ class ClientRepository @Inject()(implicit mc: ReactiveMongoComponent, ec: Execut
 
   def findByClientId(clientId: String): Future[Option[Client]] =
     find("clientId" -> JsString(clientId)).map(_.headOption)
-
-  override def isInsertion(newRecordId: BSONObjectID, oldRecord: Client): Boolean = newRecordId.equals(oldRecord.id)
 }
 
 case class Client(clientId: String, callbackUrl: String, token: String, id: BSONObjectID = BSONObjectID.generate())

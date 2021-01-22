@@ -16,42 +16,35 @@
 
 package uk.gov.hmrc.customs.declarations.stub.controllers
 
-import org.mockito.ArgumentMatchers
-import org.scalatest.concurrent.ScalaFutures
-import org.scalatest.mockito.MockitoSugar
-import org.scalatestplus.play.PlaySpec
-import play.api.test.Helpers.{CONTENT_TYPE, _}
+import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito._
-import org.mockito.ArgumentMatchers.{any, eq => ameq}
-import org.mockito.stubbing.OngoingStubbing
-import org.scalatest.BeforeAndAfterEach
+import org.scalatest.{BeforeAndAfterEach, Matchers, WordSpec}
+import org.scalatest.concurrent.ScalaFutures
+import org.scalatestplus.mockito.MockitoSugar
 import org.scalatestplus.play.guice.GuiceOneAppPerSuite
 import play.api.Application
 import play.api.http.ContentTypes
-import play.api.inject.{bind, Injector}
 import play.api.inject.guice.GuiceApplicationBuilder
-import play.api.libs.concurrent.Execution.Implicits
-import play.api.mvc.{Codec, Result}
+import play.api.inject.{bind, Injector}
+import play.api.mvc.Codec
 import play.api.test.FakeRequest
-import play.api.mvc.Results._
+import play.api.test.Helpers._
 import reactivemongo.bson.BSONObjectID
-import uk.gov.hmrc.auth.core.AuthProvider.GovernmentGateway
-import uk.gov.hmrc.auth.core.authorise.{EmptyPredicate, Predicate}
-import uk.gov.hmrc.auth.core.retrieve.Retrieval
 import uk.gov.hmrc.auth.core._
+import uk.gov.hmrc.auth.core.authorise.Predicate
+import uk.gov.hmrc.auth.core.retrieve.Retrieval
 import uk.gov.hmrc.customs.declarations.stub.config.AppConfig
 import uk.gov.hmrc.customs.declarations.stub.connector.NotificationConnector
 import uk.gov.hmrc.customs.declarations.stub.repositories.{Client, ClientRepository}
-import uk.gov.hmrc.customs.declarations.stub.util.TestData
 import uk.gov.hmrc.customs.declarations.stub.util.TestData._
 import uk.gov.hmrc.http.HeaderCarrier
-import uk.gov.hmrc.play.test.UnitSpec
 
 import scala.concurrent.{ExecutionContext, Future}
 import scala.reflect.ClassTag
 
 class DeclarationsStubControllerSpec
-    extends UnitSpec with GuiceOneAppPerSuite with MockitoSugar with ScalaFutures with BeforeAndAfterEach {
+    extends WordSpec with Matchers with GuiceOneAppPerSuite with MockitoSugar with ScalaFutures
+    with BeforeAndAfterEach {
 
   val submissionUri = "/"
   val cancellationUri = "/cancellation-requests"
@@ -89,8 +82,6 @@ class DeclarationsStubControllerSpec
 
   def appConfig: AppConfig = injector.instanceOf[AppConfig]
 
-  implicit val ec: ExecutionContext = Implicits.defaultContext
-
   override lazy val app: Application =
     GuiceApplicationBuilder()
       .overrides(
@@ -116,9 +107,9 @@ class DeclarationsStubControllerSpec
         ).thenReturn(Future.successful(()))
         when(mockClientRepo.findByClientId(any())).thenReturn(Future.successful(Some(client)))
 
-        val result = await(route(app, fakeSubmissionXmlRequest))
+        val result = route(app, fakeSubmissionXmlRequest).get
 
-        status(result.get) should be(ACCEPTED)
+        status(result) should be(ACCEPTED)
         verify(mockNotificationConnector, times(1)).notifyInDueCourse(any(), any(), any(), any(), any(), any())
       }
 
@@ -128,10 +119,10 @@ class DeclarationsStubControllerSpec
         ).thenReturn(Future.successful(()))
         when(mockClientRepo.findByClientId(any())).thenReturn(Future.successful(Some(client)))
 
-        val result = await(route(app, fakeSubmissionXmlRequest.withBody("<some></some>")))
+        val result = route(app, fakeSubmissionXmlRequest.withBody("<some></some>")).get
 
-        status(result.get) should be(BAD_REQUEST)
-        verifyZeroInteractions(mockNotificationConnector)
+        status(result) should be(BAD_REQUEST)
+        verifyNoMoreInteractions(mockNotificationConnector)
       }
 
       "return ACCEPTED and send notification when cancellation endpoint called " in {
@@ -140,9 +131,9 @@ class DeclarationsStubControllerSpec
         ).thenReturn(Future.successful(()))
         when(mockClientRepo.findByClientId(any())).thenReturn(Future.successful(Some(client)))
 
-        val result = await(route(app, fakeCancellationXmlRequest))
+        val result = route(app, fakeCancellationXmlRequest).get
 
-        status(result.get) should be(ACCEPTED)
+        status(result) should be(ACCEPTED)
         verify(mockNotificationConnector, times(1)).notifyInDueCourse(any(), any(), any(), any(), any(), any())
       }
 
@@ -152,10 +143,10 @@ class DeclarationsStubControllerSpec
         ).thenReturn(Future.successful(()))
         when(mockClientRepo.findByClientId(any())).thenReturn(Future.successful(Some(client)))
 
-        val result = await(route(app, fakeCancellationXmlRequest.withBody("<some></some>")))
+        val result = route(app, fakeCancellationXmlRequest.withBody("<some></some>")).get
 
-        status(result.get) should be(BAD_REQUEST)
-        verifyZeroInteractions(mockNotificationConnector)
+        status(result) should be(BAD_REQUEST)
+        verifyNoMoreInteractions(mockNotificationConnector)
       }
 
     }
@@ -167,10 +158,10 @@ class DeclarationsStubControllerSpec
         ).thenReturn(Future.successful(()))
         when(mockClientRepo.findByClientId(any())).thenReturn(Future.successful(Some(client)))
 
-        val result = await(route(app, fakeSubmissionNoNotificationXmlRequest))
+        val result = route(app, fakeSubmissionNoNotificationXmlRequest).get
 
-        status(result.get) should be(ACCEPTED)
-        verifyZeroInteractions(mockNotificationConnector)
+        status(result) should be(ACCEPTED)
+        verifyNoMoreInteractions(mockNotificationConnector)
       }
 
       "return BADREQUEST when invalidxml is sent to submission Endpoint" in {
@@ -179,10 +170,10 @@ class DeclarationsStubControllerSpec
         ).thenReturn(Future.successful(()))
         when(mockClientRepo.findByClientId(any())).thenReturn(Future.successful(Some(client)))
 
-        val result = await(route(app, fakeSubmissionNoNotificationXmlRequest.withBody("<some></some>")))
+        val result = route(app, fakeSubmissionNoNotificationXmlRequest.withBody("<some></some>")).get
 
-        status(result.get) should be(BAD_REQUEST)
-        verifyZeroInteractions(mockNotificationConnector)
+        status(result) should be(BAD_REQUEST)
+        verifyNoMoreInteractions(mockNotificationConnector)
       }
 
       "return ACCEPTED, not send notification when cancellationNoNotification endpoint called " in {
@@ -191,10 +182,10 @@ class DeclarationsStubControllerSpec
         ).thenReturn(Future.successful(()))
         when(mockClientRepo.findByClientId(any())).thenReturn(Future.successful(Some(client)))
 
-        val result = await(route(app, fakeCancellationNoNotificationXmlRequest))
+        val result = route(app, fakeCancellationNoNotificationXmlRequest).get
 
-        status(result.get) should be(ACCEPTED)
-        verifyZeroInteractions(mockNotificationConnector)
+        status(result) should be(ACCEPTED)
+        verifyNoMoreInteractions(mockNotificationConnector)
       }
 
       "return BADREQUEST when invalidxml is sent to cancellation Endpoint" in {
@@ -203,10 +194,10 @@ class DeclarationsStubControllerSpec
         ).thenReturn(Future.successful(()))
         when(mockClientRepo.findByClientId(any())).thenReturn(Future.successful(Some(client)))
 
-        val result = await(route(app, fakeCancellationNoNotificationXmlRequest.withBody("<some></some>")))
+        val result = route(app, fakeCancellationNoNotificationXmlRequest.withBody("<some></some>")).get
 
-        status(result.get) should be(BAD_REQUEST)
-        verifyZeroInteractions(mockNotificationConnector)
+        status(result) should be(BAD_REQUEST)
+        verifyNoMoreInteractions(mockNotificationConnector)
       }
 
     }

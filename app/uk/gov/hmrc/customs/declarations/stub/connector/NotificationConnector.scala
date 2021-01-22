@@ -28,8 +28,9 @@ import uk.gov.hmrc.customs.declarations.stub.generators.NotificationGenerator._
 import uk.gov.hmrc.customs.declarations.stub.models.ApiHeaders
 import uk.gov.hmrc.customs.declarations.stub.repositories.{Client, NotificationRepository}
 import uk.gov.hmrc.http.{HeaderCarrier, HttpReads, HttpResponse}
-import uk.gov.hmrc.play.bootstrap.http.HttpClient
+import uk.gov.hmrc.http.HttpClient
 import uk.gov.hmrc.wco.dec.MetaData
+import uk.gov.hmrc.http.HttpReads.Implicits.readRaw
 
 import scala.concurrent.duration.{Duration, _}
 import scala.concurrent.{ExecutionContext, Future}
@@ -41,6 +42,8 @@ class NotificationConnector @Inject()(
   notificationRepo: NotificationRepository,
   generator: NotificationGenerator
 )(implicit val appConfig: AppConfig, ec: ExecutionContext, actorSystem: ActorSystem) {
+
+  private val logger = Logger(this.getClass)
 
   def notifyInDueCourse(
     operation: String,
@@ -63,16 +66,16 @@ class NotificationConnector @Inject()(
       notificationRepo
         .findByClientAndOperationAndMetaData(client.clientId, operation, meta)
         .map { maybeNotification =>
-          Logger.info("Entering async request notification")
+          logger.info("Entering async request notification")
 
           val xml = maybeNotification
             .map(_.xml)
             .getOrElse {
-              Logger.info("Notification not found in database - generate one dynamically")
+              logger.info("Notification not found in database - generate one dynamically")
               lazy val default = generator.generateAcceptNotificationWithRandomMRN().toString
               meta.declaration.fold(default) { declaration =>
                 declaration.functionalReferenceId.fold(default) { lrn =>
-                  Logger.info(s"Dynamic generating for LNR $lrn ")
+                  logger.info(s"Dynamic generating for LNR $lrn ")
                   lrn.headOption match {
                     case Some('G') => generator.generate(lrn, Seq(Accepted)).toString
                     case Some('B') => generator.generate(lrn, Seq(Rejected)).toString
@@ -83,14 +86,14 @@ class NotificationConnector @Inject()(
               }
             }
 
-          Logger.debug(s"scheduling one notification call ${xml.toString}")
+          logger.debug(s"scheduling one notification call ${xml.toString}")
 
           sendNotificationWithDelay(client, conversationId, xml).onComplete { _ =>
-            Logger.info("Exiting async request notification")
+            logger.info("Exiting async request notification")
           }
         }
         .andThen {
-          case Failure(e) => Logger.error("Problem on sending notification back", e)
+          case Failure(e) => logger.error("Problem on sending notification back", e)
         }
     }
 

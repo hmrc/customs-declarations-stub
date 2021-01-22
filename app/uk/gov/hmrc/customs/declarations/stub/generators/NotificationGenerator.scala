@@ -16,14 +16,13 @@
 
 package uk.gov.hmrc.customs.declarations.stub.generators
 
+import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
-import java.time.{Instant, LocalDateTime}
 import java.util.UUID
 
 import javax.inject.Inject
 import uk.gov.hmrc.customs.declarations.stub.generators.NotificationGenerator.FunctionCode
 import uk.gov.hmrc.customs.declarations.stub.utils.XmlPayloads.{adjustTime, firstDate, secondDate, thirdDate}
-import uk.gov.hmrc.wco.dec.MetaData
 
 import scala.util.Random
 import scala.xml.{Elem, NodeSeq}

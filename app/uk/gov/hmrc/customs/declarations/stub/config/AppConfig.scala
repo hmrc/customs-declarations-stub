@@ -17,25 +17,19 @@
 package uk.gov.hmrc.customs.declarations.stub.config
 
 import javax.inject.{Inject, Singleton}
-import play.api.Mode.Mode
-import play.api.{Configuration, Environment}
+import play.api.Configuration
 import uk.gov.hmrc.customs.declarations.stub.repositories.Client
-import uk.gov.hmrc.play.config.{AppName, ServicesConfig}
+import uk.gov.hmrc.play.bootstrap.config.ServicesConfig
 
 @Singleton
-class AppConfig @Inject()(val runModeConfiguration: Configuration, val environment: Environment)
-    extends ServicesConfig with AppName {
-
-  override protected def mode: Mode = environment.mode
-
-  override protected def appNameConfiguration: Configuration = runModeConfiguration
+class AppConfig @Inject()(runModeConfiguration: Configuration, servicesConfig: ServicesConfig) {
 
   private def loadConfig(key: String): String =
-    runModeConfiguration.getString(key).getOrElse(throw new Exception(s"Missing configuration key: $key"))
+    runModeConfiguration.getOptional[String](key).getOrElse(throw new Exception(s"Missing configuration key: $key"))
 
   val defaultClient: Client = Client(
     clientId = loadConfig("microservice.services.client.id"),
-    callbackUrl = baseUrl("client") + loadConfig("microservice.services.client.uri"),
+    callbackUrl = servicesConfig.baseUrl("client") + loadConfig("microservice.services.client.uri"),
     token = loadConfig("microservice.services.client.token")
   )
 }

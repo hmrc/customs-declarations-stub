@@ -28,7 +28,7 @@ import uk.gov.hmrc.wco.dec.MetaData
 import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
-class NotificationRepository @Inject()(implicit mc: ReactiveMongoComponent, ec: ExecutionContext)
+class NotificationRepository @Inject()(mc: ReactiveMongoComponent)(implicit ec: ExecutionContext)
     extends ReactiveRepository[Notification, BSONObjectID](
       "notifications",
       mc.mongoConnector.db,
