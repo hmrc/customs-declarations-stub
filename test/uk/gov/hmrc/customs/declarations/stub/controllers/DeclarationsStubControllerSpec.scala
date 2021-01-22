@@ -28,7 +28,7 @@ import org.scalatest.BeforeAndAfterEach
 import org.scalatestplus.play.guice.GuiceOneAppPerSuite
 import play.api.Application
 import play.api.http.ContentTypes
-import play.api.inject.{Injector, bind}
+import play.api.inject.{bind, Injector}
 import play.api.inject.guice.GuiceApplicationBuilder
 import play.api.libs.concurrent.Execution.Implicits
 import play.api.mvc.{Codec, Result}
@@ -50,34 +50,36 @@ import uk.gov.hmrc.play.test.UnitSpec
 import scala.concurrent.{ExecutionContext, Future}
 import scala.reflect.ClassTag
 
-class DeclarationsStubControllerSpec extends UnitSpec with GuiceOneAppPerSuite with MockitoSugar with ScalaFutures with BeforeAndAfterEach {
+class DeclarationsStubControllerSpec
+    extends UnitSpec with GuiceOneAppPerSuite with MockitoSugar with ScalaFutures with BeforeAndAfterEach {
 
   val submissionUri = "/"
   val cancellationUri = "/cancellation-requests"
   val submissionNoNotificationUri = "/customs-declare-imports/"
   val cancellationNoNotificationUri = "/customs-declare-imports/cancellation-requests"
 
-  def buildFakeRequest(xmlBody : String, method: String, uriVal: String): FakeRequest[String] = {
+  def buildFakeRequest(xmlBody: String, method: String, uriVal: String): FakeRequest[String] =
     FakeRequest(method, uriVal)
       .withBody(xmlBody)
-      .withHeaders(AUTHORIZATION -> "dummyToken",
+      .withHeaders(
+        AUTHORIZATION -> "dummyToken",
         CONTENT_TYPE -> ContentTypes.XML(Codec.utf_8),
         ACCEPT -> "application/vnd.hmrc.1.0+xml",
-        "X-Client-ID" -> "CLIENT ID")
-  }
+        "X-Client-ID" -> "CLIENT ID"
+      )
 
+  val fakeSubmissionXmlRequest: FakeRequest[String] =
+    buildFakeRequest(validSubmissionXml.toString, "POST", submissionUri)
+  val fakeCancellationXmlRequest: FakeRequest[String] =
+    buildFakeRequest(validCancellationXml.toString, "POST", cancellationUri)
 
-  val fakeSubmissionXmlRequest: FakeRequest[String] = buildFakeRequest(validSubmissionXml.toString, "POST", submissionUri)
-  val fakeCancellationXmlRequest: FakeRequest[String] = buildFakeRequest(validCancellationXml.toString, "POST", cancellationUri)
-
-  val fakeSubmissionNoNotificationXmlRequest: FakeRequest[String] = buildFakeRequest(validSubmissionXml.toString, "POST", submissionNoNotificationUri)
-  val fakeCancellationNoNotificationXmlRequest: FakeRequest[String] = buildFakeRequest(validCancellationXml.toString, "POST", cancellationNoNotificationUri)
-
-
-
+  val fakeSubmissionNoNotificationXmlRequest: FakeRequest[String] =
+    buildFakeRequest(validSubmissionXml.toString, "POST", submissionNoNotificationUri)
+  val fakeCancellationNoNotificationXmlRequest: FakeRequest[String] =
+    buildFakeRequest(validCancellationXml.toString, "POST", cancellationNoNotificationUri)
 
   val mockAuthConnector: AuthConnector = mock[AuthConnector]
-  val mockClientRepo: ClientRepository =  mock[ClientRepository]
+  val mockClientRepo: ClientRepository = mock[ClientRepository]
   val mockNotificationConnector: NotificationConnector = mock[NotificationConnector]
   val mockAppConfig: AppConfig = mock[AppConfig]
 
@@ -90,14 +92,14 @@ class DeclarationsStubControllerSpec extends UnitSpec with GuiceOneAppPerSuite w
   implicit val ec: ExecutionContext = Implicits.defaultContext
 
   override lazy val app: Application =
-  GuiceApplicationBuilder()
-  .overrides(
-  bind[AuthConnector].to(mockAuthConnector),
-  bind[ClientRepository].to(mockClientRepo),
-  bind[NotificationConnector].to(mockNotificationConnector),
-  bind[AppConfig].to(mockAppConfig)
-  )
-  .build()
+    GuiceApplicationBuilder()
+      .overrides(
+        bind[AuthConnector].to(mockAuthConnector),
+        bind[ClientRepository].to(mockClientRepo),
+        bind[NotificationConnector].to(mockNotificationConnector),
+        bind[AppConfig].to(mockAppConfig)
+      )
+      .build()
 
   override def beforeEach() {
     reset(mockClientRepo, mockAuthConnector, mockNotificationConnector)
@@ -109,8 +111,9 @@ class DeclarationsStubControllerSpec extends UnitSpec with GuiceOneAppPerSuite w
 
     "Standard Endpoints" should {
       "return ACCEPTED and send notification when submission endpoint called " in {
-        when(mockAuthConnector.authorise(any[Predicate], any[Retrieval[Unit]])(any[HeaderCarrier], any[ExecutionContext]))
-          .thenReturn(Future.successful(()))
+        when(
+          mockAuthConnector.authorise(any[Predicate], any[Retrieval[Unit]])(any[HeaderCarrier], any[ExecutionContext])
+        ).thenReturn(Future.successful(()))
         when(mockClientRepo.findByClientId(any())).thenReturn(Future.successful(Some(client)))
 
         val result = await(route(app, fakeSubmissionXmlRequest))
@@ -120,8 +123,9 @@ class DeclarationsStubControllerSpec extends UnitSpec with GuiceOneAppPerSuite w
       }
 
       "return BADREQUEST when invalidxml is sent to submission Endpoint" in {
-        when(mockAuthConnector.authorise(any[Predicate], any[Retrieval[Unit]])(any[HeaderCarrier], any[ExecutionContext]))
-          .thenReturn(Future.successful(()))
+        when(
+          mockAuthConnector.authorise(any[Predicate], any[Retrieval[Unit]])(any[HeaderCarrier], any[ExecutionContext])
+        ).thenReturn(Future.successful(()))
         when(mockClientRepo.findByClientId(any())).thenReturn(Future.successful(Some(client)))
 
         val result = await(route(app, fakeSubmissionXmlRequest.withBody("<some></some>")))
@@ -131,8 +135,9 @@ class DeclarationsStubControllerSpec extends UnitSpec with GuiceOneAppPerSuite w
       }
 
       "return ACCEPTED and send notification when cancellation endpoint called " in {
-        when(mockAuthConnector.authorise(any[Predicate], any[Retrieval[Unit]])(any[HeaderCarrier], any[ExecutionContext]))
-          .thenReturn(Future.successful(()))
+        when(
+          mockAuthConnector.authorise(any[Predicate], any[Retrieval[Unit]])(any[HeaderCarrier], any[ExecutionContext])
+        ).thenReturn(Future.successful(()))
         when(mockClientRepo.findByClientId(any())).thenReturn(Future.successful(Some(client)))
 
         val result = await(route(app, fakeCancellationXmlRequest))
@@ -142,8 +147,9 @@ class DeclarationsStubControllerSpec extends UnitSpec with GuiceOneAppPerSuite w
       }
 
       "return BADREQUEST when invalidxml is sent to cancellation Endpoint" in {
-        when(mockAuthConnector.authorise(any[Predicate], any[Retrieval[Unit]])(any[HeaderCarrier], any[ExecutionContext]))
-          .thenReturn(Future.successful(()))
+        when(
+          mockAuthConnector.authorise(any[Predicate], any[Retrieval[Unit]])(any[HeaderCarrier], any[ExecutionContext])
+        ).thenReturn(Future.successful(()))
         when(mockClientRepo.findByClientId(any())).thenReturn(Future.successful(Some(client)))
 
         val result = await(route(app, fakeCancellationXmlRequest.withBody("<some></some>")))
@@ -156,8 +162,9 @@ class DeclarationsStubControllerSpec extends UnitSpec with GuiceOneAppPerSuite w
 
     "No Notification Endpoints" should {
       "return ACCEPTED, not send notification when submissionNoNotification endpoint called " in {
-        when(mockAuthConnector.authorise(any[Predicate], any[Retrieval[Unit]])(any[HeaderCarrier], any[ExecutionContext]))
-          .thenReturn(Future.successful(()))
+        when(
+          mockAuthConnector.authorise(any[Predicate], any[Retrieval[Unit]])(any[HeaderCarrier], any[ExecutionContext])
+        ).thenReturn(Future.successful(()))
         when(mockClientRepo.findByClientId(any())).thenReturn(Future.successful(Some(client)))
 
         val result = await(route(app, fakeSubmissionNoNotificationXmlRequest))
@@ -167,8 +174,9 @@ class DeclarationsStubControllerSpec extends UnitSpec with GuiceOneAppPerSuite w
       }
 
       "return BADREQUEST when invalidxml is sent to submission Endpoint" in {
-        when(mockAuthConnector.authorise(any[Predicate], any[Retrieval[Unit]])(any[HeaderCarrier], any[ExecutionContext]))
-          .thenReturn(Future.successful(()))
+        when(
+          mockAuthConnector.authorise(any[Predicate], any[Retrieval[Unit]])(any[HeaderCarrier], any[ExecutionContext])
+        ).thenReturn(Future.successful(()))
         when(mockClientRepo.findByClientId(any())).thenReturn(Future.successful(Some(client)))
 
         val result = await(route(app, fakeSubmissionNoNotificationXmlRequest.withBody("<some></some>")))
@@ -178,8 +186,9 @@ class DeclarationsStubControllerSpec extends UnitSpec with GuiceOneAppPerSuite w
       }
 
       "return ACCEPTED, not send notification when cancellationNoNotification endpoint called " in {
-        when(mockAuthConnector.authorise(any[Predicate], any[Retrieval[Unit]])(any[HeaderCarrier], any[ExecutionContext]))
-          .thenReturn(Future.successful(()))
+        when(
+          mockAuthConnector.authorise(any[Predicate], any[Retrieval[Unit]])(any[HeaderCarrier], any[ExecutionContext])
+        ).thenReturn(Future.successful(()))
         when(mockClientRepo.findByClientId(any())).thenReturn(Future.successful(Some(client)))
 
         val result = await(route(app, fakeCancellationNoNotificationXmlRequest))
@@ -189,8 +198,9 @@ class DeclarationsStubControllerSpec extends UnitSpec with GuiceOneAppPerSuite w
       }
 
       "return BADREQUEST when invalidxml is sent to cancellation Endpoint" in {
-        when(mockAuthConnector.authorise(any[Predicate], any[Retrieval[Unit]])(any[HeaderCarrier], any[ExecutionContext]))
-          .thenReturn(Future.successful(()))
+        when(
+          mockAuthConnector.authorise(any[Predicate], any[Retrieval[Unit]])(any[HeaderCarrier], any[ExecutionContext])
+        ).thenReturn(Future.successful(()))
         when(mockClientRepo.findByClientId(any())).thenReturn(Future.successful(Some(client)))
 
         val result = await(route(app, fakeCancellationNoNotificationXmlRequest.withBody("<some></some>")))

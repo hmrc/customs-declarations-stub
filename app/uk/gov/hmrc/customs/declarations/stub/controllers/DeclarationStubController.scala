@@ -66,7 +66,7 @@ class DeclarationStubController @Inject()(
   override def authConnector: AuthConnector = auth
 
   def submit(): Action[NodeSeq] = Action.async(parse.xml) { implicit request =>
-    validateHeaders() { headers =>
+     validateHeaders() { headers =>
       authenticate(headers) { client =>
         validatePayload(submitSchemas) { meta =>
           lastSubmission.set(Some(request.body))
@@ -155,7 +155,8 @@ class DeclarationStubController @Inject()(
     val badgeId = req.headers.get("X-Badge-Identifier")
 
     if (accept.isEmpty || !permissibleAcceptHeaders.contains(accept.get)) Future.successful(NotAcceptable)
-    else if (contentType.isEmpty || !permissibleContentTypes.contains(contentType.get)) Future.successful(UnsupportedMediaType)
+    else if (contentType.isEmpty || !permissibleContentTypes.contains(contentType.get))
+      Future.successful(UnsupportedMediaType)
     else if (clientId.isEmpty) Future.successful(InternalServerError)
     else f(ApiHeaders(accept.get, contentType.get, clientId.get, badgeId))
   }
@@ -169,7 +170,7 @@ class DeclarationStubController @Inject()(
         clientRepo.findByClientId(headers.clientId).flatMap { maybeClient =>
           val client = maybeClient.getOrElse {
             if (headers.clientId == appConfig.defaultClient.clientId) appConfig.defaultClient
-            else throw new IllegalArgumentException(s"Unauthorized client: ${ headers.clientId}")
+            else throw new IllegalArgumentException(s"Unauthorized client: ${headers.clientId}")
           }
           f(client)
         }

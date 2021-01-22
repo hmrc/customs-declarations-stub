@@ -39,7 +39,7 @@ import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.duration.FiniteDuration
 import scala.xml.Source
 
-class NotificationConnectorSpec extends UnitSpec with MockitoSugar with ScalaFutures{
+class NotificationConnectorSpec extends UnitSpec with MockitoSugar with ScalaFutures {
 
   val mockHttpClient: HttpClient = mock[HttpClient]
 
@@ -50,14 +50,12 @@ class NotificationConnectorSpec extends UnitSpec with MockitoSugar with ScalaFut
     val mockNotificationGenerator = new NotificationGenerator(new NotificationValueGenerator())
     implicit val system: ActorSystem = ActorSystem("test")
 
-    val testObj = new NotificationConnector(mockHttpClient,
-                                            mockNotificationRepository,
-                                            mockNotificationGenerator)
+    val testObj = new NotificationConnector(mockHttpClient, mockNotificationRepository, mockNotificationGenerator)
     reset(mockHttpClient, mockNotificationRepository)
   }
 
   "NotificationConnector" should {
-    "return Accepted and send the notification body from the repo" in new SetUp{
+    "return Accepted and send the notification body from the repo" in new SetUp {
       val client = Client("clientId", "callBackUrl", "token")
       val apiHeaders = ApiHeaders("Accept", "contentType", "clientId", badgeId = None)
       val metaData: MetaData = mock[MetaData]
@@ -67,16 +65,25 @@ class NotificationConnectorSpec extends UnitSpec with MockitoSugar with ScalaFut
       when(mockNotificationRepository.findByClientAndOperationAndMetaData(any(), any(), any()))
         .thenReturn(Future.successful(Some(Notification("clientId", "operation", "lrn", xmlBody))))
       val conversationId: String = UUID.randomUUID().toString
-      val result: Unit = await(testObj.notifyInDueCourse("operation", apiHeaders, client, metaData, new FiniteDuration(500, TimeUnit.MILLISECONDS), conversationId))
-       Thread.sleep(2000)
-        result shouldBe((): Unit)
-        verify(mockNotificationRepository, times(1))
-          .findByClientAndOperationAndMetaData(any(), any(), any())
+      val result: Unit = await(
+        testObj.notifyInDueCourse(
+          "operation",
+          apiHeaders,
+          client,
+          metaData,
+          new FiniteDuration(500, TimeUnit.MILLISECONDS),
+          conversationId
+        )
+      )
+      Thread.sleep(2000)
+      result shouldBe ((): Unit)
+      verify(mockNotificationRepository, times(1))
+        .findByClientAndOperationAndMetaData(any(), any(), any())
 
       verify(mockHttpClient, times(1)).POSTString(any(), meq(xmlBody), any())(any(), any(), any())
     }
 
-    "return Accepted and call use the default notification Body" in new SetUp{
+    "return Accepted and call use the default notification Body" in new SetUp {
       val client = Client("clientId", "callBackUrl", "token")
       val apiHeaders = ApiHeaders("Accept", "contentType", "clientId", badgeId = None)
       val metaData: MetaData = MetaData(declaration = Some(Declaration(functionalReferenceId = Some("BLRN"))))
@@ -86,9 +93,18 @@ class NotificationConnectorSpec extends UnitSpec with MockitoSugar with ScalaFut
       when(mockNotificationRepository.findByClientAndOperationAndMetaData(any(), any(), any()))
         .thenReturn(Future.successful(None))
       val conversationId: String = UUID.randomUUID().toString
-      val result: Unit = await(testObj.notifyInDueCourse("operation", apiHeaders, client, metaData, new FiniteDuration(500, TimeUnit.MILLISECONDS), conversationId))
+      val result: Unit = await(
+        testObj.notifyInDueCourse(
+          "operation",
+          apiHeaders,
+          client,
+          metaData,
+          new FiniteDuration(500, TimeUnit.MILLISECONDS),
+          conversationId
+        )
+      )
       Thread.sleep(750)
-      result shouldBe((): Unit)
+      result shouldBe ((): Unit)
       verify(mockNotificationRepository, times(1))
         .findByClientAndOperationAndMetaData(any(), any(), any())
       val payloadCaptor = ArgumentCaptor.forClass(classOf[String])
@@ -97,9 +113,12 @@ class NotificationConnectorSpec extends UnitSpec with MockitoSugar with ScalaFut
     }
   }
 
-  private def returnResponseForRequest(eventualResponse: Future[HttpResponse]) = {
-    when(mockHttpClient.POSTString(anyString, anyString, any[Seq[(String, String)]])(
-      any[HttpReads[HttpResponse]](), any[HeaderCarrier](), any[ExecutionContext]))
-      .thenReturn(eventualResponse)
-  }
+  private def returnResponseForRequest(eventualResponse: Future[HttpResponse]) =
+    when(
+      mockHttpClient.POSTString(anyString, anyString, any[Seq[(String, String)]])(
+        any[HttpReads[HttpResponse]](),
+        any[HeaderCarrier](),
+        any[ExecutionContext]
+      )
+    ).thenReturn(eventualResponse)
 }

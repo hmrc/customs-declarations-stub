@@ -43,8 +43,8 @@ class NotificationGenerator @Inject()(notificationValueGenerator: NotificationVa
       val charSection = random.shuffle("ABCDEFGHIJKLMNOPQRSTUVWXYZ".toSeq).take(2).mkString
       val secondCode = random.nextInt(8999999) + 1000000
       val witchoutCheck = s"${year}${country}${code}${charSection}${secondCode}"
-      val check = witchoutCheck.zipWithIndex.foldLeft(0){
-        case (input, (char, index)) =>  input + (NotificationGenerator.characterValue(char) * (1<<index))
+      val check = witchoutCheck.zipWithIndex.foldLeft(0) {
+        case (input, (char, index)) => input + (NotificationGenerator.characterValue(char) * (1 << index))
       }
       val controlDigit = ((check % 11) % 10).toString
       witchoutCheck + controlDigit
@@ -65,7 +65,6 @@ class NotificationGenerator @Inject()(notificationValueGenerator: NotificationVa
       case (status, index) => notificationResponse(status, declaration, issueAt.plusMinutes(index))
     }
 
-
     <urn:MetaData xmlns:urn="urn:wco:datamodel:WCO:DocumentMetaData-DMS:2" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xs:schemaLocation="urn:wco:datamodel:WCO:DocumentMetaData-DMS:2 ../DocumentMetaData_2_DMS.xsd" xmlns:xs="http://www.w3.org/2001/XMLSchema">
       <md:WCODataModelVersionCode xmlns:md="urn:wco:datamodel:WCO:DocumentMetaData-DMS:2">3.6</md:WCODataModelVersionCode>
       <md:WCOTypeName xmlns:md="urn:wco:datamodel:WCO:DocumentMetaData-DMS:2">DEC</md:WCOTypeName>
@@ -78,9 +77,9 @@ class NotificationGenerator @Inject()(notificationValueGenerator: NotificationVa
 
   private def notificationResponse(code: FunctionCode, declaration: NodeSeq, issuedAt: LocalDateTime) = {
 
-    val functionalReference = UUID.randomUUID().toString.replace("-","")
+    val functionalReference = UUID.randomUUID().toString.replace("-", "")
 
-    val errorNode = if(code.isError){
+    val errorNode = if (code.isError) {
       <_2_1:Error>
         <_2_1:ValidationCode>CDS10020</_2_1:ValidationCode>
         <_2_1:Pointer>
@@ -114,9 +113,10 @@ class NotificationGenerator @Inject()(notificationValueGenerator: NotificationVa
     </p:Response>
   }
 
-  def generateAcceptNotificationWithRandomMRN(): Elem = generateAcceptNotification(notificationValueGenerator.generateMRN())
+  def generateAcceptNotificationWithRandomMRN(): Elem =
+    generateAcceptNotification(notificationValueGenerator.generateMRN())
 
-  def generateAcceptNotification(mrn: String = "18GBJCM3USAFD2WD51"): Elem = {
+  def generateAcceptNotification(mrn: String = "18GBJCM3USAFD2WD51"): Elem =
     <md:MetaData xmlns:md="urn:wco:datamodel:WCO:DocumentMetaData-DMS:2">
       <md:WCODataModelVersionCode>3.6</md:WCODataModelVersionCode>
       <md:WCOTypeName>RES</md:WCOTypeName>
@@ -216,8 +216,6 @@ class NotificationGenerator @Inject()(notificationValueGenerator: NotificationVa
         </resp:Declaration>
       </resp:Response>
     </md:MetaData>
-
-  }
 
 }
 
@@ -354,7 +352,8 @@ object NotificationGenerator {
     val fullCode: String = "14"
     val isError = false
 
-    override def toString(): String = "Your account does not have enough money in it. Please make a payment to release your goods"
+    override def toString(): String =
+      "Your account does not have enough money in it. Please make a payment to release your goods"
   }
 
   case object insufficientBalanceInDanReminder extends FunctionCode {

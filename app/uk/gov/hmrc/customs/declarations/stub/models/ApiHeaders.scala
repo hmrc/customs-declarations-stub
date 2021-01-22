@@ -16,5 +16,4 @@
 
 package uk.gov.hmrc.customs.declarations.stub.models
 
-
 case class ApiHeaders(accept: String, contentType: String, clientId: String, badgeId: Option[String])

@@ -20,7 +20,8 @@ import scala.xml.Elem
 
 object TestData {
 
-  val validCancellationXml: Elem = <md:MetaData xmlns="urn:wco:datamodel:WCO:DEC-DMS:2" xmlns:md="urn:wco:datamodel:WCO:DocumentMetaData-DMS:2">
+  val validCancellationXml: Elem =
+    <md:MetaData xmlns="urn:wco:datamodel:WCO:DEC-DMS:2" xmlns:md="urn:wco:datamodel:WCO:DocumentMetaData-DMS:2">
       <md:WCODataModelVersionCode>3.6</md:WCODataModelVersionCode>
       <md:WCOTypeName>DEC</md:WCOTypeName>
       <md:ResponsibleCountryCode>NL</md:ResponsibleCountryCode>

@@ -25,8 +25,8 @@ class NotificationValueGeneratorSpec extends UnitSpec {
 
   "NotificationValueGenerator" should {
     "generate an MRN of the correct length" in {
-       val result =  testObj.generateMRN()
-       result.length should be(18)
+      val result = testObj.generateMRN()
+      result.length should be(18)
     }
   }
 

@@ -58,49 +58,52 @@ class NotificationConnector @Inject()(
     client: Client,
     meta: MetaData,
     duration: FiniteDuration
-  ): Unit = {
-
+  ): Unit =
     actorSystem.scheduler.scheduleOnce(duration) {
-      notificationRepo.findByClientAndOperationAndMetaData(client.clientId, operation, meta).map { maybeNotification =>
-        Logger.info("Entering async request notification")
+      notificationRepo
+        .findByClientAndOperationAndMetaData(client.clientId, operation, meta)
+        .map { maybeNotification =>
+          Logger.info("Entering async request notification")
 
-        val xml = maybeNotification
-          .map(_.xml)
-          .getOrElse {
-            Logger.info("Notification not found in database - generate one dynamically")
-            lazy val default = generator.generateAcceptNotificationWithRandomMRN().toString
-            meta.declaration.fold(default){declaration =>
-              declaration.functionalReferenceId.fold(default){ lrn =>
-                Logger.info(s"Dynamic generating for LNR $lrn ")
-                lrn.headOption match {
-                  case Some('G') => generator.generate(lrn, Seq(Accepted)).toString
-                  case Some('B') => generator.generate(lrn, Seq(Rejected)).toString
-                  case Some('D') => generator.generate(lrn, Seq(Accepted, AdditionalDocumentsRequired)).toString
-                  case _ => importsSpecificErrors(lrn, default)
+          val xml = maybeNotification
+            .map(_.xml)
+            .getOrElse {
+              Logger.info("Notification not found in database - generate one dynamically")
+              lazy val default = generator.generateAcceptNotificationWithRandomMRN().toString
+              meta.declaration.fold(default) { declaration =>
+                declaration.functionalReferenceId.fold(default) { lrn =>
+                  Logger.info(s"Dynamic generating for LNR $lrn ")
+                  lrn.headOption match {
+                    case Some('G') => generator.generate(lrn, Seq(Accepted)).toString
+                    case Some('B') => generator.generate(lrn, Seq(Rejected)).toString
+                    case Some('D') => generator.generate(lrn, Seq(Accepted, AdditionalDocumentsRequired)).toString
+                    case _         => importsSpecificErrors(lrn, default)
+                  }
                 }
               }
             }
+
+          Logger.debug(s"scheduling one notification call ${xml.toString}")
+
+          sendNotificationWithDelay(client, conversationId, xml).onComplete { _ =>
+            Logger.info("Exiting async request notification")
           }
-
-        Logger.debug(s"scheduling one notification call ${xml.toString}")
-
-        sendNotificationWithDelay(client, conversationId, xml).onComplete { _ =>
-          Logger.info("Exiting async request notification")
         }
-      }.andThen {
-        case Failure(e) => Logger.error("Problem on sending notification back", e)
-      }
+        .andThen {
+          case Failure(e) => Logger.error("Problem on sending notification back", e)
+        }
     }
-  }
 
-  private def importsSpecificErrors(lrn: String, default: String): String = {
-   lrn match {
-     case lrnForTaxLiability if lrnForTaxLiability.startsWith("TAX_LIABILITY") => generator.generate(lrnForTaxLiability, Seq(NotificationGenerator.taxLiability)).toString
-     case lrnForBalance if lrnForBalance.startsWith("INSUFFICIENT") => generator.generate(lrnForBalance, Seq(NotificationGenerator.insufficientBalanceInDan)).toString
-     case lrnForBalanceReminder if lrnForBalanceReminder.startsWith("REMINDER") => generator.generate(lrnForBalanceReminder, Seq(NotificationGenerator.insufficientBalanceInDanReminder)).toString
-     case _ => default
-   }
-  }
+  private def importsSpecificErrors(lrn: String, default: String): String =
+    lrn match {
+      case lrnForTaxLiability if lrnForTaxLiability.startsWith("TAX_LIABILITY") =>
+        generator.generate(lrnForTaxLiability, Seq(NotificationGenerator.taxLiability)).toString
+      case lrnForBalance if lrnForBalance.startsWith("INSUFFICIENT") =>
+        generator.generate(lrnForBalance, Seq(NotificationGenerator.insufficientBalanceInDan)).toString
+      case lrnForBalanceReminder if lrnForBalanceReminder.startsWith("REMINDER") =>
+        generator.generate(lrnForBalanceReminder, Seq(NotificationGenerator.insufficientBalanceInDanReminder)).toString
+      case _ => default
+    }
 
   private def sendNotificationWithDelay(
     client: Client,
