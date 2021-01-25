@@ -153,9 +153,8 @@ class DeclarationStubController @Inject()(
     val clientId = req.headers.get("X-Client-ID")
     val badgeId = req.headers.get("X-Badge-Identifier")
 
-    if (accept.isEmpty || !permissibleAcceptHeaders.contains(accept.get)) Future.successful(NotAcceptable)
-    else if (contentType.isEmpty || !permissibleContentTypes.contains(contentType.get))
-      Future.successful(UnsupportedMediaType)
+    if (!permissibleAcceptHeaders.contains(accept.get.toLowerCase)) Future.successful(NotAcceptable)
+    else if (!permissibleContentTypes.contains(contentType.get.toLowerCase)) Future.successful(UnsupportedMediaType)
     else if (clientId.isEmpty) Future.successful(InternalServerError)
     else f(ApiHeaders(accept.get, contentType.get, clientId.get, badgeId))
   }
