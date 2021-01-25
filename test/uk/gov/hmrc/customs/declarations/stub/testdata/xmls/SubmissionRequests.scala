@@ -14,11 +14,11 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.customs.declarations.stub.util
+package uk.gov.hmrc.customs.declarations.stub.testdata.xmls
 
 import scala.xml.Elem
 
-object TestData {
+object SubmissionRequests {
 
   val validCancellationXml: Elem =
     <md:MetaData xmlns="urn:wco:datamodel:WCO:DEC-DMS:2" xmlns:md="urn:wco:datamodel:WCO:DocumentMetaData-DMS:2">
