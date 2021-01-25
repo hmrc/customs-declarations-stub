@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 HM Revenue & Customs
+ * Copyright 2021 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,17 +16,17 @@
 
 package uk.gov.hmrc.customs.declarations.stub.connector
 
+import org.scalatest.{Matchers, WordSpec}
 import uk.gov.hmrc.customs.declarations.stub.generators.NotificationValueGenerator
-import uk.gov.hmrc.play.test.UnitSpec
 
-class NotificationValueGeneratorSpec extends UnitSpec {
+class NotificationValueGeneratorSpec extends WordSpec with Matchers {
 
   val testObj = new NotificationValueGenerator
 
   "NotificationValueGenerator" should {
     "generate an MRN of the correct length" in {
-       val result =  testObj.generateMRN()
-       result.length should be(18)
+      val result = testObj.generateMRN()
+      result.length should be(18)
     }
   }
 

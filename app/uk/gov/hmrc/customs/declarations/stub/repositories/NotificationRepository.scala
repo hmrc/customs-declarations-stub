@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 HM Revenue & Customs
+ * Copyright 2021 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -28,7 +28,7 @@ import uk.gov.hmrc.wco.dec.MetaData
 import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
-class NotificationRepository @Inject()(implicit mc: ReactiveMongoComponent, ec: ExecutionContext)
+class NotificationRepository @Inject()(mc: ReactiveMongoComponent)(implicit ec: ExecutionContext)
     extends ReactiveRepository[Notification, BSONObjectID](
       "notifications",
       mc.mongoConnector.db,

@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 HM Revenue & Customs
+ * Copyright 2021 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,26 +20,25 @@ import java.util.UUID
 import java.util.concurrent.TimeUnit
 
 import akka.actor.ActorSystem
-import org.scalatest.mockito.MockitoSugar
 import org.mockito.ArgumentCaptor
-import org.mockito.Mockito._
 import org.mockito.ArgumentMatchers.{any, anyString, eq => meq}
+import org.mockito.Mockito._
 import org.scalatest.concurrent.ScalaFutures
+import org.scalatestplus.mockito.MockitoSugar
+import org.scalatest.{Matchers, WordSpec}
 import uk.gov.hmrc.customs.declarations.stub.config.AppConfig
 import uk.gov.hmrc.customs.declarations.stub.generators.{NotificationGenerator, NotificationValueGenerator}
 import uk.gov.hmrc.customs.declarations.stub.models.ApiHeaders
 import uk.gov.hmrc.customs.declarations.stub.repositories.{Client, Notification, NotificationRepository}
-import uk.gov.hmrc.http.{HeaderCarrier, HttpReads, HttpResponse}
-import uk.gov.hmrc.play.bootstrap.http.HttpClient
-import uk.gov.hmrc.play.test.UnitSpec
+import uk.gov.hmrc.http.{HeaderCarrier, HttpClient, HttpReads, HttpResponse}
 import uk.gov.hmrc.wco.dec.{Declaration, MetaData}
 
-import scala.concurrent.{ExecutionContext, Future}
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.duration.FiniteDuration
+import scala.concurrent.{ExecutionContext, Future}
 import scala.xml.Source
 
-class NotificationConnectorSpec extends UnitSpec with MockitoSugar with ScalaFutures{
+class NotificationConnectorSpec extends WordSpec with Matchers with MockitoSugar with ScalaFutures {
 
   val mockHttpClient: HttpClient = mock[HttpClient]
 
@@ -50,14 +49,12 @@ class NotificationConnectorSpec extends UnitSpec with MockitoSugar with ScalaFut
     val mockNotificationGenerator = new NotificationGenerator(new NotificationValueGenerator())
     implicit val system: ActorSystem = ActorSystem("test")
 
-    val testObj = new NotificationConnector(mockHttpClient,
-                                            mockNotificationRepository,
-                                            mockNotificationGenerator)
+    val testObj = new NotificationConnector(mockHttpClient, mockNotificationRepository, mockNotificationGenerator)
     reset(mockHttpClient, mockNotificationRepository)
   }
 
   "NotificationConnector" should {
-    "return Accepted and send the notification body from the repo" in new SetUp{
+    "return Accepted and send the notification body from the repo" in new SetUp {
       val client = Client("clientId", "callBackUrl", "token")
       val apiHeaders = ApiHeaders("Accept", "contentType", "clientId", badgeId = None)
       val metaData: MetaData = mock[MetaData]
@@ -67,28 +64,41 @@ class NotificationConnectorSpec extends UnitSpec with MockitoSugar with ScalaFut
       when(mockNotificationRepository.findByClientAndOperationAndMetaData(any(), any(), any()))
         .thenReturn(Future.successful(Some(Notification("clientId", "operation", "lrn", xmlBody))))
       val conversationId: String = UUID.randomUUID().toString
-      val result: Unit = await(testObj.notifyInDueCourse("operation", apiHeaders, client, metaData, new FiniteDuration(500, TimeUnit.MILLISECONDS), conversationId))
-       Thread.sleep(2000)
-        result shouldBe((): Unit)
-        verify(mockNotificationRepository, times(1))
-          .findByClientAndOperationAndMetaData(any(), any(), any())
+      val result: Unit = testObj.notifyInDueCourse(
+        "operation",
+        apiHeaders,
+        client,
+        metaData,
+        new FiniteDuration(500, TimeUnit.MILLISECONDS),
+        conversationId
+      )
+      Thread.sleep(2000)
+      result shouldBe ((): Unit)
+      verify(mockNotificationRepository, times(1))
+        .findByClientAndOperationAndMetaData(any(), any(), any())
 
       verify(mockHttpClient, times(1)).POSTString(any(), meq(xmlBody), any())(any(), any(), any())
     }
 
-    "return Accepted and call use the default notification Body" in new SetUp{
+    "return Accepted and call use the default notification Body" in new SetUp {
       val client = Client("clientId", "callBackUrl", "token")
       val apiHeaders = ApiHeaders("Accept", "contentType", "clientId", badgeId = None)
       val metaData: MetaData = MetaData(declaration = Some(Declaration(functionalReferenceId = Some("BLRN"))))
-      val generatedMrn = "MRN7878787"
 
       returnResponseForRequest(Future.successful(mock[HttpResponse]))
       when(mockNotificationRepository.findByClientAndOperationAndMetaData(any(), any(), any()))
         .thenReturn(Future.successful(None))
       val conversationId: String = UUID.randomUUID().toString
-      val result: Unit = await(testObj.notifyInDueCourse("operation", apiHeaders, client, metaData, new FiniteDuration(500, TimeUnit.MILLISECONDS), conversationId))
+      val result: Unit = testObj.notifyInDueCourse(
+        "operation",
+        apiHeaders,
+        client,
+        metaData,
+        new FiniteDuration(500, TimeUnit.MILLISECONDS),
+        conversationId
+      )
       Thread.sleep(750)
-      result shouldBe((): Unit)
+      result shouldBe ((): Unit)
       verify(mockNotificationRepository, times(1))
         .findByClientAndOperationAndMetaData(any(), any(), any())
       val payloadCaptor = ArgumentCaptor.forClass(classOf[String])
@@ -97,9 +107,12 @@ class NotificationConnectorSpec extends UnitSpec with MockitoSugar with ScalaFut
     }
   }
 
-  private def returnResponseForRequest(eventualResponse: Future[HttpResponse]) = {
-    when(mockHttpClient.POSTString(anyString, anyString, any[Seq[(String, String)]])(
-      any[HttpReads[HttpResponse]](), any[HeaderCarrier](), any[ExecutionContext]))
-      .thenReturn(eventualResponse)
-  }
+  private def returnResponseForRequest(eventualResponse: Future[HttpResponse]) =
+    when(
+      mockHttpClient.POSTString(anyString, anyString, any[Seq[(String, String)]])(
+        any[HttpReads[HttpResponse]](),
+        any[HeaderCarrier](),
+        any[ExecutionContext]
+      )
+    ).thenReturn(eventualResponse)
 }

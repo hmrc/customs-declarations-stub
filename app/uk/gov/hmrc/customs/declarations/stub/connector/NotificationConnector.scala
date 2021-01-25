@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 HM Revenue & Customs
+ * Copyright 2021 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -28,8 +28,9 @@ import uk.gov.hmrc.customs.declarations.stub.generators.NotificationGenerator._
 import uk.gov.hmrc.customs.declarations.stub.models.ApiHeaders
 import uk.gov.hmrc.customs.declarations.stub.repositories.{Client, NotificationRepository}
 import uk.gov.hmrc.http.{HeaderCarrier, HttpReads, HttpResponse}
-import uk.gov.hmrc.play.bootstrap.http.HttpClient
+import uk.gov.hmrc.http.HttpClient
 import uk.gov.hmrc.wco.dec.MetaData
+import uk.gov.hmrc.http.HttpReads.Implicits.readRaw
 
 import scala.concurrent.duration.{Duration, _}
 import scala.concurrent.{ExecutionContext, Future}
@@ -41,6 +42,8 @@ class NotificationConnector @Inject()(
   notificationRepo: NotificationRepository,
   generator: NotificationGenerator
 )(implicit val appConfig: AppConfig, ec: ExecutionContext, actorSystem: ActorSystem) {
+
+  private val logger = Logger(this.getClass)
 
   def notifyInDueCourse(
     operation: String,
@@ -58,49 +61,52 @@ class NotificationConnector @Inject()(
     client: Client,
     meta: MetaData,
     duration: FiniteDuration
-  ): Unit = {
-
+  ): Unit =
     actorSystem.scheduler.scheduleOnce(duration) {
-      notificationRepo.findByClientAndOperationAndMetaData(client.clientId, operation, meta).map { maybeNotification =>
-        Logger.info("Entering async request notification")
+      notificationRepo
+        .findByClientAndOperationAndMetaData(client.clientId, operation, meta)
+        .map { maybeNotification =>
+          logger.info("Entering async request notification")
 
-        val xml = maybeNotification
-          .map(_.xml)
-          .getOrElse {
-            Logger.info("Notification not found in database - generate one dynamically")
-            lazy val default = generator.generateAcceptNotificationWithRandomMRN().toString
-            meta.declaration.fold(default){declaration =>
-              declaration.functionalReferenceId.fold(default){ lrn =>
-                Logger.info(s"Dynamic generating for LNR $lrn ")
-                lrn.headOption match {
-                  case Some('G') => generator.generate(lrn, Seq(Accepted)).toString
-                  case Some('B') => generator.generate(lrn, Seq(Rejected)).toString
-                  case Some('D') => generator.generate(lrn, Seq(Accepted, AdditionalDocumentsRequired)).toString
-                  case _ => importsSpecificErrors(lrn, default)
+          val xml = maybeNotification
+            .map(_.xml)
+            .getOrElse {
+              logger.info("Notification not found in database - generate one dynamically")
+              lazy val default = generator.generateAcceptNotificationWithRandomMRN().toString
+              meta.declaration.fold(default) { declaration =>
+                declaration.functionalReferenceId.fold(default) { lrn =>
+                  logger.info(s"Dynamic generating for LNR $lrn ")
+                  lrn.headOption match {
+                    case Some('G') => generator.generate(lrn, Seq(Accepted)).toString
+                    case Some('B') => generator.generate(lrn, Seq(Rejected)).toString
+                    case Some('D') => generator.generate(lrn, Seq(Accepted, AdditionalDocumentsRequired)).toString
+                    case _         => importsSpecificErrors(lrn, default)
+                  }
                 }
               }
             }
+
+          logger.debug(s"scheduling one notification call ${xml.toString}")
+
+          sendNotificationWithDelay(client, conversationId, xml).onComplete { _ =>
+            logger.info("Exiting async request notification")
           }
-
-        Logger.debug(s"scheduling one notification call ${xml.toString}")
-
-        sendNotificationWithDelay(client, conversationId, xml).onComplete { _ =>
-          Logger.info("Exiting async request notification")
         }
-      }.andThen {
-        case Failure(e) => Logger.error("Problem on sending notification back", e)
-      }
+        .andThen {
+          case Failure(e) => logger.error("Problem on sending notification back", e)
+        }
     }
-  }
 
-  private def importsSpecificErrors(lrn: String, default: String): String = {
-   lrn match {
-     case lrnForTaxLiability if lrnForTaxLiability.startsWith("TAX_LIABILITY") => generator.generate(lrnForTaxLiability, Seq(NotificationGenerator.taxLiability)).toString
-     case lrnForBalance if lrnForBalance.startsWith("INSUFFICIENT") => generator.generate(lrnForBalance, Seq(NotificationGenerator.insufficientBalanceInDan)).toString
-     case lrnForBalanceReminder if lrnForBalanceReminder.startsWith("REMINDER") => generator.generate(lrnForBalanceReminder, Seq(NotificationGenerator.insufficientBalanceInDanReminder)).toString
-     case _ => default
-   }
-  }
+  private def importsSpecificErrors(lrn: String, default: String): String =
+    lrn match {
+      case lrnForTaxLiability if lrnForTaxLiability.startsWith("TAX_LIABILITY") =>
+        generator.generate(lrnForTaxLiability, Seq(NotificationGenerator.taxLiability)).toString
+      case lrnForBalance if lrnForBalance.startsWith("INSUFFICIENT") =>
+        generator.generate(lrnForBalance, Seq(NotificationGenerator.insufficientBalanceInDan)).toString
+      case lrnForBalanceReminder if lrnForBalanceReminder.startsWith("REMINDER") =>
+        generator.generate(lrnForBalanceReminder, Seq(NotificationGenerator.insufficientBalanceInDanReminder)).toString
+      case _ => default
+    }
 
   private def sendNotificationWithDelay(
     client: Client,

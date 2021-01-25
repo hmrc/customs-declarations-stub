@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 HM Revenue & Customs
+ * Copyright 2021 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,8 +25,9 @@ object XmlPayloads {
   val thirdDate = firstDate.plusMinutes(10)
 
   def adjustTime(time: LocalDateTime): String = DateTimeFormatter.ofPattern("yyyyMMddHHmmss").format(time) + "Z"
-  
-  def acceptedExportNotification(mrn: String = "18GBJCM3USAFD2WD51") = <md:MetaData xmlns:md="urn:wco:datamodel:WCO:DocumentMetaData-DMS:2">
+
+  def acceptedExportNotification(mrn: String = "18GBJCM3USAFD2WD51") =
+    <md:MetaData xmlns:md="urn:wco:datamodel:WCO:DocumentMetaData-DMS:2">
     <md:WCODataModelVersionCode>3.6</md:WCODataModelVersionCode>
     <md:WCOTypeName>RES</md:WCOTypeName>
     <md:ResponsibleCountryCode/>

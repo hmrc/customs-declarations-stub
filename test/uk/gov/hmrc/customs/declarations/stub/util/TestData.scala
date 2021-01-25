@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 HM Revenue & Customs
+ * Copyright 2021 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,7 +20,8 @@ import scala.xml.Elem
 
 object TestData {
 
-  val validCancellationXml: Elem = <md:MetaData xmlns="urn:wco:datamodel:WCO:DEC-DMS:2" xmlns:md="urn:wco:datamodel:WCO:DocumentMetaData-DMS:2">
+  val validCancellationXml: Elem =
+    <md:MetaData xmlns="urn:wco:datamodel:WCO:DEC-DMS:2" xmlns:md="urn:wco:datamodel:WCO:DocumentMetaData-DMS:2">
       <md:WCODataModelVersionCode>3.6</md:WCODataModelVersionCode>
       <md:WCOTypeName>DEC</md:WCOTypeName>
       <md:ResponsibleCountryCode>NL</md:ResponsibleCountryCode>

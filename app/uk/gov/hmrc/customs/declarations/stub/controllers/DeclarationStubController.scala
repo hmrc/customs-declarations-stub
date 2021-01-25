@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 HM Revenue & Customs
+ * Copyright 2021 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,6 +19,7 @@ package uk.gov.hmrc.customs.declarations.stub.controllers
 import java.io.StringReader
 import java.util.UUID
 import java.util.concurrent.atomic.AtomicReference
+
 import javax.inject.{Inject, Singleton}
 import javax.xml.XMLConstants
 import javax.xml.transform.stream.StreamSource
@@ -28,7 +29,7 @@ import play.api.Logger
 import play.api.http.{ContentTypes, HeaderNames, MimeTypes}
 import play.api.libs.json.Json
 import play.api.mvc._
-import reactivemongo.bson.{BSONDocument, BSONObjectID}
+import reactivemongo.bson.BSONObjectID
 import uk.gov.hmrc.auth.core.{AuthConnector, AuthorisedFunctions, Enrolment}
 import uk.gov.hmrc.customs.declarations.stub.config.AppConfig
 import uk.gov.hmrc.customs.declarations.stub.connector.NotificationConnector
@@ -36,18 +37,20 @@ import uk.gov.hmrc.customs.declarations.stub.models.ApiHeaders
 import uk.gov.hmrc.customs.declarations.stub.repositories._
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.mongo.BSONBuilderHelpers
-import uk.gov.hmrc.play.bootstrap.controller.BaseController
+import uk.gov.hmrc.play.bootstrap.backend.controller.BackendController
 import uk.gov.hmrc.wco.dec.MetaData
+
 import scala.concurrent.{ExecutionContext, Future}
 import scala.xml.NodeSeq
 
 @Singleton
 class DeclarationStubController @Inject()(
+  cc: ControllerComponents,
   auth: AuthConnector,
   clientRepo: ClientRepository,
   notificationConnector: NotificationConnector
 )(implicit val appConfig: AppConfig, ec: ExecutionContext)
-    extends BaseController with AuthorisedFunctions with BSONBuilderHelpers {
+    extends BackendController(cc) with AuthorisedFunctions with BSONBuilderHelpers {
 
   private val logger = Logger(this.getClass)
 
@@ -81,7 +84,7 @@ class DeclarationStubController @Inject()(
     }
   }
 
-  def lastSubmit(): Action[AnyContent] = Action { implicit request =>
+  def lastSubmit(): Action[AnyContent] = Action { _ =>
     lastSubmission.get().fold[Result](NotFound)(Ok(_)).as(ContentTypes.XML)
   }
 
@@ -125,51 +128,48 @@ class DeclarationStubController @Inject()(
     }
   }
 
-  def listClients(): Action[AnyContent] = Action.async { implicit req =>
+  def listClients(): Action[AnyContent] = Action.async { _ =>
     clientRepo.findAll().map(found => Ok(Json.toJson(found ++ Seq(appConfig.defaultClient))))
   }
 
   def addClient(): Action[ClientWrapper] = Action.async(parse.json[ClientWrapper]) { implicit req =>
     val client = req.body.toClient
     clientRepo
-      .atomicUpsert(
-        BSONDocument("clientId" -> client.clientId),
-        setOnInsert(
-          BSONDocument("clientId" -> client.clientId, "callbackUrl" -> client.callbackUrl, "token" -> client.token)
-        )
+      .findAndUpdate(
+        Json.obj("clientId" -> client.clientId),
+        Json.obj("clientId" -> client.clientId, "callbackUrl" -> client.callbackUrl, "token" -> client.token)
       )
-      .map(res => if (res.writeResult.ok) Created else InternalServerError)
+      .map(res => if (res.value.isDefined) Created else InternalServerError)
   }
 
-  def deleteClient(id: String): Action[AnyContent] = Action.async { implicit req =>
+  def deleteClient(id: String): Action[AnyContent] = Action.async { _ =>
     clientRepo.removeById(BSONObjectID.parse(id).get).map(_ => NoContent)
   }
 
   // a dirty approximation of the header validation process implemented by customs declarations API
-  private def validateHeaders()(
-    f: ApiHeaders => Future[Result]
-  )(implicit req: Request[NodeSeq], hc: HeaderCarrier): Future[Result] = {
+  private def validateHeaders()(f: ApiHeaders => Future[Result])(implicit req: Request[NodeSeq]): Future[Result] = {
     val accept = req.headers.get(HeaderNames.ACCEPT)
     val contentType = req.headers.get(HeaderNames.CONTENT_TYPE)
     val clientId = req.headers.get("X-Client-ID")
     val badgeId = req.headers.get("X-Badge-Identifier")
 
     if (accept.isEmpty || !permissibleAcceptHeaders.contains(accept.get)) Future.successful(NotAcceptable)
-    else if (contentType.isEmpty || !permissibleContentTypes.contains(contentType.get)) Future.successful(UnsupportedMediaType)
+    else if (contentType.isEmpty || !permissibleContentTypes.contains(contentType.get))
+      Future.successful(UnsupportedMediaType)
     else if (clientId.isEmpty) Future.successful(InternalServerError)
     else f(ApiHeaders(accept.get, contentType.get, clientId.get, badgeId))
   }
 
   private def authenticate(
     headers: ApiHeaders
-  )(f: Client => Future[Result])(implicit req: Request[NodeSeq], hc: HeaderCarrier): Future[Result] =
+  )(f: Client => Future[Result])(implicit hc: HeaderCarrier): Future[Result] =
     try {
       // we only care about whether the client request can be authorised via the implicit header carrier
       authorised(Enrolment("HMRC-CUS-ORG")) {
         clientRepo.findByClientId(headers.clientId).flatMap { maybeClient =>
           val client = maybeClient.getOrElse {
             if (headers.clientId == appConfig.defaultClient.clientId) appConfig.defaultClient
-            else throw new IllegalArgumentException(s"Unauthorized client: ${ headers.clientId}")
+            else throw new IllegalArgumentException(s"Unauthorized client: ${headers.clientId}")
           }
           f(client)
         }
@@ -180,7 +180,7 @@ class DeclarationStubController @Inject()(
 
   private def validatePayload(
     schemas: Seq[String]
-  )(f: MetaData => Future[Result])(implicit req: Request[NodeSeq], hc: HeaderCarrier): Future[Result] = {
+  )(f: MetaData => Future[Result])(implicit req: Request[NodeSeq]): Future[Result] = {
     val schema: Schema = {
       val sources = schemas
         .map(res => getClass.getResource(res).toString)
