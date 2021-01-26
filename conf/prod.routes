@@ -7,6 +7,8 @@ POST          /cancellation-requests                                            
 
 GET           /last-submission                                                               uk.gov.hmrc.customs.declarations.stub.controllers.DeclarationStubController.lastSubmit()
 
+GET           /mrn/:mrn/status                                                               uk.gov.hmrc.customs.declarations.stub.controllers.DeclarationsInformationStubController.getDeclarationStatus(mrn)
+
 POST          /customs-declare-imports/                                                      uk.gov.hmrc.customs.declarations.stub.controllers.DeclarationStubController.submitNoNotification()
 
 POST          /customs-declare-imports/cancellation-requests                                 uk.gov.hmrc.customs.declarations.stub.controllers.DeclarationStubController.cancelNoNotification()

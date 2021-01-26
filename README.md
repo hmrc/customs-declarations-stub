@@ -15,6 +15,18 @@ If LRN starts with:
 - 'D' - Stub will send Accepted and Additional Documents Required notifications
 - other letters will invoke default behaviour which is Accepted notification
 
+### Customs Declarations Information stubbing
+
+    GET         /mrn/:mrn/status
+
+This endpoint returns mocked DeclarationStatusResponse with dynamic EORI and MRN taken from the request.
+MRN is part of the url, but EORI is taken from Auth service using `Authorization` token.
+
+By default the response is successful.
+
+In case you need unsuccessful response to be returned, these can be triggered by providing MRN as per rules below:
+- ends with '9999' - Not Found (404) response
+
 ### License
 
 This code is open source software licensed under the [Apache 2.0 License]("http://www.apache.org/licenses/LICENSE-2.0.html").

@@ -36,7 +36,7 @@ import uk.gov.hmrc.auth.core.retrieve.Retrieval
 import uk.gov.hmrc.customs.declarations.stub.config.AppConfig
 import uk.gov.hmrc.customs.declarations.stub.connector.NotificationConnector
 import uk.gov.hmrc.customs.declarations.stub.repositories.{Client, ClientRepository}
-import uk.gov.hmrc.customs.declarations.stub.util.TestData._
+import uk.gov.hmrc.customs.declarations.stub.testdata.xmls.SubmissionRequests._
 import uk.gov.hmrc.http.HeaderCarrier
 
 import scala.concurrent.{ExecutionContext, Future}
