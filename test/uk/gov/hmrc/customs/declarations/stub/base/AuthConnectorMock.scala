@@ -16,6 +16,9 @@
 
 package uk.gov.hmrc.customs.declarations.stub.base
 
+import scala.concurrent.ExecutionContext.global
+import scala.concurrent.Future
+
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito._
 import org.scalatest.{BeforeAndAfterEach, Suite}
@@ -26,9 +29,6 @@ import uk.gov.hmrc.auth.core.retrieve.Retrieval
 import uk.gov.hmrc.customs.declarations.stub.controllers.actions.AuthActionImpl
 import uk.gov.hmrc.customs.declarations.stub.models.requests.SignedInUser
 import uk.gov.hmrc.customs.declarations.stub.testdata.CommonTestData._
-
-import scala.concurrent.ExecutionContext.global
-import scala.concurrent.Future
 
 trait AuthConnectorMock extends MockitoSugar with BeforeAndAfterEach { self: Suite =>
 
