@@ -28,11 +28,9 @@ import uk.gov.hmrc.mongo.BSONBuilderHelpers
 import uk.gov.hmrc.play.bootstrap.backend.controller.BackendController
 
 @Singleton
-class NotificationController @Inject()(
-  cc: ControllerComponents,
-  notificationRepo: NotificationRepository
-)(implicit val ec: ExecutionContext)
-  extends BackendController(cc) with BSONBuilderHelpers {
+class NotificationController @Inject()(cc: ControllerComponents, notificationRepo: NotificationRepository)(
+  implicit val ec: ExecutionContext
+) extends BackendController(cc) with BSONBuilderHelpers {
 
   def listNotifications(): Action[AnyContent] = Action.async { _ =>
     notificationRepo.findAll().map(found => Ok(Json.toJson(found)))
