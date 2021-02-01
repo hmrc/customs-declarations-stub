@@ -16,31 +16,21 @@
 
 package uk.gov.hmrc.customs.declarations.stub.controllers
 
+import scala.concurrent.ExecutionContext
+import scala.xml.NodeSeq
+
 import javax.inject.{Inject, Singleton}
 import play.api.libs.json.Json
 import play.api.mvc.{Action, AnyContent, ControllerComponents}
 import reactivemongo.bson.BSONObjectID
-import uk.gov.hmrc.auth.core.{AuthConnector, AuthorisedFunctions}
-import uk.gov.hmrc.customs.declarations.stub.config.AppConfig
-import uk.gov.hmrc.customs.declarations.stub.repositories.{ClientRepository, Notification, NotificationRepository}
-import uk.gov.hmrc.http.HttpClient
+import uk.gov.hmrc.customs.declarations.stub.repositories.{Notification, NotificationRepository}
 import uk.gov.hmrc.mongo.BSONBuilderHelpers
 import uk.gov.hmrc.play.bootstrap.backend.controller.BackendController
 
-import scala.concurrent.ExecutionContext
-import scala.xml.NodeSeq
-
 @Singleton
-class NotificationController @Inject()(
-  cc: ControllerComponents,
-  auth: AuthConnector,
-  http: HttpClient,
-  clientRepo: ClientRepository,
-  notificationRepo: NotificationRepository
-)(implicit val appConfig: AppConfig, ec: ExecutionContext)
-    extends BackendController(cc) with AuthorisedFunctions with BSONBuilderHelpers {
-
-  override def authConnector: AuthConnector = auth
+class NotificationController @Inject()(cc: ControllerComponents, notificationRepo: NotificationRepository)(
+  implicit val ec: ExecutionContext
+) extends BackendController(cc) with BSONBuilderHelpers {
 
   def listNotifications(): Action[AnyContent] = Action.async { _ =>
     notificationRepo.findAll().map(found => Ok(Json.toJson(found)))

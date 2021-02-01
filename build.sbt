@@ -8,8 +8,7 @@ val appName = "customs-declarations-stub"
 lazy val microservice = Project(appName, file("."))
   .enablePlugins(play.sbt.PlayScala, SbtAutoBuildPlugin, SbtGitVersioning, SbtDistributablesPlugin, SbtArtifactory)
   .settings(
-    libraryDependencies              ++= AppDependencies.compile ++ AppDependencies.test,
-    evictionWarningOptions in update := EvictionWarningOptions.default.withWarnScalaVersionEviction(false),
+    libraryDependencies ++= AppDependencies.compile ++ AppDependencies.test,
     majorVersion := 0
   )
   .settings(scalaVersion := "2.12.12")
@@ -38,7 +37,7 @@ lazy val scoverageSettings: Seq[Setting[_]] = Seq(
   ).mkString(";"),
 
   coverageMinimum := 57,
-  coverageFailOnMinimum := true,
+  coverageFailOnMinimum := false,
   coverageHighlighting := true,
   parallelExecution in Test := false
 )
