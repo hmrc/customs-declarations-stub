@@ -19,13 +19,19 @@ package uk.gov.hmrc.customs.declarations.stub.connector
 import java.util.UUID
 import java.util.concurrent.TimeUnit
 
+import scala.concurrent.ExecutionContext.Implicits.global
+import scala.concurrent.duration.FiniteDuration
+import scala.concurrent.{ExecutionContext, Future}
+import scala.xml.Source
+
 import akka.actor.ActorSystem
 import org.mockito.ArgumentCaptor
 import org.mockito.ArgumentMatchers.{any, anyString, eq => meq}
 import org.mockito.Mockito._
 import org.scalatest.concurrent.ScalaFutures
+import org.scalatest.matchers.should.Matchers
+import org.scalatest.wordspec.AnyWordSpec
 import org.scalatestplus.mockito.MockitoSugar
-import org.scalatest.{Matchers, WordSpec}
 import uk.gov.hmrc.customs.declarations.stub.config.AppConfig
 import uk.gov.hmrc.customs.declarations.stub.generators.{NotificationGenerator, NotificationValueGenerator}
 import uk.gov.hmrc.customs.declarations.stub.models.ApiHeaders
@@ -33,12 +39,7 @@ import uk.gov.hmrc.customs.declarations.stub.repositories.{Client, Notification,
 import uk.gov.hmrc.http.{HeaderCarrier, HttpClient, HttpReads, HttpResponse}
 import uk.gov.hmrc.wco.dec.{Declaration, MetaData}
 
-import scala.concurrent.ExecutionContext.Implicits.global
-import scala.concurrent.duration.FiniteDuration
-import scala.concurrent.{ExecutionContext, Future}
-import scala.xml.Source
-
-class NotificationConnectorSpec extends WordSpec with Matchers with MockitoSugar with ScalaFutures {
+class NotificationConnectorSpec extends AnyWordSpec with Matchers with MockitoSugar with ScalaFutures {
 
   val mockHttpClient: HttpClient = mock[HttpClient]
 

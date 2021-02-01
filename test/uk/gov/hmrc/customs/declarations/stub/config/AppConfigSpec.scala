@@ -16,12 +16,13 @@
 
 package uk.gov.hmrc.customs.declarations.stub.config
 
-import org.scalatest.{MustMatchers, WordSpec}
+import org.scalatest.matchers.must.Matchers
+import org.scalatest.wordspec.AnyWordSpec
 import org.scalatestplus.play.guice.GuiceOneAppPerSuite
 import play.api.Application
 import play.api.inject.guice.GuiceApplicationBuilder
 
-class AppConfigSpec extends WordSpec with MustMatchers with GuiceOneAppPerSuite {
+class AppConfigSpec extends AnyWordSpec with Matchers with GuiceOneAppPerSuite {
 
   override lazy val app: Application = GuiceApplicationBuilder().build()
 

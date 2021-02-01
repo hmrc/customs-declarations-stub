@@ -16,10 +16,15 @@
 
 package uk.gov.hmrc.customs.declarations.stub.controllers
 
+import scala.concurrent.{ExecutionContext, Future}
+import scala.reflect.ClassTag
+
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito._
-import org.scalatest.{BeforeAndAfterEach, Matchers, WordSpec}
+import org.scalatest.BeforeAndAfterEach
 import org.scalatest.concurrent.ScalaFutures
+import org.scalatest.matchers.should.Matchers
+import org.scalatest.wordspec.AnyWordSpec
 import org.scalatestplus.mockito.MockitoSugar
 import org.scalatestplus.play.guice.GuiceOneAppPerSuite
 import play.api.Application
@@ -39,11 +44,8 @@ import uk.gov.hmrc.customs.declarations.stub.repositories.{Client, ClientReposit
 import uk.gov.hmrc.customs.declarations.stub.testdata.xmls.SubmissionRequests._
 import uk.gov.hmrc.http.HeaderCarrier
 
-import scala.concurrent.{ExecutionContext, Future}
-import scala.reflect.ClassTag
-
 class DeclarationsStubControllerSpec
-    extends WordSpec with Matchers with GuiceOneAppPerSuite with MockitoSugar with ScalaFutures
+    extends AnyWordSpec with Matchers with GuiceOneAppPerSuite with MockitoSugar with ScalaFutures
     with BeforeAndAfterEach {
 
   val submissionUri = "/"

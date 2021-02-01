@@ -19,19 +19,20 @@ package uk.gov.hmrc.customs.declarations.stub.controllers
 import org.mockito.ArgumentMatchers.{anyString, eq => eqTo}
 import org.mockito.Mockito._
 import org.scalatest.concurrent.ScalaFutures
-import org.scalatest.{BeforeAndAfterEach, MustMatchers, WordSpec}
+import org.scalatest.BeforeAndAfterEach
+import org.scalatest.wordspec.AnyWordSpec
+import org.scalatest.matchers.must.Matchers
 import org.scalatestplus.mockito.MockitoSugar
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
+import scala.xml.XML
 import uk.gov.hmrc.customs.declarations.stub.base.AuthConnectorMock
 import uk.gov.hmrc.customs.declarations.stub.models.declarationstatus.DeclarationStatusResponse._
 import uk.gov.hmrc.customs.declarations.stub.services.DeclarationStatusResponseBuilder
 import uk.gov.hmrc.customs.declarations.stub.testdata.CommonTestData.{eori, mrn, signedInUser}
 
-import scala.xml.XML
-
 class DeclarationsInformationStubControllerSpec
-    extends WordSpec with MustMatchers with MockitoSugar with ScalaFutures with BeforeAndAfterEach
+    extends AnyWordSpec with Matchers with MockitoSugar with ScalaFutures with BeforeAndAfterEach
     with AuthConnectorMock {
 
   private val declarationsInformationStubService = mock[DeclarationStatusResponseBuilder]
