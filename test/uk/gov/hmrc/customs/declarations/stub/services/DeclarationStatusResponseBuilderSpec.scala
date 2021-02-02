@@ -16,7 +16,8 @@
 
 package uk.gov.hmrc.customs.declarations.stub.services
 
-import org.scalatest.{MustMatchers, WordSpec}
+import org.scalatest.matchers.must.Matchers
+import org.scalatest.wordspec.AnyWordSpec
 import uk.gov.hmrc.customs.declarations.stub.models.declarationstatus.DeclarationStatusResponse
 import uk.gov.hmrc.customs.declarations.stub.models.declarationstatus.DeclarationStatusResponse.{
   NotFoundResponse,
@@ -24,7 +25,7 @@ import uk.gov.hmrc.customs.declarations.stub.models.declarationstatus.Declaratio
 }
 import uk.gov.hmrc.customs.declarations.stub.testdata.CommonTestData
 
-class DeclarationStatusResponseBuilderSpec extends WordSpec with MustMatchers {
+class DeclarationStatusResponseBuilderSpec extends AnyWordSpec with Matchers {
 
   private val declarationStatusResponseBuilder = new DeclarationStatusResponseBuilder()
 
