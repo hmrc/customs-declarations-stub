@@ -35,12 +35,6 @@ class CustomsDataStoreStubControllerSpec extends AnyWordSpec with Matchers {
       contentAsString(result) shouldBe controller.verified
     }
 
-    "return a 400(BAD_REQUEST) for an invalid EORI number" in {
-      val eori = "G"
-      val result = controller.emailIfVerified(eori)(request)
-      status(result) shouldBe BAD_REQUEST
-    }
-
     "return a 404(NOT_FOUND) for an EORI number ending in '99'" in {
       val eori = "GB1234567899"
       val result = controller.emailIfVerified(eori)(request)

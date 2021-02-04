@@ -29,11 +29,7 @@ class CustomsDataStoreStubController @Inject()(cc: ControllerComponents) extends
 
   def emailIfVerified(eori: String): Action[AnyContent] = Action.async { _ =>
     Future.successful {
-      eori match {
-        case _ if eori.length < 2           => BadRequest("Invalid EORI Number")
-        case _ if eori.takeRight(2) == "99" => NotFound("The email address is not verified")
-        case _                              => Ok(verified)
-      }
+      if (eori.endsWith("99")) NotFound("The email address is not verified") else Ok(verified)
     }
   }
 }

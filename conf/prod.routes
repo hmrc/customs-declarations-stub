@@ -27,4 +27,4 @@ POST          /customs-declarations-stub/admin/notification/:clientId/:operation
 
 DELETE        /customs-declarations-stub/admin/notification/:id                              uk.gov.hmrc.customs.declarations.stub.controllers.NotificationController.deleteNotification(id)
 
-GET           /eori/:eori/verified-email                                                     uk.gov.hmrc.customs.declarations.stub.controllers.CustomsDataStoreStubController.emailIfVerified(eori)
+GET           /customs-data-store/eori/:eori/verified-email                                  uk.gov.hmrc.customs.declarations.stub.controllers.CustomsDataStoreStubController.emailIfVerified(eori)
