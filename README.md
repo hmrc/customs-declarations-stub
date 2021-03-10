@@ -3,9 +3,12 @@
 
  [ ![Download](https://api.bintray.com/packages/hmrc/releases/customs-declarations-stub/images/download.svg) ](https://bintray.com/hmrc/releases/customs-declarations-stub/_latestVersion)
 
-This application provides a stub for Customs Declarations API that enables frontend services that use Customs Declarations API with a stub to develop locally without depending on the API. 
+This application provides a stubs for the following services:
+* Customs Declarations API service - that enables frontend services that use Customs Declarations API with a stub to develop locally without depending on the API. 
+* Customs Data Store service - just for the email verification endpoint (no other endpoints are stubbed here)
+* Upscan service - the 'batch-file-upload' and 's3-bucket' endpoints
 
-
+##Customs Declarations API service
 ### Usage custom notifications
 If you send a declaration with specific letter at the beginning of the LRN you can control what notifications you receive.
 
@@ -15,7 +18,7 @@ If LRN starts with:
 - 'D' - Stub will send Accepted and Additional Documents Required notifications
 - other letters will invoke default behaviour which is Accepted notification
 
-### Customs Declarations Information stubbing
+## Customs Declarations Information stubbing
 ```
     GET    /mrn/:mrn/status
 ```
@@ -27,7 +30,7 @@ By default the response is successful.
 In case you need unsuccessful response to be returned, these can be triggered by providing MRN as per rules below:
 - ends with '9999' - Not Found (404) response
 
-
+## Customs Data Store service
 ### eMail Address Verification
 ```
     GET    /eori/<EORI>/verified-email
@@ -42,7 +45,13 @@ otherwise a 404(NOT_FOUND) response is returned.
 
 Note that for any given EORI number ending in `99`, the associated email address will always be considered **unverified**, resulting accordingly in a 404(NOT_FOUND) response.
 
+## Upscan service
+Endpoint to simulate an S3 url that accepts a multipart file upload and sends the required success/failure notification to the SFUS backend service. 
 
-### License
+```
+    POST    /upscan/s3-bucket
+```
+
+## License
 
 This code is open source software licensed under the [Apache 2.0 License]("http://www.apache.org/licenses/LICENSE-2.0.html").

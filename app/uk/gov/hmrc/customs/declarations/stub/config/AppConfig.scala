@@ -32,4 +32,10 @@ class AppConfig @Inject()(runModeConfiguration: Configuration, servicesConfig: S
     callbackUrl = servicesConfig.baseUrl("client") + loadConfig("microservice.services.client.uri"),
     token = loadConfig("microservice.services.client.token")
   )
+
+  val cdsFileUploadBaseUrl = servicesConfig.baseUrl("cds-file-upload")
+
+  val cdsFileUploadFrontendBaseUrl = servicesConfig.baseUrl("cds-file-upload-frontend")
+
+  val upscanBaseUrl = servicesConfig.baseUrl("upscan")
 }
