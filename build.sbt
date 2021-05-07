@@ -23,7 +23,6 @@ lazy val microservice = Project(appName, file("."))
     parallelExecution in IntegrationTest          := false,
     addTestReportOption(IntegrationTest, "int-test-reports")
   )
-  .settings(resolvers ++= Seq(Resolver.jcenterRepo, Resolver.bintrayRepo("hmrc", "releases")))
   .settings(scoverageSettings)
   .settings(silencerSettings)
   .disablePlugins(JUnitXmlReportPlugin) //Required to prevent https://github.com/scalatest/scalatest/issues/1427
