@@ -16,16 +16,7 @@
 
 package uk.gov.hmrc.customs.declarations.stub.controllers
 
-import java.io.StringReader
-import java.util.UUID
-import java.util.concurrent.atomic.AtomicReference
-
-import javax.inject.{Inject, Singleton}
-import javax.xml.XMLConstants
-import javax.xml.transform.stream.StreamSource
-import javax.xml.transform.{Source => XmlSource}
-import javax.xml.validation.{Schema, SchemaFactory}
-import play.api.Logger
+import play.api.Logging
 import play.api.http.{ContentTypes, HeaderNames, MimeTypes}
 import play.api.libs.json.Json
 import play.api.mvc._
@@ -40,6 +31,14 @@ import uk.gov.hmrc.mongo.BSONBuilderHelpers
 import uk.gov.hmrc.play.bootstrap.backend.controller.BackendController
 import uk.gov.hmrc.wco.dec.MetaData
 
+import java.io.StringReader
+import java.util.UUID
+import java.util.concurrent.atomic.AtomicReference
+import javax.inject.{Inject, Singleton}
+import javax.xml.XMLConstants
+import javax.xml.transform.stream.StreamSource
+import javax.xml.transform.{Source => XmlSource}
+import javax.xml.validation.{Schema, SchemaFactory}
 import scala.concurrent.{ExecutionContext, Future}
 import scala.xml.NodeSeq
 
@@ -50,9 +49,7 @@ class DeclarationStubController @Inject()(
   clientRepo: ClientRepository,
   notificationConnector: NotificationConnector
 )(implicit val appConfig: AppConfig, ec: ExecutionContext)
-    extends BackendController(cc) with AuthorisedFunctions with BSONBuilderHelpers {
-
-  private val logger = Logger(this.getClass)
+    extends BackendController(cc) with AuthorisedFunctions with BSONBuilderHelpers with Logging {
 
   private val permissibleAcceptHeaders: Set[String] =
     Set("application/vnd.hmrc.1.0+xml", "application/vnd.hmrc.2.0+xml", "application/vnd.hmrc.3.0+xml")
@@ -192,7 +189,8 @@ class DeclarationStubController @Inject()(
     val xml = req.body.mkString
     val validator = schema.newValidator()
 
-    //TODO: Change implementation to not use return inside
+    logger.debug(s"Payload received:\n$xml")
+
     try {
       validator.validate(new StreamSource(new StringReader(xml)))
     } catch {
