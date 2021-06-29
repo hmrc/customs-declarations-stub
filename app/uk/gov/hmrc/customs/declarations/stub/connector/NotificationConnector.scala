@@ -80,13 +80,14 @@ class NotificationConnector @Inject()(
                     case Some('G') => generator.generate(lrn, Seq(Accepted)).toString
                     case Some('B') => generator.generate(lrn, Seq(Rejected)).toString
                     case Some('D') => generator.generate(lrn, Seq(Accepted, AdditionalDocumentsRequired)).toString
+                    case Some('Q') => generator.generate(lrn, Seq(QueryNotificationMessage)).toString
                     case _         => importsSpecificErrors(lrn, default)
                   }
                 }
               }
             }
 
-          logger.debug(s"scheduling one notification call ${xml.toString}")
+          logger.debug(s"scheduling one notification call ${xml}")
 
           sendNotificationWithDelay(client, conversationId, xml).onComplete { _ =>
             logger.info("Exiting async request notification")

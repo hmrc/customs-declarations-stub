@@ -19,13 +19,12 @@ package uk.gov.hmrc.customs.declarations.stub.generators
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 import java.util.UUID
-
 import javax.inject.Inject
 import uk.gov.hmrc.customs.declarations.stub.generators.NotificationGenerator.FunctionCode
 import uk.gov.hmrc.customs.declarations.stub.utils.XmlPayloads.{adjustTime, firstDate, secondDate, thirdDate}
 
 import scala.util.Random
-import scala.xml.{Elem, NodeSeq}
+import scala.xml.{Elem, Node, NodeSeq}
 
 class NotificationGenerator @Inject()(notificationValueGenerator: NotificationValueGenerator) {
 
@@ -50,10 +49,14 @@ class NotificationGenerator @Inject()(notificationValueGenerator: NotificationVa
     }
 
     val declaration = {
-      <p:Declaration>
+      val acceptanceDateTime: NodeSeq = if (!lrn.startsWith("Q")) {
         <p:AcceptanceDateTime>
           <p2:DateTimeString xmlns:p2="urn:wco:datamodel:WCO:Response_DS:DMS:2" formatCode="304">{format304.format(issueAt)}</p2:DateTimeString>
         </p:AcceptanceDateTime>
+      } else NodeSeq.Empty
+
+      <p:Declaration>
+        {acceptanceDateTime}
         <p:FunctionalReferenceID>{lrn}</p:FunctionalReferenceID>
         <p:ID>{mrn}</p:ID>
         <p:VersionID>1</p:VersionID>
@@ -61,7 +64,7 @@ class NotificationGenerator @Inject()(notificationValueGenerator: NotificationVa
     }
 
     val responses = statuses.zipWithIndex.map {
-      case (status, index) => notificationResponse(status, declaration, issueAt.plusMinutes(index))
+      case (status, index) => notificationResponse(status, declaration, issueAt.plusMinutes(index), lrn)
     }
 
     <urn:MetaData xmlns:urn="urn:wco:datamodel:WCO:DocumentMetaData-DMS:2" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xs:schemaLocation="urn:wco:datamodel:WCO:DocumentMetaData-DMS:2 ../DocumentMetaData_2_DMS.xsd" xmlns:xs="http://www.w3.org/2001/XMLSchema">
@@ -74,9 +77,22 @@ class NotificationGenerator @Inject()(notificationValueGenerator: NotificationVa
     </urn:MetaData>
   }
 
-  private def notificationResponse(code: FunctionCode, declaration: NodeSeq, issuedAt: LocalDateTime) = {
+  private def notificationResponse(code: FunctionCode, declaration: NodeSeq, issuedAt: LocalDateTime, lrn: String) = {
 
     val functionalReference = UUID.randomUUID().toString.replace("-", "")
+
+    val additionalInformation: NodeSeq = if (lrn.startsWith("Q")) {
+      <AdditionalInformation>
+        <StatementCode>Q01</StatementCode>
+        <StatementDescription>Urgent: Your Declaration or Goods are being queried. Customs authorities have
+          raised a query, or they have a further query for you. You must sign in to view and act on the query
+          message each time in order for your declaration to progress. Step 1. Search online for ‘Upload documents
+          and get messages for the Customs Declaration Service’ on the GOV.UK website. Step 2. Sign in using the
+          Government Gateway account that is linked to your EORI number. Step 3. Select the View messages option.
+        </StatementDescription>
+        <StatementTypeCode>QRY</StatementTypeCode>
+      </AdditionalInformation>
+    } else NodeSeq.Empty
 
     val errorNode = if (code.isError) {
       <_2_1:Error>
@@ -107,6 +123,7 @@ class NotificationGenerator @Inject()(notificationValueGenerator: NotificationVa
       <p:IssueDateTime>
         <p2:DateTimeString xmlns:p2="urn:wco:datamodel:WCO:Response_DS:DMS:2" formatCode="304">{format304.format(issuedAt)}</p2:DateTimeString>
       </p:IssueDateTime>
+      {additionalInformation}
       {declaration}
       {errorNode}
     </p:Response>
@@ -381,5 +398,12 @@ object NotificationGenerator {
     val isError = false
 
     override def toString(): String = "Awaiting Exit Results"
+  }
+
+  case object QueryNotificationMessage extends FunctionCode {
+    val fullCode: String = "51"
+    val isError = false
+
+    override def toString(): String = "Query Notification Message"
   }
 }
