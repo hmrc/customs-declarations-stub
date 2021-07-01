@@ -9,6 +9,7 @@ This application provides a stubs for the following services:
 * Upscan service - the 'batch-file-upload' and 's3-bucket' endpoints
 
 ##Customs Declarations API service
+
 ### Usage custom notifications
 If you send a declaration with specific letter at the beginning of the LRN you can control what notifications you receive.
 
@@ -16,6 +17,7 @@ If LRN starts with:
 - 'G' - Stub will send Accepted notification
 - 'B' - Stub will send Rejected notification
 - 'D' - Stub will send Accepted and Additional Documents Required notifications
+- 'Q' - Stub will send Query Notification Message notification
 - other letters will invoke default behaviour which is Accepted notification
 
 ## Customs Declarations Information stubbing
