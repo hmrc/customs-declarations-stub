@@ -30,11 +30,12 @@ import javax.inject.{Inject, Singleton}
 import scala.xml._
 
 @Singleton
-class UpscanStubController @Inject()(appConfig: AppConfig, httpClient: HttpClient, mcc: MessagesControllerComponents) extends BackendController(mcc) with Logging {
+class UpscanStubController @Inject()(appConfig: AppConfig, httpClient: HttpClient, mcc: MessagesControllerComponents)
+    extends BackendController(mcc) with Logging {
 
   implicit val ec = mcc.executionContext
 
-  def waiting(ref: String) = {
+  def waiting(ref: String) =
     Waiting(
       UploadRequest(
         href = s"${appConfig.upscanBaseUrl}/upscan/s3-bucket",
@@ -50,7 +51,6 @@ class UpscanStubController @Inject()(appConfig: AppConfig, httpClient: HttpClien
         )
       )
     )
-  }
 
   // for now, we will just return some random
   def handleBatchFileUploadRequest: Action[NodeSeq] = Action(parse.xml) { implicit req =>
