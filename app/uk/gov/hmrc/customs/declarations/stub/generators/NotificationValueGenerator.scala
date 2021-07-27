@@ -25,12 +25,10 @@ class NotificationValueGenerator {
   private val ALPHA_NUMERIC_STRING = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789".toCharArray
   private val MrnRandomPartLength = 13
 
-  private def randomAlphaNumeric: String = {
+  private def randomAlphaNumeric: String =
     (1 to MrnRandomPartLength).map { _ =>
-
       val charPos = Math.abs(Random.nextInt() % ALPHA_NUMERIC_STRING.length)
       ALPHA_NUMERIC_STRING.charAt(charPos)
     }.mkString("")
-  }
 
 }
