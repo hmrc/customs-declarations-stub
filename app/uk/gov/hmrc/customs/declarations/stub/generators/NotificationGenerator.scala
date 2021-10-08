@@ -16,15 +16,15 @@
 
 package uk.gov.hmrc.customs.declarations.stub.generators
 
+import uk.gov.hmrc.customs.declarations.stub.generators.NotificationGenerator.FunctionCode
+import uk.gov.hmrc.customs.declarations.stub.utils.XmlPayloads._
+
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 import java.util.UUID
 import javax.inject.Inject
-import uk.gov.hmrc.customs.declarations.stub.generators.NotificationGenerator.FunctionCode
-import uk.gov.hmrc.customs.declarations.stub.utils.XmlPayloads.{adjustTime, firstDate, secondDate, thirdDate}
-
 import scala.util.Random
-import scala.xml.{Elem, Node, NodeSeq}
+import scala.xml._
 
 class NotificationGenerator @Inject()(notificationValueGenerator: NotificationValueGenerator) {
 

@@ -22,7 +22,7 @@ import uk.gov.hmrc.auth.core._
 import uk.gov.hmrc.auth.core.retrieve.v2.Retrievals._
 import uk.gov.hmrc.customs.declarations.stub.models.requests.{AuthenticatedRequest, SignedInUser}
 import uk.gov.hmrc.http.HeaderCarrier
-import uk.gov.hmrc.play.HeaderCarrierConverter
+import uk.gov.hmrc.play.http.HeaderCarrierConverter
 
 import scala.concurrent.{ExecutionContext, Future}
 
@@ -36,7 +36,7 @@ class AuthActionImpl @Inject()(override val authConnector: AuthConnector, cc: Co
   private val eoriNumberIdentifierKey = "EORINumber"
 
   override def invokeBlock[A](request: Request[A], block: AuthenticatedRequest[A] => Future[Result]): Future[Result] = {
-    implicit val hc: HeaderCarrier = HeaderCarrierConverter.fromHeadersAndSessionAndRequest(request.headers)
+    implicit val hc: HeaderCarrier = HeaderCarrierConverter.fromRequestAndSession(request, request.session)
 
     authorised(Enrolment(hmrcCusOrgEnrolmentKey))
       .retrieve(allEnrolments) { allEnrolments: Enrolments =>
