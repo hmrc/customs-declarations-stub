@@ -67,7 +67,6 @@ class NotificationConnectorSpec extends AnyWordSpec with Matchers with MockitoSu
       val conversationId: String = UUID.randomUUID().toString
       val result: Unit = testObj.notifyInDueCourse(
         "operation",
-        apiHeaders,
         client,
         metaData,
         new FiniteDuration(500, TimeUnit.MILLISECONDS),
@@ -83,7 +82,6 @@ class NotificationConnectorSpec extends AnyWordSpec with Matchers with MockitoSu
 
     "return Accepted and call use the default notification Body" in new SetUp {
       val client = Client("clientId", "callBackUrl", "token")
-      val apiHeaders = ApiHeaders("Accept", "contentType", "clientId", badgeId = None)
       val metaData: MetaData = MetaData(declaration = Some(Declaration(functionalReferenceId = Some("BLRN"))))
 
       returnResponseForRequest(Future.successful(mock[HttpResponse]))
@@ -92,7 +90,6 @@ class NotificationConnectorSpec extends AnyWordSpec with Matchers with MockitoSu
       val conversationId: String = UUID.randomUUID().toString
       val result: Unit = testObj.notifyInDueCourse(
         "operation",
-        apiHeaders,
         client,
         metaData,
         new FiniteDuration(500, TimeUnit.MILLISECONDS),

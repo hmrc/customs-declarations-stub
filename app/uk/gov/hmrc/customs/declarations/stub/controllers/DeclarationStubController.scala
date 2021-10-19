@@ -73,7 +73,7 @@ class DeclarationStubController @Inject()(
 
           val conversationId = UUID.randomUUID().toString
 
-          notificationConnector.notifyInDueCourse("submit", headers, client, meta, conversationId = conversationId)
+          notificationConnector.notifyInDueCourse("submit", client, meta, conversationId = conversationId)
 
           Future.successful(Accepted.withHeaders("X-Conversation-ID" -> conversationId).as(ContentTypes.XML))
         }
@@ -105,7 +105,7 @@ class DeclarationStubController @Inject()(
         validatePayload(cancelSchemas) { meta =>
           val conversationId = UUID.randomUUID().toString
 
-          notificationConnector.notifyInDueCourse("cancel", headers, client, meta, conversationId = conversationId)
+          notificationConnector.notifyInDueCourse("cancel", client, meta, conversationId = conversationId)
 
           Future.successful(Accepted.withHeaders("X-Conversation-ID" -> conversationId).as(ContentTypes.XML))
         }
