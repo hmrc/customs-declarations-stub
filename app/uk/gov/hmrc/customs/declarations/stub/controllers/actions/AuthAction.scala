@@ -36,7 +36,7 @@ class AuthActionImpl @Inject()(override val authConnector: AuthConnector, cc: Co
   private val eoriNumberIdentifierKey = "EORINumber"
 
   override def invokeBlock[A](request: Request[A], block: AuthenticatedRequest[A] => Future[Result]): Future[Result] = {
-    implicit val hc: HeaderCarrier = HeaderCarrierConverter.fromRequestAndSession(request, request.session)
+    implicit val hc: HeaderCarrier = HeaderCarrierConverter.fromRequest(request)
 
     authorised(Enrolment(hmrcCusOrgEnrolmentKey))
       .retrieve(allEnrolments) { allEnrolments: Enrolments =>
