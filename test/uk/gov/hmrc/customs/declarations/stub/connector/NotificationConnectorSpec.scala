@@ -17,10 +17,9 @@
 package uk.gov.hmrc.customs.declarations.stub.connector
 
 import java.util.UUID
-import java.util.concurrent.TimeUnit
 
 import scala.concurrent.ExecutionContext.Implicits.global
-import scala.concurrent.duration.FiniteDuration
+import scala.concurrent.duration.Duration
 import scala.concurrent.{ExecutionContext, Future}
 import scala.xml.Source
 
@@ -34,7 +33,6 @@ import org.scalatest.wordspec.AnyWordSpec
 import org.scalatestplus.mockito.MockitoSugar
 import uk.gov.hmrc.customs.declarations.stub.config.AppConfig
 import uk.gov.hmrc.customs.declarations.stub.generators.{NotificationGenerator, NotificationValueGenerator}
-import uk.gov.hmrc.customs.declarations.stub.models.ApiHeaders
 import uk.gov.hmrc.customs.declarations.stub.repositories.{Client, Notification, NotificationRepository}
 import uk.gov.hmrc.http.{HeaderCarrier, HttpClient, HttpReads, HttpResponse}
 import uk.gov.hmrc.wco.dec.{Declaration, MetaData}
@@ -55,9 +53,9 @@ class NotificationConnectorSpec extends AnyWordSpec with Matchers with MockitoSu
   }
 
   "NotificationConnector" should {
+
     "return Accepted and send the notification body from the repo" in new SetUp {
       val client = Client("clientId", "callBackUrl", "token")
-      val apiHeaders = ApiHeaders("Accept", "contentType", "clientId", badgeId = None)
       val metaData: MetaData = mock[MetaData]
       val xmlBody = "<xml></xml>"
 
@@ -65,13 +63,7 @@ class NotificationConnectorSpec extends AnyWordSpec with Matchers with MockitoSu
       when(mockNotificationRepository.findByClientAndOperationAndMetaData(any(), any(), any()))
         .thenReturn(Future.successful(Some(Notification("clientId", "operation", "lrn", xmlBody))))
       val conversationId: String = UUID.randomUUID().toString
-      val result: Unit = testObj.notifyInDueCourse(
-        "operation",
-        client,
-        metaData,
-        new FiniteDuration(500, TimeUnit.MILLISECONDS),
-        conversationId
-      )
+      val result: Unit = testObj.notifyInDueCourse("operation", client, metaData, Duration(500, "ms"), conversationId)
       Thread.sleep(2000)
       result shouldBe ((): Unit)
       verify(mockNotificationRepository, times(1))
@@ -88,13 +80,7 @@ class NotificationConnectorSpec extends AnyWordSpec with Matchers with MockitoSu
       when(mockNotificationRepository.findByClientAndOperationAndMetaData(any(), any(), any()))
         .thenReturn(Future.successful(None))
       val conversationId: String = UUID.randomUUID().toString
-      val result: Unit = testObj.notifyInDueCourse(
-        "operation",
-        client,
-        metaData,
-        new FiniteDuration(500, TimeUnit.MILLISECONDS),
-        conversationId
-      )
+      val result: Unit = testObj.notifyInDueCourse("operation", client, metaData, Duration(500, "ms"), conversationId)
       Thread.sleep(750)
       result shouldBe ((): Unit)
       verify(mockNotificationRepository, times(1))

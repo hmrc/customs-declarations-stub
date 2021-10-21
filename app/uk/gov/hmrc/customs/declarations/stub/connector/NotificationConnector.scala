@@ -53,25 +53,31 @@ class NotificationConnector @Inject()(
 
   private val defaultDelay = 0.seconds
 
-  private def scheduleEachOnce(operation: String, conversationId: String, client: Client, meta: MetaData, duration: FiniteDuration): Unit =
+  private def scheduleEachOnce(
+    operation: String,
+    conversationId: String,
+    client: Client,
+    meta: MetaData,
+    duration: FiniteDuration
+  ): Unit =
     actorSystem.scheduler.scheduleOnce(duration) {
       notificationRepo
         .findByClientAndOperationAndMetaData(client.clientId, operation, meta)
         .map { maybeNotification =>
           logger.info("Entering async request notification")
 
-          val (delay, xml) = maybeNotification
-            .map { notification => (defaultDelay, notification.xml) }
-            .getOrElse {
-              logger.info("Notification not found in database - generate one dynamically")
-              lazy val default = generator.generateAcceptNotificationWithRandomMRN().toString
-              meta.declaration.fold((defaultDelay, default)) { declaration =>
-                declaration.functionalReferenceId.fold((defaultDelay, default)) { lrn =>
-                  logger.info(s"Dynamic generating for LNR $lrn ")
-                  generate(lrn, default)
-                }
+          val (delay, xml) = maybeNotification.map { notification =>
+            (defaultDelay, notification.xml)
+          }.getOrElse {
+            logger.info("Notification not found in database - generate one dynamically")
+            lazy val default = generator.generateAcceptNotificationWithRandomMRN().toString
+            meta.declaration.fold((defaultDelay, default)) { declaration =>
+              declaration.functionalReferenceId.fold((defaultDelay, default)) { lrn =>
+                logger.info(s"Dynamic generating for LNR $lrn ")
+                generate(lrn, default)
               }
             }
+          }
 
           logger.debug(s"scheduling one notification call ${xml}")
           sendNotificationWithDelay(client, conversationId, xml, delay)
@@ -100,7 +106,7 @@ class NotificationConnector @Inject()(
   private def extractDelay(lrn: String): FiniteDuration =
     lrn.take(2) match {
       case onDelay(_, delay) => Duration(delay.toLong, "secs")
-      case _ => defaultDelay
+      case _                 => defaultDelay
     }
 
   private def importsSpecificErrors(lrn: String, default: String): String =
@@ -117,22 +123,24 @@ class NotificationConnector @Inject()(
       case _ => default
     }
 
-  private def sendNotificationWithDelay(
-    client: Client,
-    conversationId: String,
-    xml: String,
-    delay: Duration
-  )(implicit rds: HttpReads[HttpResponse], ec: ExecutionContext): Unit =
-    (new Timer).schedule(new TimerTask() {
-      val payload = Seq(
-        HeaderNames.AUTHORIZATION -> s"Bearer ${client.token}",
-        HeaderNames.CONTENT_TYPE -> ContentTypes.XML,
-        "X-Conversation-ID" -> conversationId
-      )
+  private def sendNotificationWithDelay(client: Client, conversationId: String, xml: String, delay: Duration)(
+    implicit rds: HttpReads[HttpResponse],
+    ec: ExecutionContext
+  ): Unit =
+    (new Timer).schedule(
+      new TimerTask() {
+        val payload = Seq(
+          HeaderNames.AUTHORIZATION -> s"Bearer ${client.token}",
+          HeaderNames.CONTENT_TYPE -> ContentTypes.XML,
+          "X-Conversation-ID" -> conversationId
+        )
 
-      def run: Unit =
-        http.POSTString(client.callbackUrl, xml, payload)(rds, HeaderCarrier(), ec)
-          .onComplete(_ => logger.info("Exiting async request notification"))
+        def run: Unit =
+          http
+            .POSTString(client.callbackUrl, xml, payload)(rds, HeaderCarrier(), ec)
+            .onComplete(_ => logger.info("Exiting async request notification"))
 
-    }, delay.toMillis)
+      },
+      delay.toMillis
+    )
 }

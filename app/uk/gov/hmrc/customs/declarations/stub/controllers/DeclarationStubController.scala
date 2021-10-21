@@ -16,6 +16,20 @@
 
 package uk.gov.hmrc.customs.declarations.stub.controllers
 
+import java.io.{IOException, StringReader}
+import java.util.UUID
+import java.util.concurrent.atomic.AtomicReference
+
+import scala.concurrent.{ExecutionContext, Future}
+import scala.util.Try
+import scala.xml.NodeSeq
+
+import javax.inject.{Inject, Singleton}
+import javax.xml.XMLConstants
+import javax.xml.transform.stream.StreamSource
+import javax.xml.transform.{Source => XmlSource}
+import javax.xml.validation.{Schema, SchemaFactory}
+import org.xml.sax.SAXException
 import play.api.Logging
 import play.api.http.{ContentTypes, HeaderNames, MimeTypes}
 import play.api.libs.json.Json
@@ -30,17 +44,6 @@ import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.mongo.BSONBuilderHelpers
 import uk.gov.hmrc.play.bootstrap.backend.controller.BackendController
 import uk.gov.hmrc.wco.dec.MetaData
-
-import java.io.StringReader
-import java.util.UUID
-import java.util.concurrent.atomic.AtomicReference
-import javax.inject.{Inject, Singleton}
-import javax.xml.XMLConstants
-import javax.xml.transform.stream.StreamSource
-import javax.xml.transform.{Source => XmlSource}
-import javax.xml.validation.{Schema, SchemaFactory}
-import scala.concurrent.{ExecutionContext, Future}
-import scala.xml.NodeSeq
 
 @Singleton
 class DeclarationStubController @Inject()(
@@ -191,20 +194,25 @@ class DeclarationStubController @Inject()(
 
     logger.debug(s"Payload received:\n$xml")
 
-    try {
-      validator.validate(new StreamSource(new StringReader(xml)))
-    } catch {
-      case e: Exception =>
-        logger.warn(s"Invalid XML: ${e.getMessage}\n$xml", e)
-        return Future.successful(BadRequest)
+    val result = for {
+      _ <- Try(validator.validate(new StreamSource(new StringReader(xml))))
+      r <- Try(f(MetaData.fromXml(xml)))
+    } yield r
+
+    def logAndRespond(message: String, throwable: Throwable): Future[Result] = {
+      logger.warn(message, throwable)
+      Future.successful(BadRequest)
     }
 
-    try {
-      f(MetaData.fromXml(xml)) // additionally, catch failure to deserialize as WCO domain case class for the sake of visibility on this kind of error
-    } catch {
-      case e: Exception =>
-        logger.warn(s"Cannot deserialize XML: ${e.getMessage}", e)
-        Future.successful(BadRequest)
-    }
+    result.recover {
+      case ex: SAXException =>
+        logAndRespond(s"Invalid XML: ${ex.getMessage}\n$xml", ex)
+
+      case ex: IOException =>
+        logAndRespond(s"Invalid XML: ${ex.getMessage}\n$xml", ex)
+
+      case ex: Exception =>
+        logAndRespond(s"Cannot deserialize XML: ${ex.getMessage}", ex)
+    }.get
   }
 }

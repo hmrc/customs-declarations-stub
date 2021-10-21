@@ -36,7 +36,7 @@ object DeclarationStatusResponse {
     </errorResponse>
   )
 
-  //noinspection ScalaStyle
+  // scalastyle:off
   def successfulResponseBody(eori: String, mrn: String): Elem =
     <p:DeclarationStatusResponse xsi:schemaLocation="http://gov.uk/customs/declarationInformationRetrieval/status/v2"
                                  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
@@ -98,5 +98,4 @@ object DeclarationStatusResponse {
         </p2:Declaration>
       </p:DeclarationStatusDetails>
     </p:DeclarationStatusResponse>
-
 }
