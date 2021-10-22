@@ -67,6 +67,7 @@ class NotificationGenerator @Inject()(notificationValueGenerator: NotificationVa
       case (status, index) => notificationResponse(status, declaration, issueAt.plusMinutes(index), lrn)
     }
 
+// scalastyle:off
     <urn:MetaData xmlns:urn="urn:wco:datamodel:WCO:DocumentMetaData-DMS:2" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xs:schemaLocation="urn:wco:datamodel:WCO:DocumentMetaData-DMS:2 ../DocumentMetaData_2_DMS.xsd" xmlns:xs="http://www.w3.org/2001/XMLSchema">
       <md:WCODataModelVersionCode xmlns:md="urn:wco:datamodel:WCO:DocumentMetaData-DMS:2">3.6</md:WCODataModelVersionCode>
       <md:WCOTypeName xmlns:md="urn:wco:datamodel:WCO:DocumentMetaData-DMS:2">DEC</md:WCOTypeName>
@@ -76,8 +77,15 @@ class NotificationGenerator @Inject()(notificationValueGenerator: NotificationVa
       {responses}
     </urn:MetaData>
   }
+// scalastyle:on
 
-  private def notificationResponse(code: FunctionCode, declaration: NodeSeq, issuedAt: LocalDateTime, lrn: String) = {
+// scalastyle:off
+  private def notificationResponse(
+    code: FunctionCode,
+    declaration: NodeSeq,
+    issuedAt: LocalDateTime,
+    lrn: String
+  ): Elem = {
 
     val functionalReference = UUID.randomUUID().toString.replace("-", "")
 
@@ -128,10 +136,12 @@ class NotificationGenerator @Inject()(notificationValueGenerator: NotificationVa
       {errorNode}
     </p:Response>
   }
+// scalastyle:on
 
   def generateAcceptNotificationWithRandomMRN(): Elem =
     generateAcceptNotification(notificationValueGenerator.generateMRN())
 
+// scalastyle:off
   def generateAcceptNotification(mrn: String = "18GBJCM3USAFD2WD51"): Elem =
     <md:MetaData xmlns:md="urn:wco:datamodel:WCO:DocumentMetaData-DMS:2">
       <md:WCODataModelVersionCode>3.6</md:WCODataModelVersionCode>
@@ -232,8 +242,8 @@ class NotificationGenerator @Inject()(notificationValueGenerator: NotificationVa
         </resp:Declaration>
       </resp:Response>
     </md:MetaData>
-
 }
+// scalastyle:on
 
 object NotificationGenerator {
   val characterValue: Map[Char, Int] = Map(

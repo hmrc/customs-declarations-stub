@@ -15,6 +15,7 @@
  */
 
 package uk.gov.hmrc.customs.declarations.stub.utils
+
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 
@@ -26,6 +27,7 @@ object XmlPayloads {
 
   def adjustTime(time: LocalDateTime): String = DateTimeFormatter.ofPattern("yyyyMMddHHmmss").format(time) + "Z"
 
+  // scalastyle:off
   def acceptedExportNotification(mrn: String = "18GBJCM3USAFD2WD51") =
     <md:MetaData xmlns:md="urn:wco:datamodel:WCO:DocumentMetaData-DMS:2">
     <md:WCODataModelVersionCode>3.6</md:WCODataModelVersionCode>
@@ -126,5 +128,4 @@ object XmlPayloads {
       </resp:Declaration>
     </resp:Response>
   </md:MetaData>
-
 }

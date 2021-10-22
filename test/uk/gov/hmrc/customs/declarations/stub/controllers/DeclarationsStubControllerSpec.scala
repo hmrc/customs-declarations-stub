@@ -65,11 +65,13 @@ class DeclarationsStubControllerSpec
 
   val fakeSubmissionXmlRequest: FakeRequest[String] =
     buildFakeRequest(validSubmissionXml.toString, "POST", submissionUri)
+
   val fakeCancellationXmlRequest: FakeRequest[String] =
     buildFakeRequest(validCancellationXml.toString, "POST", cancellationUri)
 
   val fakeSubmissionNoNotificationXmlRequest: FakeRequest[String] =
     buildFakeRequest(validSubmissionXml.toString, "POST", submissionNoNotificationUri)
+
   val fakeCancellationNoNotificationXmlRequest: FakeRequest[String] =
     buildFakeRequest(validCancellationXml.toString, "POST", cancellationNoNotificationUri)
 
@@ -112,10 +114,10 @@ class DeclarationsStubControllerSpec
         val result = route(app, fakeSubmissionXmlRequest).get
 
         status(result) should be(ACCEPTED)
-        verify(mockNotificationConnector, times(1)).notifyInDueCourse(any(), any(), any(), any(), any(), any())
+        verify(mockNotificationConnector, times(1)).notifyInDueCourse(any(), any(), any(), any(), any())
       }
 
-      "return BADREQUEST when invalidxml is sent to submission Endpoint" in {
+      "return BAD_REQUEST when invalidxml is sent to submission Endpoint" in {
         when(
           mockAuthConnector.authorise(any[Predicate], any[Retrieval[Unit]])(any[HeaderCarrier], any[ExecutionContext])
         ).thenReturn(Future.successful(()))
@@ -136,10 +138,10 @@ class DeclarationsStubControllerSpec
         val result = route(app, fakeCancellationXmlRequest).get
 
         status(result) should be(ACCEPTED)
-        verify(mockNotificationConnector, times(1)).notifyInDueCourse(any(), any(), any(), any(), any(), any())
+        verify(mockNotificationConnector, times(1)).notifyInDueCourse(any(), any(), any(), any(), any())
       }
 
-      "return BADREQUEST when invalidxml is sent to cancellation Endpoint" in {
+      "return BAD_REQUEST when invalidxml is sent to cancellation Endpoint" in {
         when(
           mockAuthConnector.authorise(any[Predicate], any[Retrieval[Unit]])(any[HeaderCarrier], any[ExecutionContext])
         ).thenReturn(Future.successful(()))
