@@ -38,5 +38,4 @@ class DeclarationsInformationStubController @Inject()(
       case NotFoundResponse      => NotFound(response.body)
     }
   }
-
 }

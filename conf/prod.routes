@@ -25,7 +25,7 @@ POST          /upscan/s3-bucket                                                 
 
 GET           /customs-data-store/eori/:eori/verified-email                                  uk.gov.hmrc.customs.declarations.stub.controllers.CustomsDataStoreStubController.emailIfVerified(eori)
 
-#Admin endpoints
+# Admin endpoints
 
 GET           /customs-declarations-stub/admin/client                                        uk.gov.hmrc.customs.declarations.stub.controllers.DeclarationStubController.listClients()
 
@@ -40,3 +40,7 @@ GET           /customs-declarations-stub/admin/notification/:clientId/:operation
 POST          /customs-declarations-stub/admin/notification/:clientId/:operation/:lrn        uk.gov.hmrc.customs.declarations.stub.controllers.NotificationController.addNotification(clientId, operation, lrn)
 
 DELETE        /customs-declarations-stub/admin/notification/:id                              uk.gov.hmrc.customs.declarations.stub.controllers.NotificationController.deleteNotification(id)
+
+# Tariff API endpoints
+
+GET           /api/v2/commodities/:code                                                      uk.gov.hmrc.customs.declarations.stub.controllers.TariffApiController.commodities(code: String)

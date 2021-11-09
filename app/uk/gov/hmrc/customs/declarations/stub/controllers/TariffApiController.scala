@@ -16,16 +16,20 @@
 
 package uk.gov.hmrc.customs.declarations.stub.controllers
 
+import java.nio.file.Paths
+
 import javax.inject.{Inject, Singleton}
-import play.api.mvc.{Action, AnyContent, ControllerComponents}
+import play.api.mvc._
+import uk.gov.hmrc.customs.declarations.stub.utils.JsonPayloads
 import uk.gov.hmrc.play.bootstrap.backend.controller.BackendController
 
 @Singleton
-class CustomsDataStoreStubController @Inject()(cc: ControllerComponents) extends BackendController(cc) {
+class TariffApiController @Inject()(cc: ControllerComponents) extends BackendController(cc) {
 
-  lazy val verified = """{"address":"some@email.com","timestamp":"1987-03-20T01:02:03Z"}"""
-
-  def emailIfVerified(eori: String): Action[AnyContent] = Action { _ =>
-    if (eori.endsWith("99")) NotFound("The email address is not verified") else Ok(verified)
+  def commodities(code: String): Action[AnyContent] = Action { _ =>
+    val lastDigit = code.filter(_.isDigit).takeRight(1)
+    val filename =
+      if (lastDigit == "1") "supplementary-units-required.json" else "supplementary-units-not-required.json"
+    JsonPayloads.fromPath(Paths.get(getClass.getResource(s"/messages/$filename").toURI))
   }
 }
