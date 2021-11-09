@@ -33,18 +33,30 @@ class TariffApiControllerSpec extends AnyWordSpec with Matchers with GuiceOneApp
 
   "TariffApiController.commodities" should {
 
-    "return OK with a Json body of the expected size when the last digit of the given commodity code is 1" in {
-      val result = route(app, FakeRequest("GET", "/api/v2/commodities/1234567891")).get
+    "return OK with a Json body of the expected size" when {
+      "the last digit of the given commodity code is '1'" in {
+        val result = route(app, FakeRequest("GET", "/api/v2/commodities/1234567891")).get
 
-      status(result) shouldBe OK
-      contentAsString(result).size shouldBe 240510
+        status(result) shouldBe OK
+        contentAsString(result).size shouldBe 240510
+      }
     }
 
-    "return OK with a Json body of the expected size when the last digit of the given commodity code is NOT 1" in {
-      val result = route(app, FakeRequest("GET", "/api/v2/commodities/1234567890")).get
+    "return OK with a Json body of the expected size" when {
+      "the last digit of the given commodity code is NOT '1'" in {
+        val result = route(app, FakeRequest("GET", "/api/v2/commodities/1234567890")).get
 
-      status(result) shouldBe OK
-      contentAsString(result).size shouldBe 326756
+        status(result) shouldBe OK
+        contentAsString(result).size shouldBe 326756
+      }
+    }
+
+    "return NOT_FOUND" when {
+      "the last digit of the given commodity code is '9'" in {
+        val result = route(app, FakeRequest("GET", "/api/v2/commodities/0123456789")).get
+
+        status(result) shouldBe NOT_FOUND
+      }
     }
   }
 }

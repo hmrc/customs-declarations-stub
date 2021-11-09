@@ -27,9 +27,15 @@ import uk.gov.hmrc.play.bootstrap.backend.controller.BackendController
 class TariffApiController @Inject()(cc: ControllerComponents) extends BackendController(cc) {
 
   def commodities(code: String): Action[AnyContent] = Action { _ =>
-    val lastDigit = code.filter(_.isDigit).takeRight(1)
-    val filename =
-      if (lastDigit == "1") "supplementary-units-required.json" else "supplementary-units-not-required.json"
-    JsonPayloads.fromPath(Paths.get(getClass.getResource(s"/messages/$filename").toURI))
+    val commodityCode = code.filter(_.isDigit)
+    if (commodityCode.length != 10 || commodityCode.takeRight(1) == "9") NotFound("Commodity was not found.")
+    else {
+      val uri = getClass.getResource(s"/messages/${filename(commodityCode)}").toURI
+      JsonPayloads.fromPath(Paths.get(uri))
+    }
   }
+
+  private def filename(commodityCode: String): String =
+    if (commodityCode.takeRight(1) == "1") "supplementary-units-required.json"
+    else "supplementary-units-not-required.json"
 }
