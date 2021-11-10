@@ -14,18 +14,24 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.customs.declarations.stub.controllers
+package uk.gov.hmrc.customs.declarations.stub.utils
 
-import javax.inject.{Inject, Singleton}
-import play.api.mvc.{Action, AnyContent, ControllerComponents}
-import uk.gov.hmrc.play.bootstrap.backend.controller.BackendController
+import java.nio.file.{Files, Path}
 
-@Singleton
-class CustomsDataStoreStubController @Inject()(cc: ControllerComponents) extends BackendController(cc) {
+import akka.stream.scaladsl.FileIO
+import play.api.http.HttpEntity
+import play.api.http.Status.OK
+import play.api.mvc.{ResponseHeader, Result}
 
-  lazy val verified = """{"address":"some@email.com","timestamp":"1987-03-20T01:02:03Z"}"""
+object JsonPayloads {
 
-  def emailIfVerified(eori: String): Action[AnyContent] = Action { _ =>
-    if (eori.endsWith("99")) NotFound("The email address is not verified") else Ok(verified)
+  def fromPath(path: Path): Result = {
+    val source = FileIO.fromPath(path)
+    val contentLength = Some(Files.size(path))
+
+    Result(
+      header = ResponseHeader(OK, Map.empty),
+      body = HttpEntity.Streamed(source, contentLength, Some("application/json"))
+    )
   }
 }

@@ -7,18 +7,24 @@ This application provides a stubs for the following services:
 * Customs Declarations API service - that enables frontend services that use Customs Declarations API with a stub to develop locally without depending on the API. 
 * Customs Data Store service - just for the email verification endpoint (no other endpoints are stubbed here)
 * Upscan service - the 'batch-file-upload' and 's3-bucket' endpoints
+* Tariff API
 
-##Customs Declarations API service
+## Customs Declarations API service
 
-### Usage custom notifications
+### How to deliver custom notifications
 If you send a declaration with specific letter at the beginning of the LRN you can control what notifications you receive.
 
 If LRN starts with:
-- 'G' - Stub will send Accepted notification
-- 'B' - Stub will send Rejected notification
-- 'D' - Stub will send Accepted and Additional Documents Required notifications
-- 'Q' - Stub will send Query Notification Message notification
+- 'B' - Stub will send a 'Rejected' notification
+- 'D' - Stub will send an 'Accepted' and an 'Additional Documents Required' notifications
+- 'G' - Stub will send an 'Accepted' notification
+- 'Q' - Stub will send a 'Query Notification Message' notification
+- 'R' - Stub will send a 'Received' notification
+- 'U' - Stub will send an 'Undergoing Physical Check' notification
+- 'X' - Stub will send a 'Goods Have Exited The Community' notification
 - other letters will invoke default behaviour which is Accepted notification
+
+In addition if the 2nd character of the LRN is a digit (0-9) you can control the delay in seconds of the notification delivery.
 
 ## Customs Declarations Information stubbing
 ```
@@ -46,6 +52,20 @@ If the EORI's email address is verified the 200(OK) response's payload is
 otherwise a 404(NOT_FOUND) response is returned.
 
 Note that for any given EORI number ending in `99`, the associated email address will always be considered **unverified**, resulting accordingly in a 404(NOT_FOUND) response.
+
+## TARIFF API
+Endpoint used by the CDS Exports service to simulate the [Tariff API](https://api.trade-tariff.service.gov.uk/reference.html#get-commodities-id)
+which, given a goods_nomenclature_item_id (a commodity code), responds with a Json payload which identifies the commodity.
+
+```
+    GET    /api/v2/commodities/:id
+```
+
+The given id must be a numeric string of 10 digits otherwise a Not Found (404) response is returned. In addition, if the last digit is:
+- '1' - the body of the OK (200) response is provided by the content of 'conf/messages/supplementary-units-required.json'
+- '9' - the response is Not Found (404)
+
+For any other trailing digit, the body of the OK (200) response is provided by the content of 'conf/messages/supplementary-units-not-required.json' 
 
 ## Upscan service
 Endpoint to simulate an S3 url that accepts a multipart file upload and sends the required success/failure notification to the SFUS backend service. 
