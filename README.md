@@ -61,11 +61,18 @@ which, given a goods_nomenclature_item_id (a commodity code), responds with a Js
     GET    /api/v2/commodities/:id
 ```
 
-The given id must be a numeric string of 10 digits otherwise a Not Found (404) response is returned. In addition, if the last digit is:
-- '1' - the body of the OK (200) response is provided by the content of 'conf/messages/supplementary-units-required.json'
+The given id must be a numeric string of 10 digits otherwise a Not Found (404) response is returned.
+
+If the given id is:
+- '2208303000' - the payload of the OK (200) response is the content of 'conf/messages/supplementary-units-2208303000.json'
+- '3903110000' - the payload of the OK (200) response is the content of 'conf/messages/supplementary-units-3903110000.json'
+- '6103230000' - the payload of the OK (200) response is the content of 'conf/messages/supplementary-units-6103230000.json'
+
+Otherwise, if the last digit of the given id is:
+- '0' or '1' - the payload of the OK (200) response is the content of 'conf/messages/supplementary-units-required.json'
 - '9' - the response is Not Found (404)
 
-For any other trailing digit, the body of the OK (200) response is provided by the content of 'conf/messages/supplementary-units-not-required.json' 
+For any other trailing digit, the body of the OK (200) response is the content of 'conf/messages/supplementary-units-not-required.json' 
 
 ## Upscan service
 Endpoint to simulate an S3 url that accepts a multipart file upload and sends the required success/failure notification to the SFUS backend service. 
