@@ -64,9 +64,8 @@ which, given a goods_nomenclature_item_id (a commodity code), responds with a Js
 The given id must be a numeric string of 10 digits otherwise a Not Found (404) response is returned.
 
 If the given id is:
-- '2208303000' - the payload of the OK (200) response is the content of 'conf/messages/supplementary-units-2208303000.json'
-- '3903110000' - the payload of the OK (200) response is the content of 'conf/messages/supplementary-units-3903110000.json'
-- '6103230000' - the payload of the OK (200) response is the content of 'conf/messages/supplementary-units-6103230000.json'
+- '2208303000' - the payload of the OK (200) response is the content of 'conf/messages/supplementary-units-2208303000.json' (has supplementary units)
+- '3903110000' - the payload of the OK (200) response is the content of 'conf/messages/supplementary-units-3903110000.json' (no supplementary units)
 
 Otherwise, if the last digit of the given id is:
 - '0' or '1' - the payload of the OK (200) response is the content of 'conf/messages/supplementary-units-required.json'
