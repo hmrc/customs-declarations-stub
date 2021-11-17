@@ -49,6 +49,20 @@ class TariffApiControllerSpec extends AnyWordSpec with Matchers with GuiceOneApp
         contentAsString(result).size shouldBe 323930
       }
 
+      "the given commodity code is equal to '6103230000'" in {
+        val result = route(app, FakeRequest("GET", "/api/v2/commodities/6103230000")).get
+
+        status(result) shouldBe OK
+        contentAsString(result).size shouldBe 350063
+      }
+
+      "the given commodity code is equal to '7114110000'" in {
+        val result = route(app, FakeRequest("GET", "/api/v2/commodities/7114110000")).get
+
+        status(result) shouldBe OK
+        contentAsString(result).size shouldBe 351890
+      }
+
       "the last digit of the given commodity code is '0'" in {
         val result = route(app, FakeRequest("GET", "/api/v2/commodities/1234567890")).get
 

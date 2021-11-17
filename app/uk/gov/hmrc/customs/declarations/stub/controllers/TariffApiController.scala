@@ -40,6 +40,8 @@ class TariffApiController @Inject()(cc: ControllerComponents) extends BackendCon
     commodityCode match {
       case "2208303000"                      => "supplementary-units-2208303000.json"
       case "3903110000"                      => "supplementary-units-3903110000.json"
+      case "6103230000"                      => "supplementary-units-6103230000.json"
+      case "7114110000"                      => "supplementary-units-7114110000.json"
       case _ if digit == "0" || digit == "1" => "supplementary-units-required.json"
       case _                                 => "supplementary-units-not-required.json"
     }
