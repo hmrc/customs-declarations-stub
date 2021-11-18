@@ -43,15 +43,39 @@ In case you need unsuccessful response to be returned, these can be triggered by
 ```
     GET    /eori/<EORI>/verified-email
 ```
-This endpoint enables retrieving the email address associated with the given EORI number as long as it is a **verified** email address.
+This endpoint enables retrieving the email address associated with the given EORI number as long as it is a **verified** or **undeliverable** email address.
 
 If the EORI's email address is verified the 200(OK) response's payload is
 ```
 { "address":"some@email.com", "timestamp":"1987-03-20T01:02:03Z" }
 ```
+Or, if the EORI's email address is undeliverable (bounced) the 200(OK) response's payload is:
+```
+{
+    "address": "some@email.com",
+    "timestamp": "2020-03-20T01:02:03Z",
+    "undeliverable": {
+          "subject": "subject-example",
+          "eventId": "example-id",
+          "groupId": "example-group-id",
+          "timestamp": "2021-05-14T10:59:45.811+01:00",
+          "event": {
+                     "id": "example-id",
+                    "event": "someEvent",
+                    "emailAddress": "some@email.com",
+                    "detected": "2021-05-14T10:59:45.811+01:00",
+                    "code": 12,
+                    "reason": "Inbox full",
+                    "enrolment": "HMRC-CUS-ORG~EORINumber~testEori"
+        }
+     }
+}
+```
 otherwise a 404(NOT_FOUND) response is returned.
 
 Note that for any given EORI number ending in `99`, the associated email address will always be considered **unverified**, resulting accordingly in a 404(NOT_FOUND) response.
+For an EORI number inding in '98', the associated email address will always be considered **undeliverable**, resulting accordingly in an OK response with the above payload.
+
 
 ## TARIFF API
 Endpoint used by the CDS Exports service to simulate the [Tariff API](https://api.trade-tariff.service.gov.uk/reference.html#get-commodities-id)

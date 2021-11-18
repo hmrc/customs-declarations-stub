@@ -24,7 +24,7 @@ import uk.gov.hmrc.play.bootstrap.backend.controller.BackendController
 class CustomsDataStoreStubController @Inject()(cc: ControllerComponents) extends BackendController(cc) {
 
   lazy val verified = """{"address":"some@email.com","timestamp":"1987-03-20T01:02:03Z"}"""
-  lazy val undeliverable = """{
+  lazy val undeliverable: String = """{
                              |    "address": "some@email.com",
                              |    "timestamp": "2020-03-20T01:02:03Z",
                              |    "undeliverable": {
@@ -48,7 +48,7 @@ class CustomsDataStoreStubController @Inject()(cc: ControllerComponents) extends
     eori.takeRight(2) match {
       case "99" => NotFound("The email address is not verified")
       case "98" => Ok(undeliverable)
-      case _ => Ok(verified)
+      case _    => Ok(verified)
     }
   }
 }
