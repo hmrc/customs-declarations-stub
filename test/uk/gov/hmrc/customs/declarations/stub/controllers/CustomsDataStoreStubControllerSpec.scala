@@ -28,11 +28,18 @@ class CustomsDataStoreStubControllerSpec extends AnyWordSpec with Matchers {
 
   "GET emailIfVerified" should {
 
-    "return a 200(OK) payload with the expected payload for an EORI number not ending in '99'" in {
+    "return a 200(OK) payload with the expected payload for an EORI number not ending in '99' or '98'" in {
       val eori = "GB1234567890"
       val result = controller.emailIfVerified(eori)(request)
       status(result) shouldBe OK
       contentAsString(result) shouldBe controller.verified
+    }
+
+    "return a 200(OK) payload with the expected payload for an EORI number ending in '98'" in {
+      val eori = "GB1234567898"
+      val result = controller.emailIfVerified(eori)(request)
+      status(result) shouldBe OK
+      contentAsString(result) shouldBe controller.undeliverable
     }
 
     "return a 404(NOT_FOUND) for an EORI number ending in '99'" in {
