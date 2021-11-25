@@ -81,7 +81,7 @@ class TariffApiControllerSpec extends AnyWordSpec with Matchers with GuiceOneApp
         val result = route(app, FakeRequest("GET", "/api/v2/commodities/1234567892")).get
 
         status(result) shouldBe OK
-        contentAsString(result).size shouldBe 326756
+        contentAsString(result).size shouldBe 326755
       }
     }
 
