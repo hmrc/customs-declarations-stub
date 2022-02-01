@@ -16,14 +16,13 @@
 
 package uk.gov.hmrc.customs.declarations.stub.controllers
 
-import play.api.http.{ContentTypes, HeaderNames}
-import play.api.mvc.{Action, Codec, MessagesControllerComponents}
+import play.api.http.ContentTypes
+import play.api.mvc.{Action, MessagesControllerComponents}
 import play.api.Logging
 import uk.gov.hmrc.customs.declarations.stub.config.AppConfig
 import uk.gov.hmrc.customs.declarations.stub.models.upscan._
 import uk.gov.hmrc.customs.declarations.stub.models.upscan.Field._
-import uk.gov.hmrc.http.{HeaderCarrier, HttpClient, HttpResponse}
-import uk.gov.hmrc.http.HttpReads.Implicits._
+import uk.gov.hmrc.http.HttpClient
 import uk.gov.hmrc.play.bootstrap.backend.controller.BackendController
 
 import javax.inject.{Inject, Singleton}
@@ -38,7 +37,7 @@ class UpscanStubController @Inject()(appConfig: AppConfig, httpClient: HttpClien
   def waiting(ref: String) =
     Waiting(
       UploadRequest(
-        href = s"${appConfig.upscanBaseUrl}/upscan/s3-bucket",
+        href = s"${appConfig.cdsFileUploadFrontendBaseUrl}/cds-file-upload-service/test-only/s3-bucket",
         fields = Map(
           Algorithm.toString -> "AWS4-HMAC-SHA256",
           Signature.toString -> "xxxx",
@@ -64,33 +63,11 @@ class UpscanStubController @Inject()(appConfig: AppConfig, httpClient: HttpClien
       FileUpload(i.toString, waiting(i.toString), id = s"$i")
     }.toList)
 
-    Ok(XmlHelper.toXml(resp)).as(ContentTypes.XML)
-  }
+    val xmlResp = XmlHelper.toXml(resp)
 
-  def handleS3FileUploadRequest = Action(parse.multipartFormData) { implicit req =>
-    val redirectLocation = req.body.dataParts("success_action_redirect").head
-    val reference = redirectLocation.split("/").last
-    callBack(reference)
-    SeeOther(redirectLocation).withHeaders("Location" -> redirectLocation)
-  }
+    logger.debug(s"Batch file upload response: $xmlResp")
 
-  def callBack(ref: String)(implicit hc: HeaderCarrier) = {
-    Thread.sleep(1000)
-
-    val notification =
-      <Root>
-        <FileReference>{ref}</FileReference>
-        <BatchId>5e634e09-77f6-4ff1-b92a-8a9676c715c4</BatchId>
-        <FileName>File_{ref}.pdf</FileName>
-        <Outcome>SUCCESS</Outcome>
-        <Details>[detail block]</Details>
-      </Root>
-
-    val url = appConfig.cdsFileUploadBaseUrl + "/internal/notification"
-
-    val header: (String, String) = HeaderNames.CONTENT_TYPE -> ContentTypes.XML(Codec.utf_8)
-
-    httpClient.POSTString[HttpResponse](url, notification.toString(), Seq(header))
+    Ok(xmlResp).as(ContentTypes.XML)
   }
 }
 

@@ -6,7 +6,6 @@
 This application provides a stubs for the following services:
 * Customs Declarations API service - that enables frontend services that use Customs Declarations API with a stub to develop locally without depending on the API. 
 * Customs Data Store service - just for the email verification endpoint (no other endpoints are stubbed here)
-* Upscan service - the 'batch-file-upload' and 's3-bucket' endpoints
 * Tariff API
 
 ## Customs Declarations API service
@@ -25,6 +24,13 @@ If LRN starts with:
 - other letters will invoke default behaviour which is Accepted notification
 
 In addition if the 2nd character of the LRN is a digit (0-9) you can control the delay in seconds of the notification delivery.
+
+### File Upload
+This stub also mocks the '/file-upload' endpoint of the Cust Dec API. This endpoint returns fake S3 urls that actually point 
+to the testOnly endpoint '/cds-file-upload-service/test-only/s3-bucket' of the CDS File Upload Frontend service.
+
+The fake S3 bucket urls have to point to a url that is available in the MTDP public zone (to allow the user's browser to upload
+files to it). This is why fake S3 urls can not point to a endpoint on this service (as it is deployed in the protected zone). 
 
 ## Customs Declarations Information stubbing
 ```
@@ -98,13 +104,6 @@ Otherwise, if the last digit of the given id is:
 - '9' - the response is Not Found (404)
 
 For any other trailing digit, the body of the OK (200) response is the content of 'conf/messages/supplementary-units-not-required.json' 
-
-## Upscan service
-Endpoint to simulate an S3 url that accepts a multipart file upload and sends the required success/failure notification to the SFUS backend service. 
-
-```
-    POST    /upscan/s3-bucket
-```
 
 ## License
 
