@@ -17,10 +17,6 @@ POST          /customs-declare-imports/cancellation-requests                    
 
 POST          /file-upload                                                                   uk.gov.hmrc.customs.declarations.stub.controllers.UpscanStubController.handleBatchFileUploadRequest
 
-# Upscan endpoint
-
-POST          /upscan/s3-bucket                                                              uk.gov.hmrc.customs.declarations.stub.controllers.UpscanStubController.handleS3FileUploadRequest
-
 # Customs Data Store endpoints
 
 GET           /customs-data-store/eori/:eori/verified-email                                  uk.gov.hmrc.customs.declarations.stub.controllers.CustomsDataStoreStubController.emailIfVerified(eori)
