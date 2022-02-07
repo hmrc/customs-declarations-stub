@@ -39,26 +39,6 @@ object FileUploadResponse extends Logging {
   implicit val format = Json.format[FileUploadResponse]
 
   def apply(files: List[FileUpload]): FileUploadResponse = new FileUploadResponse(files.sortBy(_.reference)) {}
-
-  def fromXml(xml: Elem): FileUploadResponse = {
-    logger.info("File Upload Response " + xml)
-    val files: List[FileUpload] = (xml \ "Files" \ "_").theSeq.collect {
-      case file =>
-        val reference = (file \ "Reference").text.trim
-        val href = (file \ "UploadRequest" \ "Href").text.trim
-        val successUrl = (file \ "UploadRequest" \ "Fields" \ "success_action_redirect").text.trim
-        val fields: Map[String, String] =
-          (file \ "UploadRequest" \ "Fields" \ "_").theSeq.collect {
-            case field if field.label == "success-action-redirect" => "success_action_redirect" -> field.text.trim
-            case field if field.label == "error-action-redirect"   => "error_action_redirect" -> field.text.trim
-            case field                                             => field.label -> field.text.trim
-          }.toMap
-
-        FileUpload(reference, Waiting(UploadRequest(href, fields)), id = successUrl.split('/').last)
-    }.toList
-
-    FileUploadResponse(files)
-  }
 }
 
 abstract class Field(value: String) {

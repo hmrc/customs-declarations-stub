@@ -33,5 +33,6 @@ class AppConfig @Inject()(runModeConfiguration: Configuration, servicesConfig: S
     token = loadConfig("microservice.services.client.token")
   )
 
-  val cdsFileUploadFrontendBaseUrl = servicesConfig.baseUrl("cds-file-upload-frontend")
+  val cdsFileUploadFrontendPublicBaseUrl = servicesConfig.baseUrl("cds-file-upload-frontend-public")
+  val cdsFileUploadFrontendInternalBaseUrl = servicesConfig.baseUrl("cds-file-upload-frontend-internal")
 }

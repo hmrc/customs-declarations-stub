@@ -34,10 +34,27 @@ class UpscanStubController @Inject()(appConfig: AppConfig, httpClient: HttpClien
 
   implicit val ec = mcc.executionContext
 
-  def waiting(ref: String) =
+  def waiting(sequenceNo: String) = {
+    /*
+      The first file in a batch upload is always the contacts file created and uploaded by the SFUS frontend itself.
+
+      In non-E2E environments (like development, staging and ET) the SFUS frontend exposed a test-only endpoint to mock
+      the S3 bucket url that files are normally upload to. So in effect for this first file the SFUS frontend is calling itself!
+
+      The domain names that a user can access from their browser and the the service can access from its MDTP environment
+      are not the same. So to facilitate the testing of the SFUS frontend in non-E2E environments the stub has this
+      special behaviour of switching the domain name for uploading the first contacts file to an internal domain that the
+      SFUS frontend can reach.
+     */
+    val sfusFrontendBaseUrl =
+      if (sequenceNo == "1")
+        appConfig.cdsFileUploadFrontendInternalBaseUrl
+      else
+        appConfig.cdsFileUploadFrontendPublicBaseUrl
+
     Waiting(
       UploadRequest(
-        href = s"${appConfig.cdsFileUploadFrontendBaseUrl}/cds-file-upload-service/test-only/s3-bucket",
+        href = s"${sfusFrontendBaseUrl}/cds-file-upload-service/test-only/s3-bucket",
         fields = Map(
           Algorithm.toString -> "AWS4-HMAC-SHA256",
           Signature.toString -> "xxxx",
@@ -45,11 +62,12 @@ class UpscanStubController @Inject()(appConfig: AppConfig, httpClient: HttpClien
           ACL.toString -> "private",
           Credentials.toString -> "ASIAxxxxxxxxx/20180202/eu-west-2/s3/aws4_request",
           Policy.toString -> "xxxxxxxx==",
-          SuccessRedirect.toString -> s"${appConfig.cdsFileUploadFrontendBaseUrl}/cds-file-upload-service/upload/upscan-success/${ref}",
-          ErrorRedirect.toString -> s"${appConfig.cdsFileUploadFrontendBaseUrl}/cds-file-upload-service/upload/upscan-error/${ref}"
+          SuccessRedirect.toString -> s"${appConfig.cdsFileUploadFrontendPublicBaseUrl}/cds-file-upload-service/upload/upscan-success/${sequenceNo}",
+          ErrorRedirect.toString -> s"${appConfig.cdsFileUploadFrontendPublicBaseUrl}/cds-file-upload-service/upload/upscan-error/${sequenceNo}"
         )
       )
     )
+  }
 
   // for now, we will just return some random
   def handleBatchFileUploadRequest: Action[NodeSeq] = Action(parse.xml) { implicit req =>
@@ -57,12 +75,15 @@ class UpscanStubController @Inject()(appConfig: AppConfig, httpClient: HttpClien
     logger.info(s"Batch file upload request: $xmlBodyString")
     Thread.sleep(100)
 
-    val fileGroupSize = (scala.xml.XML.loadString(xmlBodyString) \ "FileGroupSize").text.toInt
+    val files = (scala.xml.XML.loadString(xmlBodyString) \\ "File").toSeq
 
-    val resp = FileUploadResponse((1 to fileGroupSize).map { i =>
-      FileUpload(i.toString, waiting(i.toString), id = s"$i")
-    }.toList)
+    val fileUploads = files.map { node =>
+      val fileSequenceNo = node \ "FileSequenceNo"
 
+      FileUpload(fileSequenceNo.text, waiting(fileSequenceNo.text), id = fileSequenceNo.text)
+    }.toList
+
+    val resp = FileUploadResponse(fileUploads.toList)
     val xmlResp = XmlHelper.toXml(resp)
 
     logger.debug(s"Batch file upload response: $xmlResp")
