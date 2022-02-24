@@ -19,11 +19,9 @@ package uk.gov.hmrc.customs.declarations.stub.controllers
 import java.io.{IOException, StringReader}
 import java.util.UUID
 import java.util.concurrent.atomic.AtomicReference
-
 import scala.concurrent.{ExecutionContext, Future}
-import scala.util.Try
+import scala.util.{Success, Try}
 import scala.xml.NodeSeq
-
 import javax.inject.{Inject, Singleton}
 import javax.xml.XMLConstants
 import javax.xml.transform.stream.StreamSource
@@ -37,6 +35,7 @@ import play.api.mvc._
 import reactivemongo.bson.BSONObjectID
 import uk.gov.hmrc.auth.core.{AuthConnector, AuthorisedFunctions, Enrolment}
 import uk.gov.hmrc.customs.declarations.stub.config.AppConfig
+import uk.gov.hmrc.customs.declarations.stub.config.featureFlags.SchemaValidationConfig
 import uk.gov.hmrc.customs.declarations.stub.connector.NotificationConnector
 import uk.gov.hmrc.customs.declarations.stub.models.ApiHeaders
 import uk.gov.hmrc.customs.declarations.stub.repositories._
@@ -50,7 +49,8 @@ class DeclarationStubController @Inject()(
   cc: ControllerComponents,
   auth: AuthConnector,
   clientRepo: ClientRepository,
-  notificationConnector: NotificationConnector
+  notificationConnector: NotificationConnector,
+  schemaValidationConfig: SchemaValidationConfig
 )(implicit val appConfig: AppConfig, ec: ExecutionContext)
     extends BackendController(cc) with AuthorisedFunctions with BSONBuilderHelpers with Logging {
 
@@ -180,22 +180,32 @@ class DeclarationStubController @Inject()(
   private def validatePayload(
     schemas: Seq[String]
   )(f: MetaData => Future[Result])(implicit req: Request[NodeSeq]): Future[Result] = {
-    val schema: Schema = {
-      val sources = schemas
-        .map(res => getClass.getResource(res).toString)
-        .map(systemId => new StreamSource(systemId))
-        .toArray[XmlSource]
-
-      SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI).newSchema(sources)
-    }
 
     val xml = req.body.mkString
-    val validator = schema.newValidator()
-
     logger.debug(s"Payload received:\n$xml")
 
+    def validate(): Try[Unit] = {
+      logger.debug(s"Schema Validation enabled? ${schemaValidationConfig.isEnabled}")
+      if (!schemaValidationConfig.isEnabled)
+        Success(())
+      else {
+        val schema: Schema = {
+          val sources = schemas
+            .map(res => getClass.getResource(res).toString)
+            .map(systemId => new StreamSource(systemId))
+            .toArray[XmlSource]
+
+          SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI).newSchema(sources)
+        }
+
+        val validator = schema.newValidator()
+
+        Try(validator.validate(new StreamSource(new StringReader(xml))))
+      }
+    }
+
     val result = for {
-      _ <- Try(validator.validate(new StreamSource(new StringReader(xml))))
+      _ <- validate()
       r <- Try(f(MetaData.fromXml(xml)))
     } yield r
 

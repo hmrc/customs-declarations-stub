@@ -32,6 +32,12 @@ to the testOnly endpoint '/cds-file-upload-service/test-only/s3-bucket' of the C
 The fake S3 bucket urls have to point to a url that is available in the MTDP public zone (to allow the user's browser to upload
 files to it). This is why fake S3 urls can not point to a endpoint on this service (as it is deployed in the protected zone). 
 
+### Schema Validation
+By default the stub validates all XML payloads it receives with the corrisponding schema. However in performance test scenarios this can
+slow down the operation of the stub so there is a feature flag to disable the Schema validation work to speed up response times:
+
+`sbt "run -Dmicroservice.services.features.schemaValidation=disabled"`
+
 ## Customs Declarations Information stubbing
 ```
     GET    /mrn/:mrn/status
