@@ -19,8 +19,6 @@ package uk.gov.hmrc.customs.declarations.stub.models.upscan
 import play.api.Logging
 import play.api.libs.json._
 
-import scala.xml.Elem
-
 case class UploadRequest(href: String, fields: Map[String, String])
 
 object UploadRequest {
