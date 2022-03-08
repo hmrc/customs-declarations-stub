@@ -50,8 +50,6 @@ class DeclarationsStubControllerSpec
 
   val submissionUri = "/"
   val cancellationUri = "/cancellation-requests"
-  val submissionNoNotificationUri = "/customs-declare-imports/"
-  val cancellationNoNotificationUri = "/customs-declare-imports/cancellation-requests"
 
   def buildFakeRequest(xmlBody: String, method: String, uriVal: String): FakeRequest[String] =
     FakeRequest(method, uriVal)
@@ -68,12 +66,6 @@ class DeclarationsStubControllerSpec
 
   val fakeCancellationXmlRequest: FakeRequest[String] =
     buildFakeRequest(validCancellationXml.toString, "POST", cancellationUri)
-
-  val fakeSubmissionNoNotificationXmlRequest: FakeRequest[String] =
-    buildFakeRequest(validSubmissionXml.toString, "POST", submissionNoNotificationUri)
-
-  val fakeCancellationNoNotificationXmlRequest: FakeRequest[String] =
-    buildFakeRequest(validCancellationXml.toString, "POST", cancellationNoNotificationUri)
 
   val mockAuthConnector: AuthConnector = mock[AuthConnector]
   val mockClientRepo: ClientRepository = mock[ClientRepository]
@@ -152,59 +144,6 @@ class DeclarationsStubControllerSpec
         status(result) should be(BAD_REQUEST)
         verifyNoMoreInteractions(mockNotificationConnector)
       }
-
-    }
-
-    "No Notification Endpoints" should {
-      "return ACCEPTED, not send notification when submissionNoNotification endpoint called " in {
-        when(
-          mockAuthConnector.authorise(any[Predicate], any[Retrieval[Unit]])(any[HeaderCarrier], any[ExecutionContext])
-        ).thenReturn(Future.successful(()))
-        when(mockClientRepo.findByClientId(any())).thenReturn(Future.successful(Some(client)))
-
-        val result = route(app, fakeSubmissionNoNotificationXmlRequest).get
-
-        status(result) should be(ACCEPTED)
-        verifyNoMoreInteractions(mockNotificationConnector)
-      }
-
-      "return BADREQUEST when invalidxml is sent to submission Endpoint" in {
-        when(
-          mockAuthConnector.authorise(any[Predicate], any[Retrieval[Unit]])(any[HeaderCarrier], any[ExecutionContext])
-        ).thenReturn(Future.successful(()))
-        when(mockClientRepo.findByClientId(any())).thenReturn(Future.successful(Some(client)))
-
-        val result = route(app, fakeSubmissionNoNotificationXmlRequest.withBody("<some></some>")).get
-
-        status(result) should be(BAD_REQUEST)
-        verifyNoMoreInteractions(mockNotificationConnector)
-      }
-
-      "return ACCEPTED, not send notification when cancellationNoNotification endpoint called " in {
-        when(
-          mockAuthConnector.authorise(any[Predicate], any[Retrieval[Unit]])(any[HeaderCarrier], any[ExecutionContext])
-        ).thenReturn(Future.successful(()))
-        when(mockClientRepo.findByClientId(any())).thenReturn(Future.successful(Some(client)))
-
-        val result = route(app, fakeCancellationNoNotificationXmlRequest).get
-
-        status(result) should be(ACCEPTED)
-        verifyNoMoreInteractions(mockNotificationConnector)
-      }
-
-      "return BADREQUEST when invalidxml is sent to cancellation Endpoint" in {
-        when(
-          mockAuthConnector.authorise(any[Predicate], any[Retrieval[Unit]])(any[HeaderCarrier], any[ExecutionContext])
-        ).thenReturn(Future.successful(()))
-        when(mockClientRepo.findByClientId(any())).thenReturn(Future.successful(Some(client)))
-
-        val result = route(app, fakeCancellationNoNotificationXmlRequest.withBody("<some></some>")).get
-
-        status(result) should be(BAD_REQUEST)
-        verifyNoMoreInteractions(mockNotificationConnector)
-      }
-
     }
   }
-
 }

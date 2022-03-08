@@ -16,17 +16,6 @@
 
 package uk.gov.hmrc.customs.declarations.stub.controllers
 
-import java.io.{IOException, StringReader}
-import java.util.UUID
-import java.util.concurrent.atomic.AtomicReference
-import scala.concurrent.{ExecutionContext, Future}
-import scala.util.{Success, Try}
-import scala.xml.NodeSeq
-import javax.inject.{Inject, Singleton}
-import javax.xml.XMLConstants
-import javax.xml.transform.stream.StreamSource
-import javax.xml.transform.{Source => XmlSource}
-import javax.xml.validation.{Schema, SchemaFactory}
 import org.xml.sax.SAXException
 import play.api.Logging
 import play.api.http.{ContentTypes, HeaderNames, MimeTypes}
@@ -43,6 +32,17 @@ import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.mongo.BSONBuilderHelpers
 import uk.gov.hmrc.play.bootstrap.backend.controller.BackendController
 import uk.gov.hmrc.wco.dec.MetaData
+
+import java.io.{IOException, StringReader}
+import java.util.UUID
+import javax.inject.{Inject, Singleton}
+import javax.xml.XMLConstants
+import javax.xml.transform.{Source => XmlSource}
+import javax.xml.transform.stream.StreamSource
+import javax.xml.validation.{Schema, SchemaFactory}
+import scala.concurrent.{ExecutionContext, Future}
+import scala.util.{Success, Try}
+import scala.xml.NodeSeq
 
 @Singleton
 class DeclarationStubController @Inject()(
@@ -64,37 +64,17 @@ class DeclarationStubController @Inject()(
 
   private val cancelSchemas = Seq("/schemas/CANCEL_METADATA.xsd", "/schemas/CANCEL.xsd")
 
-  private val lastSubmission: AtomicReference[Option[NodeSeq]] = new AtomicReference[Option[NodeSeq]](None)
-
   override def authConnector: AuthConnector = auth
+
+  logger.warn(s"Schema Validation enabled? ${schemaValidationConfig.isEnabled}")
 
   def submit(): Action[NodeSeq] = Action.async(parse.xml) { implicit request =>
     validateHeaders() { headers =>
       authenticate(headers) { client =>
         validatePayload(submitSchemas) { meta =>
-          lastSubmission.set(Some(request.body))
-
           val conversationId = UUID.randomUUID().toString
 
           notificationConnector.notifyInDueCourse("submit", client, meta, conversationId = conversationId)
-
-          Future.successful(Accepted.withHeaders("X-Conversation-ID" -> conversationId).as(ContentTypes.XML))
-        }
-      }
-    }
-  }
-
-  def lastSubmit(): Action[AnyContent] = Action { _ =>
-    lastSubmission.get().fold[Result](NotFound)(Ok(_)).as(ContentTypes.XML)
-  }
-
-  def submitNoNotification(): Action[NodeSeq] = Action.async(parse.xml) { implicit req =>
-    validateHeaders() { headers =>
-      authenticate(headers) { _ =>
-        validatePayload(submitSchemas) { _ =>
-          lastSubmission.set(Some(req.body))
-
-          val conversationId = UUID.randomUUID().toString
 
           Future.successful(Accepted.withHeaders("X-Conversation-ID" -> conversationId).as(ContentTypes.XML))
         }
@@ -109,18 +89,6 @@ class DeclarationStubController @Inject()(
           val conversationId = UUID.randomUUID().toString
 
           notificationConnector.notifyInDueCourse("cancel", client, meta, conversationId = conversationId)
-
-          Future.successful(Accepted.withHeaders("X-Conversation-ID" -> conversationId).as(ContentTypes.XML))
-        }
-      }
-    }
-  }
-
-  def cancelNoNotification(): Action[NodeSeq] = Action.async(parse.xml) { implicit req =>
-    validateHeaders() { headers =>
-      authenticate(headers) { _ =>
-        validatePayload(cancelSchemas) { _ =>
-          val conversationId = UUID.randomUUID().toString
 
           Future.successful(Accepted.withHeaders("X-Conversation-ID" -> conversationId).as(ContentTypes.XML))
         }
