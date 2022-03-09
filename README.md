@@ -15,6 +15,7 @@ If you send a declaration with specific letter at the beginning of the LRN you c
 
 If LRN starts with:
 - 'B' - Stub will send a 'Rejected' notification
+- 'C' - Stub will send a 'Cleared' notification
 - 'D' - Stub will send an 'Accepted' and an 'Additional Documents Required' notifications
 - 'G' - Stub will send an 'Accepted' notification
 - 'Q' - Stub will send a 'Query Notification Message' notification

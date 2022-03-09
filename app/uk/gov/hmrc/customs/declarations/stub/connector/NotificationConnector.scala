@@ -90,13 +90,14 @@ class NotificationConnector @Inject()(
   private def generate(lrn: String, default: String): (FiniteDuration, String) = {
     val delay = extractDelay(lrn)
     lrn.headOption match {
-      case Some('B') => (delay, generator.generate(lrn, Seq(Rejected)).toString)
-      case Some('D') => (delay, generator.generate(lrn, Seq(Accepted, AdditionalDocumentsRequired)).toString)
-      case Some('G') => (delay, generator.generate(lrn, Seq(Accepted)).toString)
-      case Some('Q') => (delay, generator.generate(lrn, Seq(QueryNotificationMessage)).toString)
-      case Some('R') => (delay, generator.generate(lrn, Seq(Received)).toString)
-      case Some('U') => (delay, generator.generate(lrn, Seq(UndergoingPhysicalCheck)).toString)
-      case Some('X') => (delay, generator.generate(lrn, Seq(GoodsHaveExitedTheCommunity)).toString)
+      case Some('B') => (delay, generator.generate(lrn, List(Rejected)).toString)
+      case Some('C') => (delay, generator.generate(lrn, List(Accepted, Cleared)).toString)
+      case Some('D') => (delay, generator.generate(lrn, List(Accepted, AdditionalDocumentsRequired)).toString)
+      case Some('G') => (delay, generator.generate(lrn, List(Accepted)).toString)
+      case Some('Q') => (delay, generator.generate(lrn, List(QueryNotificationMessage)).toString)
+      case Some('R') => (delay, generator.generate(lrn, List(Received)).toString)
+      case Some('U') => (delay, generator.generate(lrn, List(UndergoingPhysicalCheck)).toString)
+      case Some('X') => (delay, generator.generate(lrn, List(GoodsHaveExitedTheCommunity)).toString)
       case _         => (delay, importsSpecificErrors(lrn, default))
     }
   }
@@ -112,13 +113,13 @@ class NotificationConnector @Inject()(
   private def importsSpecificErrors(lrn: String, default: String): String =
     lrn match {
       case lrnForTaxLiability if lrnForTaxLiability.startsWith("TAX_LIABILITY") =>
-        generator.generate(lrnForTaxLiability, Seq(NotificationGenerator.taxLiability)).toString
+        generator.generate(lrnForTaxLiability, List(NotificationGenerator.taxLiability)).toString
 
       case lrnForBalance if lrnForBalance.startsWith("INSUFFICIENT") =>
-        generator.generate(lrnForBalance, Seq(NotificationGenerator.insufficientBalanceInDan)).toString
+        generator.generate(lrnForBalance, List(NotificationGenerator.insufficientBalanceInDan)).toString
 
       case lrnForBalanceReminder if lrnForBalanceReminder.startsWith("REMINDER") =>
-        generator.generate(lrnForBalanceReminder, Seq(NotificationGenerator.insufficientBalanceInDanReminder)).toString
+        generator.generate(lrnForBalanceReminder, List(NotificationGenerator.insufficientBalanceInDanReminder)).toString
 
       case _ => default
     }
@@ -129,7 +130,7 @@ class NotificationConnector @Inject()(
   ): Unit =
     (new Timer).schedule(
       new TimerTask() {
-        val payload = Seq(
+        val payload = List(
           HeaderNames.AUTHORIZATION -> s"Bearer ${client.token}",
           HeaderNames.CONTENT_TYPE -> ContentTypes.XML,
           "X-Conversation-ID" -> conversationId
