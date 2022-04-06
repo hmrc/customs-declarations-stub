@@ -19,7 +19,7 @@ package uk.gov.hmrc.customs.declarations.stub.generators
 import uk.gov.hmrc.customs.declarations.stub.generators.NotificationGenerator.FunctionCode
 import uk.gov.hmrc.customs.declarations.stub.utils.XmlPayloads._
 
-import java.time.LocalDateTime
+import java.time.{ZoneId, ZonedDateTime}
 import java.time.format.DateTimeFormatter
 import java.util.UUID
 import javax.inject.Inject
@@ -28,10 +28,10 @@ import scala.xml._
 
 class NotificationGenerator @Inject()(notificationValueGenerator: NotificationValueGenerator) {
 
-  val format304: DateTimeFormatter = DateTimeFormatter.ofPattern("yyyyMMddHHmmss'Z'")
+  val format304: DateTimeFormatter = DateTimeFormatter.ofPattern("yyyyMMddHHmmssX")
 
   def generate(lrn: String, statuses: Seq[FunctionCode]): Elem = {
-    val issueAt = LocalDateTime.now()
+    val issueAt = ZonedDateTime.now(ZoneId.of("Europe/London"))
     val random = new Random(lrn.hashCode)
 
     val mrn = {
@@ -83,7 +83,7 @@ class NotificationGenerator @Inject()(notificationValueGenerator: NotificationVa
   private def notificationResponse(
     code: FunctionCode,
     declaration: NodeSeq,
-    issuedAt: LocalDateTime,
+    issuedAt: ZonedDateTime,
     lrn: String
   ): Elem = {
 

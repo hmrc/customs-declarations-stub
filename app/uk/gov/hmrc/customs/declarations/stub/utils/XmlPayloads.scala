@@ -16,16 +16,17 @@
 
 package uk.gov.hmrc.customs.declarations.stub.utils
 
-import java.time.LocalDateTime
+import java.time.{ZoneId, ZonedDateTime}
 import java.time.format.DateTimeFormatter
 
 object XmlPayloads {
 
-  val firstDate = LocalDateTime.now()
+  val firstDate = ZonedDateTime.now(ZoneId.of("Europe/London"))
   val secondDate = firstDate.plusMinutes(5)
   val thirdDate = firstDate.plusMinutes(10)
 
-  def adjustTime(time: LocalDateTime): String = DateTimeFormatter.ofPattern("yyyyMMddHHmmss").format(time) + "Z"
+  def adjustTime(time: ZonedDateTime): String =
+    time.format(DateTimeFormatter.ofPattern("yyyyMMddHHmmssX"))
 
   // scalastyle:off
   def acceptedExportNotification(mrn: String = "18GBJCM3USAFD2WD51") =
