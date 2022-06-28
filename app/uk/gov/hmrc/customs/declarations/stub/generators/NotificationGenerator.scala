@@ -125,6 +125,16 @@ class NotificationGenerator @Inject()(notificationValueGenerator: NotificationVa
       NodeSeq.Empty
     }
 
+    val maybeNameCode: NodeSeq = if (code.nameCode.isDefined) {
+      <resp:Status>
+        <resp:NameCode>
+          {code.nameCode.get}
+        </resp:NameCode>
+      </resp:Status>
+    } else {
+      NodeSeq.Empty
+    }
+
     <p:Response xmlns:p="urn:wco:datamodel:WCO:RES-DMS:2" xsi:schemaLocation="urn:wco:datamodel:WCO:RES-DMS:2 ../WCO_RES_2_DMS.xsd ">
       <p:FunctionCode>{code.functionCode}</p:FunctionCode>
       <p:FunctionalReferenceID>{functionalReference}</p:FunctionalReferenceID>
@@ -132,6 +142,7 @@ class NotificationGenerator @Inject()(notificationValueGenerator: NotificationVa
         <p2:DateTimeString xmlns:p2="urn:wco:datamodel:WCO:Response_DS:DMS:2" formatCode="304">{format304.format(issuedAt)}</p2:DateTimeString>
       </p:IssueDateTime>
       {additionalInformation}
+      {maybeNameCode}
       {declaration}
       {errorNode}
     </p:Response>

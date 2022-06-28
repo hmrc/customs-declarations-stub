@@ -74,7 +74,7 @@ class NotificationConnector @Inject()(
             meta.declaration.fold((defaultDelay, default)) { declaration =>
               declaration.functionalReferenceId.fold((defaultDelay, default)) { lrn =>
                 logger.info(s"Dynamic generating for LNR $lrn ")
-                generate(lrn, default)
+                generate(lrn, default, operation)
               }
             }
           }
@@ -87,18 +87,27 @@ class NotificationConnector @Inject()(
         }
     }
 
-  private def generate(lrn: String, default: String): (FiniteDuration, String) = {
+  private def generate(lrn: String, default: String, operation: String): (FiniteDuration, String) = {
     val delay = extractDelay(lrn)
-    lrn.headOption match {
-      case Some('B') => (delay, generator.generate(lrn, List(Rejected)).toString)
-      case Some('C') => (delay, generator.generate(lrn, List(Accepted, Cleared)).toString)
-      case Some('D') => (delay, generator.generate(lrn, List(Accepted, AdditionalDocumentsRequired)).toString)
-      case Some('G') => (delay, generator.generate(lrn, List(Accepted)).toString)
-      case Some('Q') => (delay, generator.generate(lrn, List(QueryNotificationMessage)).toString)
-      case Some('R') => (delay, generator.generate(lrn, List(Received)).toString)
-      case Some('U') => (delay, generator.generate(lrn, List(UndergoingPhysicalCheck)).toString)
-      case Some('X') => (delay, generator.generate(lrn, List(GoodsHaveExitedTheCommunity)).toString)
-      case _         => (delay, importsSpecificErrors(lrn, default))
+
+    if (operation == "cancel") {
+      lrn.charAt(2) match {
+        case 'S' => (delay, generator.generate(lrn, Seq(CustomsPositionGranted)).toString)
+        case 'D' => (delay, generator.generate(lrn, Seq(CustomsPositionDenied)).toString)
+        case _   => (delay, generator.generate(lrn, Seq(QueryNotificationMessage)).toString)
+      }
+    } else {
+      lrn.headOption match {
+        case Some('B') => (delay, generator.generate(lrn, List(Rejected)).toString)
+        case Some('C') => (delay, generator.generate(lrn, List(Accepted, Cleared)).toString)
+        case Some('D') => (delay, generator.generate(lrn, List(Accepted, AdditionalDocumentsRequired)).toString)
+        case Some('G') => (delay, generator.generate(lrn, List(Accepted)).toString)
+        case Some('Q') => (delay, generator.generate(lrn, List(QueryNotificationMessage)).toString)
+        case Some('R') => (delay, generator.generate(lrn, List(Received)).toString)
+        case Some('U') => (delay, generator.generate(lrn, List(UndergoingPhysicalCheck)).toString)
+        case Some('X') => (delay, generator.generate(lrn, List(GoodsHaveExitedTheCommunity)).toString)
+        case _         => (delay, importsSpecificErrors(lrn, default))
+      }
     }
   }
 
