@@ -26,6 +26,11 @@ If LRN starts with:
 
 In addition if the 2nd character of the LRN is a digit (0-9) you can control the delay in seconds of the notification delivery.
 
+The third character can be used to determine the notification response of a cancellation request:
+- 'S' - Stub sends 'Customs Position Granted' indicating successful cancellation
+- 'D' - Stub sends 'Customs Position Denied' indicated a denied cancellation request
+- other letters send 'Query Notification Message' which does not carry any significant meaning pertaining to a cancellation
+
 ### File Upload
 This stub also mocks the '/file-upload' endpoint of the Cust Dec API. This endpoint returns fake S3 urls that actually point 
 to the testOnly endpoint '/cds-file-upload-service/test-only/s3-bucket' of the CDS File Upload Frontend service.
