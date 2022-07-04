@@ -165,7 +165,7 @@ class NotificationGenerator @Inject()(notificationValueGenerator: NotificationVa
         <resp:FunctionCode>01</resp:FunctionCode>
         <resp:FunctionalReferenceID>a5b4aeb03a384a5faf1b9afeff5dac97</resp:FunctionalReferenceID>
         <resp:IssueDateTime>
-          <_2_2:DateTimeString formatCode="304" xmlns:_2_2="urn:wco:datamodel:WCO:Response_DS:DMS:2">{adjustTime(thirdDate)}</_2_2:DateTimeString>
+          <_2_2:DateTimeString formatCode="304" xmlns:_2_2="urn:wco:datamodel:WCO:Response_DS:DMS:2">{adjustTime(firstDate)}</_2_2:DateTimeString>
         </resp:IssueDateTime>
         <resp:Declaration>
           <resp:AcceptanceDateTime>
@@ -180,7 +180,7 @@ class NotificationGenerator @Inject()(notificationValueGenerator: NotificationVa
         <resp:FunctionCode>16</resp:FunctionCode>
         <resp:FunctionalReferenceID>d5710483848740849ce7415470c2886a</resp:FunctionalReferenceID>
         <resp:IssueDateTime>
-          <_2_2:DateTimeString formatCode="304" xmlns:_2_2="urn:wco:datamodel:WCO:Response_DS:DMS:2">{adjustTime(firstDate)}</_2_2:DateTimeString>
+          <_2_2:DateTimeString formatCode="304" xmlns:_2_2="urn:wco:datamodel:WCO:Response_DS:DMS:2">{adjustTime(thirdDate)}</_2_2:DateTimeString>
         </resp:IssueDateTime>
         <resp:AppealOffice>
           <resp:ID>GBLBA001</resp:ID>
