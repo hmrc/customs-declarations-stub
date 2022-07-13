@@ -23,30 +23,14 @@ import java.time.{ZoneId, ZonedDateTime}
 import java.time.format.DateTimeFormatter
 import java.util.UUID
 import javax.inject.Inject
-import scala.util.Random
 import scala.xml._
 
 class NotificationGenerator @Inject()(notificationValueGenerator: NotificationValueGenerator) {
 
   val format304: DateTimeFormatter = DateTimeFormatter.ofPattern("yyyyMMddHHmmssX")
 
-  def generate(lrn: String, statuses: Seq[FunctionCode]): Elem = {
+  def generate(lrn: String, mrn: String, statuses: Seq[FunctionCode]) = {
     val issueAt = ZonedDateTime.now(ZoneId.of("Europe/London"))
-    val random = new Random(lrn.hashCode)
-
-    val mrn = {
-      val year = issueAt.getYear % 100
-      val country = "GB"
-      val code = random.nextInt(8999) + 1000
-      val charSection = random.shuffle("ABCDEFGHIJKLMNOPQRSTUVWXYZ".toSeq).take(2).mkString
-      val secondCode = random.nextInt(8999999) + 1000000
-      val witchoutCheck = s"${year}${country}${code}${charSection}${secondCode}"
-      val check = witchoutCheck.zipWithIndex.foldLeft(0) {
-        case (input, (char, index)) => input + (NotificationGenerator.characterValue(char) * (1 << index))
-      }
-      val controlDigit = ((check % 11) % 10).toString
-      witchoutCheck + controlDigit
-    }
 
     val declaration = {
       val acceptanceDateTime: NodeSeq = if (!lrn.startsWith("Q")) {
@@ -75,7 +59,7 @@ class NotificationGenerator @Inject()(notificationValueGenerator: NotificationVa
       <md:ResponsibleAgencyName xmlns:md="urn:wco:datamodel:WCO:DocumentMetaData-DMS:2">Duane</md:ResponsibleAgencyName>
       <md:AgencyAssignedCustomizationVersionCode xmlns:md="urn:wco:datamodel:WCO:DocumentMetaData-DMS:2">v2.1</md:AgencyAssignedCustomizationVersionCode>
       {responses}
-    </urn:MetaData>
+    </urn:MetaData>.toString
   }
 // scalastyle:on
 
