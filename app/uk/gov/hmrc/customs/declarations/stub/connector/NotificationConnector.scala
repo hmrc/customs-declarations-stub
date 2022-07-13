@@ -17,12 +17,11 @@
 package uk.gov.hmrc.customs.declarations.stub.connector
 
 import java.util.{Timer, TimerTask}
-
 import scala.concurrent.ExecutionContext
 import scala.concurrent.duration.{Duration, _}
-import scala.util.Failure
-
+import scala.util.{Failure, Random}
 import akka.actor.ActorSystem
+
 import javax.inject.{Inject, Singleton}
 import play.api.Logger
 import play.api.http.{ContentTypes, HeaderNames}
@@ -33,6 +32,8 @@ import uk.gov.hmrc.customs.declarations.stub.repositories.{Client, NotificationR
 import uk.gov.hmrc.http.HttpReads.Implicits.readRaw
 import uk.gov.hmrc.http.{HeaderCarrier, HttpClient, HttpReads, HttpResponse}
 import uk.gov.hmrc.wco.dec.MetaData
+
+import java.time.{ZonedDateTime, ZoneId}
 
 @Singleton
 class NotificationConnector @Inject()(
@@ -74,7 +75,7 @@ class NotificationConnector @Inject()(
             meta.declaration.fold((defaultDelay, default)) { declaration =>
               declaration.functionalReferenceId.fold((defaultDelay, default)) { lrn =>
                 logger.info(s"Dynamic generating for LNR $lrn ")
-                generate(lrn, default, operation)
+                generate(lrn, default, operation, declaration.id)
               }
             }
           }
@@ -87,26 +88,44 @@ class NotificationConnector @Inject()(
         }
     }
 
-  private def generate(lrn: String, default: String, operation: String): (FiniteDuration, String) = {
+  private def defineMrn(maybeMrn: Option[String]) = {
+    maybeMrn.getOrElse{
+      val year = ZonedDateTime.now(ZoneId.of("Europe/London")).getYear % 100
+      val country = "GB"
+      val random = new Random(maybeMrn.hashCode)
+      val code = random.nextInt(8999) + 1000
+      val charSection = random.shuffle("ABCDEFGHIJKLMNOPQRSTUVWXYZ".toSeq).take(2).mkString
+      val secondCode = random.nextInt(8999999) + 1000000
+      val witchoutCheck = s"${year}${country}${code}${charSection}${secondCode}"
+      val check = witchoutCheck.zipWithIndex.foldLeft(0) {
+        case (input, (char, index)) => input + (NotificationGenerator.characterValue(char) * (1 << index))
+      }
+      val controlDigit = ((check % 11) % 10).toString
+      witchoutCheck + controlDigit
+    }
+  }
+
+  private def generate(lrn: String, default: String, operation: String, maybeMrn: Option[String]): (FiniteDuration, String) = {
     val delay = extractDelay(lrn)
+    val mrn = defineMrn(maybeMrn)
 
     if (operation == "cancel") {
       lrn.charAt(2) match {
-        case 'S' => (delay, generator.generate(lrn, Seq(CustomsPositionGranted)).toString)
-        case 'D' => (delay, generator.generate(lrn, Seq(CustomsPositionDenied)).toString)
-        case _   => (delay, generator.generate(lrn, Seq(QueryNotificationMessage)).toString)
+        case 'S' => (delay, generator.generate(lrn, mrn, Seq(CustomsPositionGranted)))
+        case 'D' => (delay, generator.generate(lrn, mrn, Seq(CustomsPositionDenied)))
+        case _   => (delay, generator.generate(lrn, mrn, Seq(QueryNotificationMessage)))
       }
     } else {
       lrn.headOption match {
-        case Some('B') => (delay, generator.generate(lrn, List(Rejected)).toString)
-        case Some('C') => (delay, generator.generate(lrn, List(Accepted, Cleared)).toString)
-        case Some('D') => (delay, generator.generate(lrn, List(Accepted, AdditionalDocumentsRequired)).toString)
-        case Some('G') => (delay, generator.generate(lrn, List(Accepted)).toString)
-        case Some('Q') => (delay, generator.generate(lrn, List(QueryNotificationMessage)).toString)
-        case Some('R') => (delay, generator.generate(lrn, List(Received)).toString)
-        case Some('U') => (delay, generator.generate(lrn, List(UndergoingPhysicalCheck)).toString)
-        case Some('X') => (delay, generator.generate(lrn, List(GoodsHaveExitedTheCommunity)).toString)
-        case _         => (delay, importsSpecificErrors(lrn, default))
+        case Some('B') => (delay, generator.generate(lrn, mrn, List(Rejected)))
+        case Some('C') => (delay, generator.generate(lrn, mrn, List(Accepted, Cleared)))
+        case Some('D') => (delay, generator.generate(lrn, mrn, List(Accepted, AdditionalDocumentsRequired)))
+        case Some('G') => (delay, generator.generate(lrn, mrn, List(Accepted)))
+        case Some('Q') => (delay, generator.generate(lrn, mrn, List(QueryNotificationMessage)))
+        case Some('R') => (delay, generator.generate(lrn, mrn, List(Received)))
+        case Some('U') => (delay, generator.generate(lrn, mrn, List(UndergoingPhysicalCheck)))
+        case Some('X') => (delay, generator.generate(lrn, mrn, List(GoodsHaveExitedTheCommunity)))
+        case _         => (delay, importsSpecificErrors(lrn, mrn, default))
       }
     }
   }
@@ -119,16 +138,16 @@ class NotificationConnector @Inject()(
       case _                 => defaultDelay
     }
 
-  private def importsSpecificErrors(lrn: String, default: String): String =
+  private def importsSpecificErrors(lrn: String, mrn: String, default: String): String =
     lrn match {
       case lrnForTaxLiability if lrnForTaxLiability.startsWith("TAX_LIABILITY") =>
-        generator.generate(lrnForTaxLiability, List(NotificationGenerator.taxLiability)).toString
+        generator.generate(lrnForTaxLiability, mrn, List(NotificationGenerator.taxLiability))
 
       case lrnForBalance if lrnForBalance.startsWith("INSUFFICIENT") =>
-        generator.generate(lrnForBalance, List(NotificationGenerator.insufficientBalanceInDan)).toString
+        generator.generate(lrnForBalance, mrn, List(NotificationGenerator.insufficientBalanceInDan))
 
       case lrnForBalanceReminder if lrnForBalanceReminder.startsWith("REMINDER") =>
-        generator.generate(lrnForBalanceReminder, List(NotificationGenerator.insufficientBalanceInDanReminder)).toString
+        generator.generate(lrnForBalanceReminder, mrn, List(NotificationGenerator.insufficientBalanceInDanReminder))
 
       case _ => default
     }
