@@ -74,13 +74,13 @@ class NotificationConnector @Inject()(
             lazy val default = generator.generateAcceptNotificationWithRandomMRN().toString
             meta.declaration.fold((defaultDelay, default)) { declaration =>
               declaration.functionalReferenceId.fold((defaultDelay, default)) { lrn =>
-                logger.info(s"Dynamic generating for LNR $lrn ")
-                generate(lrn, default, operation, declaration.id)
+                logger.info(s"Dynamically generating notifications for LRN: $lrn ")
+                generate(lrn, default, operation, declaration.id, declaration.typeCode)
               }
             }
           }
 
-          logger.debug(s"scheduling one notification call ${xml}")
+          logger.debug(s"Scheduling one notification call $xml")
           sendNotificationWithDelay(client, conversationId, xml, delay)
         }
         .andThen {
@@ -105,32 +105,49 @@ class NotificationConnector @Inject()(
     }
   }
 
-  private def generate(lrn: String, default: String, operation: String, maybeMrn: Option[String]): (FiniteDuration, String) = {
+  private def generate(lrn: String, default: String, operation: String, maybeMrn: Option[String], decType: Option[String]): (FiniteDuration, String) = {
+    val validPrompts = List('B', 'C', 'D', 'G', 'Q', 'R', 'U', 'X')
     val delay = extractDelay(lrn)
     val mrn = defineMrn(maybeMrn)
 
-    if (operation == "cancel") {
-      lrn.charAt(2) match {
-        case 'S' => (delay, generator.generate(lrn, mrn, Seq(CustomsPositionGranted)))
-        case 'D' => (delay, generator.generate(lrn, mrn, Seq(CustomsPositionDenied)))
-        case _   => (delay, generator.generate(lrn, mrn, Seq(QueryNotificationMessage)))
-      }
-    } else {
-      lrn.headOption match {
-        case Some('B') => (delay, generator.generate(lrn, mrn, List(Rejected)))
-        case Some('C') => (delay, generator.generate(lrn, mrn, List(Accepted, Cleared)))
-        case Some('D') => (delay, generator.generate(lrn, mrn, List(Accepted, AdditionalDocumentsRequired)))
-        case Some('G') => (delay, generator.generate(lrn, mrn, List(Accepted)))
-        case Some('Q') => (delay, generator.generate(lrn, mrn, List(QueryNotificationMessage)))
-        case Some('R') => (delay, generator.generate(lrn, mrn, List(Received)))
-        case Some('U') => (delay, generator.generate(lrn, mrn, List(UndergoingPhysicalCheck)))
-        case Some('X') => (delay, generator.generate(lrn, mrn, List(GoodsHaveExitedTheCommunity)))
+    operation match {
+      case "cancel" => (delay, generator.generate(lrn, mrn, getCancellationNotificationSequence(lrn.charAt(2))))
+      case "submit" => lrn.headOption match {
+        case Some(notificationPrompt) if validPrompts.contains(notificationPrompt) =>
+          (delay, generator.generate(lrn, mrn, getSubmissionNotificationSequence(decType, notificationPrompt)))
         case _         => (delay, importsSpecificErrors(lrn, mrn, default))
       }
     }
   }
 
   private val onDelay = "([BDGQRUX])([0-9])".r
+
+  private def getCancellationNotificationSequence(notificationPrompt: Char): List[FunctionCode] = {
+    val preliminaryNotification = Received
+    val finalNotification = if (notificationPrompt == 'S') CustomsPositionGranted else CustomsPositionDenied
+    List(preliminaryNotification, finalNotification)
+  }
+
+  private def getSubmissionNotificationSequence(decType: Option[String], notificationPrompt: Char): List[FunctionCode] = {
+    val arrivedDeclarationCodes = List('A', 'C', 'B', 'J')
+    val prelodgedDeclarationCodes = List('D', 'F', 'E', 'K')
+
+    val preliminaryNotifications = decType match {
+      case Some(typeCode) if arrivedDeclarationCodes.contains(typeCode.last) => List(Accepted)
+      case Some(typeCode) if prelodgedDeclarationCodes.contains(typeCode.last) => List(Received, Accepted)
+    }
+
+    notificationPrompt match {
+      case 'B' => List(Rejected)
+      case 'C' => preliminaryNotifications :+ Cleared
+      case 'D' => preliminaryNotifications :+ AdditionalDocumentsRequired
+      case 'G' => preliminaryNotifications
+      case 'Q' => preliminaryNotifications :+ QueryNotificationMessage
+      case 'R' => List(Received)
+      case 'U' => preliminaryNotifications :+ UndergoingPhysicalCheck
+      case 'X' => preliminaryNotifications ++ List(Cleared, GoodsHaveExitedTheCommunity)
+    }
+  }
 
   private def extractDelay(lrn: String): FiniteDuration =
     lrn.take(2) match {
