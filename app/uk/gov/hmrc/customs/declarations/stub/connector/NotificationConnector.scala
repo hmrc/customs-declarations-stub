@@ -33,7 +33,7 @@ import uk.gov.hmrc.http.HttpReads.Implicits.readRaw
 import uk.gov.hmrc.http.{HeaderCarrier, HttpClient, HttpReads, HttpResponse}
 import uk.gov.hmrc.wco.dec.MetaData
 
-import java.time.{ZonedDateTime, ZoneId}
+import java.time.{ZoneId, ZonedDateTime}
 
 @Singleton
 class NotificationConnector @Inject()(
@@ -88,8 +88,8 @@ class NotificationConnector @Inject()(
         }
     }
 
-  private def defineMrn(maybeMrn: Option[String]) = {
-    maybeMrn.getOrElse{
+  private def defineMrn(maybeMrn: Option[String]) =
+    maybeMrn.getOrElse {
       val year = ZonedDateTime.now(ZoneId.of("Europe/London")).getYear % 100
       val country = "GB"
       val random = new Random(maybeMrn.hashCode)
@@ -103,20 +103,26 @@ class NotificationConnector @Inject()(
       val controlDigit = ((check % 11) % 10).toString
       witchoutCheck + controlDigit
     }
-  }
 
-  private def generate(lrn: String, default: String, operation: String, maybeMrn: Option[String], decType: Option[String]): (FiniteDuration, String) = {
+  private def generate(
+    lrn: String,
+    default: String,
+    operation: String,
+    maybeMrn: Option[String],
+    decType: Option[String]
+  ): (FiniteDuration, String) = {
     val validPrompts = List('B', 'C', 'D', 'G', 'Q', 'R', 'U', 'X')
     val delay = extractDelay(lrn)
     val mrn = defineMrn(maybeMrn)
 
     operation match {
       case "cancel" => (delay, generator.generate(lrn, mrn, getCancellationNotificationSequence(lrn.charAt(2))))
-      case "submit" => lrn.headOption match {
-        case Some(notificationPrompt) if validPrompts.contains(notificationPrompt) =>
-          (delay, generator.generate(lrn, mrn, getSubmissionNotificationSequence(decType, notificationPrompt)))
-        case _         => (delay, importsSpecificErrors(lrn, mrn, default))
-      }
+      case "submit" =>
+        lrn.headOption match {
+          case Some(notificationPrompt) if validPrompts.contains(notificationPrompt) =>
+            (delay, generator.generate(lrn, mrn, getSubmissionNotificationSequence(decType, notificationPrompt)))
+          case _ => (delay, importsSpecificErrors(lrn, mrn, default))
+        }
     }
   }
 
@@ -128,12 +134,15 @@ class NotificationConnector @Inject()(
     List(preliminaryNotification, finalNotification)
   }
 
-  private def getSubmissionNotificationSequence(decType: Option[String], notificationPrompt: Char): List[FunctionCode] = {
+  private def getSubmissionNotificationSequence(
+    decType: Option[String],
+    notificationPrompt: Char
+  ): List[FunctionCode] = {
     val arrivedDeclarationCodes = List('A', 'C', 'B', 'J')
     val prelodgedDeclarationCodes = List('D', 'F', 'E', 'K')
 
     val preliminaryNotifications = decType match {
-      case Some(typeCode) if arrivedDeclarationCodes.contains(typeCode.last) => List(Accepted)
+      case Some(typeCode) if arrivedDeclarationCodes.contains(typeCode.last)   => List(Accepted)
       case Some(typeCode) if prelodgedDeclarationCodes.contains(typeCode.last) => List(Received, Accepted)
     }
 

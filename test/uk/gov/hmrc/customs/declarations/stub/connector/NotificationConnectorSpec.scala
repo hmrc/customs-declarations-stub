@@ -74,13 +74,14 @@ class NotificationConnectorSpec extends AnyWordSpec with Matchers with MockitoSu
 
     "return Accepted and call use the default notification Body" in new SetUp {
       val client = Client("clientId", "callBackUrl", "token")
-      val metaData: MetaData = MetaData(declaration = Some(Declaration(functionalReferenceId = Some("BLRN"))))
+      val metaData: MetaData =
+        MetaData(declaration = Some(Declaration(functionalReferenceId = Some("BLRN"), typeCode = Some("ABC"))))
 
       returnResponseForRequest(Future.successful(mock[HttpResponse]))
       when(mockNotificationRepository.findByClientAndOperationAndMetaData(any(), any(), any()))
         .thenReturn(Future.successful(None))
       val conversationId: String = UUID.randomUUID().toString
-      val result: Unit = testObj.notifyInDueCourse("operation", client, metaData, Duration(500, "ms"), conversationId)
+      val result: Unit = testObj.notifyInDueCourse("submit", client, metaData, Duration(500, "ms"), conversationId)
       Thread.sleep(750)
       result shouldBe ((): Unit)
       verify(mockNotificationRepository, times(1))
