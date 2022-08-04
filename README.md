@@ -24,12 +24,11 @@ If LRN starts with:
 - 'X' - Stub will send a 'Goods Have Exited The Community' notification
 - other letters will invoke default behaviour which is Accepted notification
 
-In addition if the 2nd character of the LRN is a digit (0-9) you can control the delay in seconds of the notification delivery.
+In addition, if the 2nd character of the LRN is a digit (0-9) you can control the delay in seconds of the notification delivery.
 
 The third character can be used to determine the notification response of a cancellation request:
 - 'S' - Stub sends 'Customs Position Granted' indicating successful cancellation
-- 'D' - Stub sends 'Customs Position Denied' indicated a denied cancellation request
-- other letters send 'Query Notification Message' which does not carry any significant meaning pertaining to a cancellation
+- Any other letter - Stub sends 'Customs Position Denied' indicated a denied cancellation request
 
 ### File Upload
 This stub also mocks the '/file-upload' endpoint of the Cust Dec API. This endpoint returns fake S3 urls that actually point 
