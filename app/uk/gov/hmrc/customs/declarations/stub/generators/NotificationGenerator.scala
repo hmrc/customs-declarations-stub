@@ -48,7 +48,7 @@ class NotificationGenerator @Inject()(notificationValueGenerator: NotificationVa
     }
 
     val responses = statuses.zipWithIndex.map {
-      case (status, index) => notificationResponse(status, declaration, issueAt.plusMinutes(index), lrn)
+      case (status, index) => notificationResponse(status, declaration, issueAt.plusSeconds(index), lrn)
     }
 
 // scalastyle:off
@@ -302,10 +302,8 @@ object NotificationGenerator {
     val isError = false
   }
 
-  case object Rejected extends FunctionCode {
+  case class Rejected(isError: Boolean) extends FunctionCode {
     val fullCode: String = "03"
-
-    val isError = true
   }
 
   case object UndergoingPhysicalCheck extends FunctionCode {

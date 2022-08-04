@@ -63,7 +63,8 @@ class NotificationConnectorSpec extends AnyWordSpec with Matchers with MockitoSu
       when(mockNotificationRepository.findByClientAndOperationAndMetaData(any(), any(), any()))
         .thenReturn(Future.successful(Some(Notification("clientId", "operation", "lrn", xmlBody))))
       val conversationId: String = UUID.randomUUID().toString
-      val result: Unit = testObj.notifyInDueCourse("operation", client, metaData, Duration(500, "ms"), conversationId)
+      val result: Unit =
+        testObj.notifyInDueCourse("operation", client, metaData, Duration(500, "ms"), conversationId, None)
       Thread.sleep(2000)
       result shouldBe ((): Unit)
       verify(mockNotificationRepository, times(1))
@@ -81,7 +82,8 @@ class NotificationConnectorSpec extends AnyWordSpec with Matchers with MockitoSu
       when(mockNotificationRepository.findByClientAndOperationAndMetaData(any(), any(), any()))
         .thenReturn(Future.successful(None))
       val conversationId: String = UUID.randomUUID().toString
-      val result: Unit = testObj.notifyInDueCourse("submit", client, metaData, Duration(500, "ms"), conversationId)
+      val result: Unit =
+        testObj.notifyInDueCourse("submit", client, metaData, Duration(500, "ms"), conversationId, None)
       Thread.sleep(750)
       result shouldBe ((): Unit)
       verify(mockNotificationRepository, times(1))

@@ -106,7 +106,7 @@ class DeclarationsStubControllerSpec
         val result = route(app, fakeSubmissionXmlRequest).get
 
         status(result) should be(ACCEPTED)
-        verify(mockNotificationConnector, times(1)).notifyInDueCourse(any(), any(), any(), any(), any())
+        verify(mockNotificationConnector, times(1)).notifyInDueCourse(any(), any(), any(), any(), any(), any())
       }
 
       "return BAD_REQUEST when invalidxml is sent to submission Endpoint" in {
@@ -130,7 +130,7 @@ class DeclarationsStubControllerSpec
         val result = route(app, fakeCancellationXmlRequest).get
 
         status(result) should be(ACCEPTED)
-        verify(mockNotificationConnector, times(1)).notifyInDueCourse(any(), any(), any(), any(), any())
+        verify(mockNotificationConnector, times(1)).notifyInDueCourse(any(), any(), any(), any(), any(), any())
       }
 
       "return BAD_REQUEST when invalidxml is sent to cancellation Endpoint" in {

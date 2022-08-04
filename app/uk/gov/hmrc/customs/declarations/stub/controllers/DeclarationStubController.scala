@@ -74,7 +74,8 @@ class DeclarationStubController @Inject()(
         validatePayload(submitSchemas) { meta =>
           val conversationId = UUID.randomUUID().toString
 
-          notificationConnector.notifyInDueCourse("submit", client, meta, conversationId = conversationId)
+          notificationConnector
+            .notifyInDueCourse("submit", client, meta, conversationId = conversationId, submissionConversationId = None)
 
           Future.successful(Accepted.withHeaders("X-Conversation-ID" -> conversationId).as(ContentTypes.XML))
         }
@@ -86,11 +87,20 @@ class DeclarationStubController @Inject()(
     validateHeaders() { headers =>
       authenticate(headers) { client =>
         validatePayload(cancelSchemas) { meta =>
-          val conversationId = UUID.randomUUID().toString
+          val cancellationConversationId = UUID.randomUUID().toString
+          val submissionConversationId = req.headers.get("submissionConversationId")
 
-          notificationConnector.notifyInDueCourse("cancel", client, meta, conversationId = conversationId)
+          notificationConnector.notifyInDueCourse(
+            "cancel",
+            client,
+            meta,
+            conversationId = cancellationConversationId,
+            submissionConversationId = submissionConversationId
+          )
 
-          Future.successful(Accepted.withHeaders("X-Conversation-ID" -> conversationId).as(ContentTypes.XML))
+          Future.successful(
+            Accepted.withHeaders("X-Conversation-ID" -> cancellationConversationId).as(ContentTypes.XML)
+          )
         }
       }
     }

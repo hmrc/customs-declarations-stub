@@ -16,13 +16,7 @@
 
 package uk.gov.hmrc.customs.declarations.stub.connector
 
-import java.util.{Timer, TimerTask}
-import scala.concurrent.ExecutionContext
-import scala.concurrent.duration.{Duration, _}
-import scala.util.{Failure, Random}
 import akka.actor.ActorSystem
-
-import javax.inject.{Inject, Singleton}
 import play.api.Logger
 import play.api.http.{ContentTypes, HeaderNames}
 import uk.gov.hmrc.customs.declarations.stub.config.AppConfig
@@ -34,6 +28,11 @@ import uk.gov.hmrc.http.{HeaderCarrier, HttpClient, HttpReads, HttpResponse}
 import uk.gov.hmrc.wco.dec.MetaData
 
 import java.time.{ZoneId, ZonedDateTime}
+import java.util.{Timer, TimerTask}
+import javax.inject.{Inject, Singleton}
+import scala.concurrent.ExecutionContext
+import scala.concurrent.duration.{Duration, _}
+import scala.util.{Failure, Random}
 
 @Singleton
 class NotificationConnector @Inject()(
@@ -49,14 +48,16 @@ class NotificationConnector @Inject()(
     client: Client,
     meta: MetaData,
     duration: FiniteDuration = Duration(2, "secs"),
-    conversationId: String
-  ): Unit = scheduleEachOnce(operation, conversationId, client, meta, duration)
+    conversationId: String,
+    submissionConversationId: Option[String]
+  ): Unit = scheduleEachOnce(operation, conversationId, submissionConversationId, client, meta, duration)
 
   private val defaultDelay = 0.seconds
 
   private def scheduleEachOnce(
     operation: String,
     conversationId: String,
+    submissionConversationId: Option[String],
     client: Client,
     meta: MetaData,
     duration: FiniteDuration
@@ -67,21 +68,28 @@ class NotificationConnector @Inject()(
         .map { maybeNotification =>
           logger.info("Entering async request notification")
 
-          val (delay, xml) = maybeNotification.map { notification =>
-            (defaultDelay, notification.xml)
+          val (delay, xml, separateXml) = maybeNotification.map { notification =>
+            (defaultDelay, notification.xml, Option.empty[String])
           }.getOrElse {
             logger.info("Notification not found in database - generate one dynamically")
             lazy val default = generator.generateAcceptNotificationWithRandomMRN().toString
-            meta.declaration.fold((defaultDelay, default)) { declaration =>
-              declaration.functionalReferenceId.fold((defaultDelay, default)) { lrn =>
+            meta.declaration.fold((defaultDelay, default, Option.empty[String])) { declaration =>
+              declaration.functionalReferenceId.fold((defaultDelay, default, Option.empty[String])) { lrn =>
                 logger.info(s"Dynamically generating notifications for LRN: $lrn ")
                 generate(lrn, default, operation, declaration.id, declaration.typeCode)
               }
             }
           }
 
-          logger.debug(s"Scheduling one notification call $xml")
+          logger.debug(s"Scheduling notification call $xml")
           sendNotificationWithDelay(client, conversationId, xml, delay)
+          for {
+            id <- submissionConversationId
+            xml <- separateXml
+          } {
+            logger.info("Sending DMSREJ notification with original Submission Id")
+            sendNotificationWithDelay(client, id, xml, delay + 5.seconds)
+          }
         }
         .andThen {
           case Failure(e) => logger.error("Problem on sending notification back", e)
@@ -92,7 +100,7 @@ class NotificationConnector @Inject()(
     maybeMrn.getOrElse {
       val year = ZonedDateTime.now(ZoneId.of("Europe/London")).getYear % 100
       val country = "GB"
-      val random = new Random(maybeMrn.hashCode)
+      val random = new Random()
       val code = random.nextInt(8999) + 1000
       val charSection = random.shuffle("ABCDEFGHIJKLMNOPQRSTUVWXYZ".toSeq).take(2).mkString
       val secondCode = random.nextInt(8999999) + 1000000
@@ -110,18 +118,25 @@ class NotificationConnector @Inject()(
     operation: String,
     maybeMrn: Option[String],
     decType: Option[String]
-  ): (FiniteDuration, String) = {
+  ): (FiniteDuration, String, Option[String]) = {
     val validPrompts = List('B', 'C', 'D', 'G', 'Q', 'R', 'U', 'X')
     val delay = extractDelay(lrn)
     val mrn = defineMrn(maybeMrn)
 
     operation match {
-      case "cancel" => (delay, generator.generate(lrn, mrn, getCancellationNotificationSequence(lrn.charAt(2))))
+      case "cancel" =>
+        val cancellationActionNotificationsSequence = getCancellationNotificationSequence(lrn.charAt(2))
+        val cancellationActionNotifications = generator.generate(lrn, mrn, cancellationActionNotificationsSequence)
+        val submissionActionNotification =
+          if (cancellationActionNotificationsSequence.last.equals(CustomsPositionGranted))
+            Some(generator.generate(lrn, mrn, List(Rejected(isError = false))))
+          else None
+        (delay, cancellationActionNotifications, submissionActionNotification)
       case "submit" =>
         lrn.headOption match {
           case Some(notificationPrompt) if validPrompts.contains(notificationPrompt) =>
-            (delay, generator.generate(lrn, mrn, getSubmissionNotificationSequence(decType, notificationPrompt)))
-          case _ => (delay, importsSpecificErrors(lrn, mrn, default))
+            (delay, generator.generate(lrn, mrn, getSubmissionNotificationSequence(decType, notificationPrompt)), None)
+          case _ => (delay, importsSpecificErrors(lrn, mrn, default), None)
         }
     }
   }
@@ -147,7 +162,7 @@ class NotificationConnector @Inject()(
     }
 
     notificationPrompt match {
-      case 'B' => List(Rejected)
+      case 'B' => List(Rejected(isError = true))
       case 'C' => preliminaryNotifications :+ Cleared
       case 'D' => preliminaryNotifications :+ AdditionalDocumentsRequired
       case 'G' => preliminaryNotifications
