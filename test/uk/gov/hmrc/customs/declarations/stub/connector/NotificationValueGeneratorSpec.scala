@@ -16,11 +16,10 @@
 
 package uk.gov.hmrc.customs.declarations.stub.connector
 
-import org.scalatest.matchers.should.Matchers
-import org.scalatest.wordspec.AnyWordSpec
+import uk.gov.hmrc.customs.declarations.stub.base.UnitTestSpec
 import uk.gov.hmrc.customs.declarations.stub.generators.NotificationValueGenerator
 
-class NotificationValueGeneratorSpec extends AnyWordSpec with Matchers {
+class NotificationValueGeneratorSpec extends UnitTestSpec {
 
   val testObj = new NotificationValueGenerator
 
@@ -30,5 +29,4 @@ class NotificationValueGeneratorSpec extends AnyWordSpec with Matchers {
       result.length should be(18)
     }
   }
-
 }

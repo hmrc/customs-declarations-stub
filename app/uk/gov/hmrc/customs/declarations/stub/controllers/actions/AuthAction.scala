@@ -26,7 +26,7 @@ import uk.gov.hmrc.play.http.HeaderCarrierConverter
 
 import scala.concurrent.{ExecutionContext, Future}
 
-class AuthActionImpl @Inject()(override val authConnector: AuthConnector, cc: ControllerComponents)(
+class AuthActionImpl @Inject() (override val authConnector: AuthConnector, cc: ControllerComponents)(
   implicit override val executionContext: ExecutionContext
 ) extends AuthAction with AuthorisedFunctions {
 

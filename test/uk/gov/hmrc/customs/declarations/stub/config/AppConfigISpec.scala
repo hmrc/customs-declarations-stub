@@ -16,25 +16,19 @@
 
 package uk.gov.hmrc.customs.declarations.stub.config
 
-import org.scalatest.matchers.must.Matchers
-import org.scalatest.wordspec.AnyWordSpec
-import org.scalatestplus.play.guice.GuiceOneAppPerSuite
-import play.api.Application
-import play.api.inject.guice.GuiceApplicationBuilder
+import uk.gov.hmrc.customs.declarations.stub.base.IntegrationTestSpec
 
-class AppConfigSpec extends AnyWordSpec with Matchers with GuiceOneAppPerSuite {
+class AppConfigISpec extends IntegrationTestSpec {
 
-  override lazy val app: Application = GuiceApplicationBuilder().build()
-
-  val config: AppConfig = app.injector.instanceOf[AppConfig]
+  val config = instanceOf[AppConfig]
 
   "Application configuration" should {
     "contains correct client information" in {
       val client = config.defaultClient
 
-      client.clientId must be("customs-declare-exports")
-      client.callbackUrl must be("http://localhost:6792/customs-declare-exports/notify")
-      client.token must be("abc59609za2q")
+      client.clientId shouldBe "customs-declare-exports"
+      client.callbackUrl shouldBe "http://localhost:6792/customs-declare-exports/notify"
+      client.token shouldBe "abc59609za2q"
     }
   }
 }

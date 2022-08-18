@@ -16,38 +16,39 @@
 
 package uk.gov.hmrc.customs.declarations.stub.base
 
-import scala.concurrent.ExecutionContext.global
-import scala.concurrent.Future
-
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito._
 import org.scalatest.{BeforeAndAfterEach, Suite}
 import org.scalatestplus.mockito.MockitoSugar
 import play.api.test.Helpers._
 import uk.gov.hmrc.auth.core._
+import uk.gov.hmrc.auth.core.authorise.Predicate
 import uk.gov.hmrc.auth.core.retrieve.Retrieval
 import uk.gov.hmrc.customs.declarations.stub.controllers.actions.AuthActionImpl
 import uk.gov.hmrc.customs.declarations.stub.models.requests.SignedInUser
-import uk.gov.hmrc.customs.declarations.stub.testdata.CommonTestData._
+import uk.gov.hmrc.customs.declarations.stub.testdata.CommonTestData.{eori, signedInUser}
+import uk.gov.hmrc.http.HeaderCarrier
 
-trait AuthConnectorMock extends MockitoSugar with BeforeAndAfterEach { self: Suite =>
+import scala.concurrent.ExecutionContext.global
+import scala.concurrent.{ExecutionContext, Future}
+
+trait AuthConnectorMock extends BeforeAndAfterEach with MockitoSugar { self: Suite =>
 
   val authConnectorMock: AuthConnector = mock[AuthConnector]
 
   val authActionMock = new AuthActionImpl(authConnectorMock, stubControllerComponents())(global)
 
-  def authorizedUser(user: SignedInUser = signedInUser(eori)): Unit =
+  def authorizedUser: Unit =
+    when(authConnectorMock.authorise(any[Predicate], any[Retrieval[Unit]])(any[HeaderCarrier], any[ExecutionContext]))
+      .thenReturn(Future.successful(()))
+
+  def userWithEori(user: SignedInUser = signedInUser(eori)): Unit =
     when(authConnectorMock.authorise(any(), any[Retrieval[Enrolments]])(any(), any()))
       .thenReturn(Future.successful(user.enrolments))
 
-  def userWithoutEori(): Unit =
+  def userWithoutEori: Unit =
     when(authConnectorMock.authorise(any(), any[Retrieval[Enrolments]])(any(), any()))
       .thenReturn(Future.successful(Enrolments(Set())))
-
-  override def beforeEach(): Unit = {
-    super.beforeEach()
-    reset(authConnectorMock)
-  }
 
   override def afterEach(): Unit = {
     reset(authConnectorMock)

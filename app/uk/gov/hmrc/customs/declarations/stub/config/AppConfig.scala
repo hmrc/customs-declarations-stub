@@ -18,11 +18,11 @@ package uk.gov.hmrc.customs.declarations.stub.config
 
 import javax.inject.{Inject, Singleton}
 import play.api.Configuration
-import uk.gov.hmrc.customs.declarations.stub.repositories.Client
+import uk.gov.hmrc.customs.declarations.stub.models.Client
 import uk.gov.hmrc.play.bootstrap.config.ServicesConfig
 
 @Singleton
-class AppConfig @Inject()(runModeConfiguration: Configuration, servicesConfig: ServicesConfig) {
+class AppConfig @Inject() (runModeConfiguration: Configuration, servicesConfig: ServicesConfig) {
 
   private def loadConfig(key: String): String =
     runModeConfiguration.getOptional[String](key).getOrElse(throw new Exception(s"Missing configuration key: $key"))

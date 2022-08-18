@@ -24,7 +24,7 @@ import uk.gov.hmrc.customs.declarations.stub.services.DeclarationStatusResponseB
 import uk.gov.hmrc.play.bootstrap.backend.controller.BackendController
 
 @Singleton
-class DeclarationsInformationStubController @Inject()(
+class DeclarationsInformationStubController @Inject() (
   cc: ControllerComponents,
   authenticate: AuthAction,
   declarationStatusResponseBuilder: DeclarationStatusResponseBuilder

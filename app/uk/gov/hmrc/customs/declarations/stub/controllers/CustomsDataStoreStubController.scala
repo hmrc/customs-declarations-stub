@@ -21,7 +21,7 @@ import play.api.mvc.{Action, AnyContent, ControllerComponents}
 import uk.gov.hmrc.play.bootstrap.backend.controller.BackendController
 
 @Singleton
-class CustomsDataStoreStubController @Inject()(cc: ControllerComponents) extends BackendController(cc) {
+class CustomsDataStoreStubController @Inject() (cc: ControllerComponents) extends BackendController(cc) {
 
   lazy val verified = """{"address":"some@email.com","timestamp":"1987-03-20T01:02:03Z"}"""
   lazy val undeliverable: String = """{

@@ -29,9 +29,6 @@ object JsonPayloads {
     val source = FileIO.fromPath(path)
     val contentLength = Some(Files.size(path))
 
-    Result(
-      header = ResponseHeader(OK, Map.empty),
-      body = HttpEntity.Streamed(source, contentLength, Some("application/json"))
-    )
+    Result(header = ResponseHeader(OK, Map.empty), body = HttpEntity.Streamed(source, contentLength, Some("application/json")))
   }
 }

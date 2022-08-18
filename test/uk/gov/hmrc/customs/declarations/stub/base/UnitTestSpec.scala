@@ -14,14 +14,12 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.customs.declarations.stub.config.featureFlags
+package uk.gov.hmrc.customs.declarations.stub.base
 
-import uk.gov.hmrc.customs.declarations.stub.features.Feature
+import org.scalatest.concurrent.ScalaFutures
+import org.scalatest.matchers.should.Matchers
+import org.scalatest.wordspec.AnyWordSpec
+import org.scalatest.{BeforeAndAfterEach, EitherValues, OptionValues}
+import org.scalatestplus.mockito.MockitoSugar
 
-import javax.inject.{Inject, Singleton}
-
-@Singleton
-class SchemaValidationConfig @Inject() (featureSwitchConfig: FeatureSwitchConfig) {
-
-  val isEnabled: Boolean = featureSwitchConfig.isFeatureOn(Feature.schemaValidation)
-}
+trait UnitTestSpec extends AnyWordSpec with BeforeAndAfterEach with EitherValues with Matchers with MockitoSugar with OptionValues with ScalaFutures
