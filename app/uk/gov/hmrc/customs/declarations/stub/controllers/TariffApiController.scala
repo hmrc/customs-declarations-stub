@@ -24,7 +24,7 @@ import uk.gov.hmrc.customs.declarations.stub.utils.JsonPayloads
 import uk.gov.hmrc.play.bootstrap.backend.controller.BackendController
 
 @Singleton
-class TariffApiController @Inject()(cc: ControllerComponents) extends BackendController(cc) {
+class TariffApiController @Inject() (cc: ControllerComponents) extends BackendController(cc) {
 
   def commodities(code: String): Action[AnyContent] = Action { _ =>
     val commodityCode = code.filter(_.isDigit)

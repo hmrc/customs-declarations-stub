@@ -29,7 +29,7 @@ import javax.inject.{Inject, Singleton}
 import scala.xml._
 
 @Singleton
-class UpscanStubController @Inject()(appConfig: AppConfig, httpClient: HttpClient, mcc: MessagesControllerComponents)
+class UpscanStubController @Inject() (appConfig: AppConfig, httpClient: HttpClient, mcc: MessagesControllerComponents)
     extends BackendController(mcc) with Logging {
 
   implicit val ec = mcc.executionContext

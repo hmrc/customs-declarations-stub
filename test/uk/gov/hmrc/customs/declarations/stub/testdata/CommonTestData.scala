@@ -27,5 +27,4 @@ object CommonTestData {
 
   def signedInUser(eori: String): SignedInUser =
     SignedInUser(eori, Enrolments(Set(Enrolment("HMRC-CUS-ORG").withIdentifier("EORINumber", eori))))
-
 }

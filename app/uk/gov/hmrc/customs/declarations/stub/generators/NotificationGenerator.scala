@@ -25,7 +25,7 @@ import java.util.UUID
 import javax.inject.Inject
 import scala.xml._
 
-class NotificationGenerator @Inject()(notificationValueGenerator: NotificationValueGenerator) {
+class NotificationGenerator @Inject() (notificationValueGenerator: NotificationValueGenerator) {
 
   val format304: DateTimeFormatter = DateTimeFormatter.ofPattern("yyyyMMddHHmmssX")
 
@@ -47,8 +47,8 @@ class NotificationGenerator @Inject()(notificationValueGenerator: NotificationVa
       </p:Declaration>
     }
 
-    val responses = statuses.zipWithIndex.map {
-      case (status, index) => notificationResponse(status, declaration, issueAt.plusSeconds(index), lrn)
+    val responses = statuses.zipWithIndex.map { case (status, index) =>
+      notificationResponse(status, declaration, issueAt.plusSeconds(index), lrn)
     }
 
 // scalastyle:off
@@ -64,12 +64,7 @@ class NotificationGenerator @Inject()(notificationValueGenerator: NotificationVa
 // scalastyle:on
 
 // scalastyle:off
-  private def notificationResponse(
-    code: FunctionCode,
-    declaration: NodeSeq,
-    issuedAt: ZonedDateTime,
-    lrn: String
-  ): Elem = {
+  private def notificationResponse(code: FunctionCode, declaration: NodeSeq, issuedAt: ZonedDateTime, lrn: String): Elem = {
 
     val functionalReference = UUID.randomUUID().toString.replace("-", "")
 

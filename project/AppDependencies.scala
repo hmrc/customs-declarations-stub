@@ -3,22 +3,26 @@ import sbt._
 
 object AppDependencies {
 
+  val bootstrapPlayVersion = "7.0.0"
+  val jacksonVersion = "2.13.3"
+  val mongoVersion = "0.70.0"
+
   val compile: Seq[ModuleID] = Seq(
     ws,
-    "uk.gov.hmrc" %% "bootstrap-backend-play-28"  % "5.7.0",
-    "uk.gov.hmrc" %% "simple-reactivemongo"       % "8.0.0-play-28",
-    "uk.gov.hmrc" %% "wco-dec"                    % "0.35.0",
+    "uk.gov.hmrc"       %% "bootstrap-backend-play-28" % bootstrapPlayVersion,
+    "uk.gov.hmrc"       %% "wco-dec"                   % "0.36.0",
+    "uk.gov.hmrc.mongo" %% "hmrc-mongo-play-28"        % mongoVersion,
 
-    //Pegging at 2.11.4 till this issue is resolved: https://github.com/FasterXML/jackson-module-kotlin/issues/396#issuecomment-854407157
-    "com.fasterxml.jackson.module"      %% "jackson-module-scala"           % "2.11.4",
-    "com.fasterxml.jackson.dataformat"  % "jackson-dataformat-xml"          % "2.11.4",
-    "com.fasterxml.jackson.dataformat"  % "jackson-dataformat-properties"   % "2.11.4"
+    "com.fasterxml.jackson.module"      %% "jackson-module-scala"         % jacksonVersion,
+    "com.fasterxml.jackson.dataformat"  % "jackson-dataformat-xml"        % jacksonVersion,
+    "com.fasterxml.jackson.dataformat"  % "jackson-dataformat-properties" % jacksonVersion
   )
 
   val test: Seq[ModuleID] = Seq(
-    "org.scalatest"          %% "scalatest"          % "3.2.9"   % "test",
-    "org.scalatestplus.play" %% "scalatestplus-play" % "5.1.0"   % "test",
-    "org.scalatestplus"      %% "mockito-3-4"        % "3.2.9.0" % "test",
-    "com.vladsch.flexmark"   %  "flexmark-all"       % "0.36.8"  % "test"
+    "uk.gov.hmrc"            %% "bootstrap-test-play-28"  % bootstrapPlayVersion,
+    "uk.gov.hmrc.mongo"      %% "hmrc-mongo-test-play-28" % mongoVersion,
+    "org.scalatest"          %% "scalatest"               % "3.2.13"   % "test",
+    "org.scalatestplus"      %% "mockito-3-4"             % "3.2.10.0" % "test",
+    "com.vladsch.flexmark"   %  "flexmark-all"            % "0.62.2"   % "test"
   )
 }

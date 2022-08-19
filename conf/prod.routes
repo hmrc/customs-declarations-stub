@@ -3,34 +3,18 @@
 
 # Customs Declarations endpoints
 
-POST          /                                                                              uk.gov.hmrc.customs.declarations.stub.controllers.DeclarationStubController.submit()
+POST          /                                               uk.gov.hmrc.customs.declarations.stub.controllers.DeclarationStubController.submit
 
-POST          /cancellation-requests                                                         uk.gov.hmrc.customs.declarations.stub.controllers.DeclarationStubController.cancel()
+POST          /cancellation-requests                          uk.gov.hmrc.customs.declarations.stub.controllers.DeclarationStubController.cancel
 
-GET           /mrn/:mrn/status                                                               uk.gov.hmrc.customs.declarations.stub.controllers.DeclarationsInformationStubController.getDeclarationStatus(mrn)
+GET           /mrn/:mrn/status                                uk.gov.hmrc.customs.declarations.stub.controllers.DeclarationsInformationStubController.getDeclarationStatus(mrn)
 
-POST          /file-upload                                                                   uk.gov.hmrc.customs.declarations.stub.controllers.UpscanStubController.handleBatchFileUploadRequest
+POST          /file-upload                                    uk.gov.hmrc.customs.declarations.stub.controllers.UpscanStubController.handleBatchFileUploadRequest
 
 # Customs Data Store endpoints
 
-GET           /customs-data-store/eori/:eori/verified-email                                  uk.gov.hmrc.customs.declarations.stub.controllers.CustomsDataStoreStubController.emailIfVerified(eori)
-
-# Admin endpoints
-
-GET           /customs-declarations-stub/admin/client                                        uk.gov.hmrc.customs.declarations.stub.controllers.DeclarationStubController.listClients()
-
-POST          /customs-declarations-stub/admin/client                                        uk.gov.hmrc.customs.declarations.stub.controllers.DeclarationStubController.addClient()
-
-DELETE        /customs-declarations-stub/admin/client/:id                                    uk.gov.hmrc.customs.declarations.stub.controllers.DeclarationStubController.deleteClient(id)
-
-GET           /customs-declarations-stub/admin/notification                                  uk.gov.hmrc.customs.declarations.stub.controllers.NotificationController.listNotifications()
-
-GET           /customs-declarations-stub/admin/notification/:clientId/:operation/:lrn        uk.gov.hmrc.customs.declarations.stub.controllers.NotificationController.displayNotification(clientId, operation, lrn)
-
-POST          /customs-declarations-stub/admin/notification/:clientId/:operation/:lrn        uk.gov.hmrc.customs.declarations.stub.controllers.NotificationController.addNotification(clientId, operation, lrn)
-
-DELETE        /customs-declarations-stub/admin/notification/:id                              uk.gov.hmrc.customs.declarations.stub.controllers.NotificationController.deleteNotification(id)
+GET           /customs-data-store/eori/:eori/verified-email   uk.gov.hmrc.customs.declarations.stub.controllers.CustomsDataStoreStubController.emailIfVerified(eori)
 
 # Tariff API endpoints
 
-GET           /api/v2/commodities/:code                                                      uk.gov.hmrc.customs.declarations.stub.controllers.TariffApiController.commodities(code: String)
+GET           /api/v2/commodities/:code                       uk.gov.hmrc.customs.declarations.stub.controllers.TariffApiController.commodities(code: String)

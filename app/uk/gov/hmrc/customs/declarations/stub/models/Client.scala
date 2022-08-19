@@ -14,14 +14,6 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.customs.declarations.stub.config.featureFlags
+package uk.gov.hmrc.customs.declarations.stub.models
 
-import uk.gov.hmrc.customs.declarations.stub.features.Feature
-
-import javax.inject.{Inject, Singleton}
-
-@Singleton
-class SchemaValidationConfig @Inject() (featureSwitchConfig: FeatureSwitchConfig) {
-
-  val isEnabled: Boolean = featureSwitchConfig.isFeatureOn(Feature.schemaValidation)
-}
+case class Client(clientId: String, callbackUrl: String, token: String)

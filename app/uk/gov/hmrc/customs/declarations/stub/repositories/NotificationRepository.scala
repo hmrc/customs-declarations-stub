@@ -16,59 +16,40 @@
 
 package uk.gov.hmrc.customs.declarations.stub.repositories
 
-import javax.inject.{Inject, Singleton}
-import play.api.libs.json.{Format, JsString, Json}
-import play.modules.reactivemongo.ReactiveMongoComponent
-import reactivemongo.api.indexes.{Index, IndexType}
-import reactivemongo.bson.BSONObjectID
-import uk.gov.hmrc.mongo.ReactiveRepository
-import uk.gov.hmrc.mongo.json.ReactiveMongoFormats.{mongoEntity, objectIdFormats}
+import com.mongodb.client.model.Indexes.ascending
+import org.mongodb.scala.bson.BsonDocument
+import org.mongodb.scala.model.{IndexModel, IndexOptions}
+import play.api.libs.json.{Format, Json}
+import uk.gov.hmrc.mongo.MongoComponent
+import uk.gov.hmrc.mongo.play.json.PlayMongoRepository
 import uk.gov.hmrc.wco.dec.MetaData
 
+import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
-class NotificationRepository @Inject()(mc: ReactiveMongoComponent)(implicit ec: ExecutionContext)
-    extends ReactiveRepository[Notification, BSONObjectID](
-      "notifications",
-      mc.mongoConnector.db,
-      Notification.formats,
-      objectIdFormats
+class NotificationRepository @Inject() (mongoComponent: MongoComponent)(implicit ec: ExecutionContext)
+    extends PlayMongoRepository[Notification](
+      mongoComponent = mongoComponent,
+      collectionName = "notifications",
+      domainFormat = Notification.format,
+      indexes = NotificationRepository.indexes
     ) {
 
-  // clientId, lrn, and operation constitute a natural key for notification; i.e. 1 notification per operation per client
-  override def indexes: Seq[Index] = Seq(
-    Index(
-      Seq("clientId" -> IndexType.Ascending, "operation" -> IndexType.Ascending, "lrn" -> IndexType.Ascending),
-      unique = true,
-      name = Some("notificationIdx")
-    )
-  )
-
-  def findByClientAndOperationAndMetaData(
-    clientId: String,
-    operation: String,
-    meta: MetaData
-  ): Future[Option[Notification]] =
-    findByClientAndOperationAndLrn(clientId, operation, meta.declaration.flatMap(_.functionalReferenceId).getOrElse(""))
-
-  def findByClientAndOperationAndLrn(clientId: String, operation: String, lrn: String): Future[Option[Notification]] =
-    find("clientId" -> JsString(clientId), "operation" -> JsString(operation), "lrn" -> JsString(lrn)).map(_.headOption)
-
+  def findByClientAndOperationAndMetaData(clientId: String, operation: String, meta: MetaData): Future[Option[Notification]] = {
+    val lrn = meta.declaration.flatMap(_.functionalReferenceId).getOrElse("")
+    val filter = Json.obj("clientId" -> clientId, "operation" -> operation, "lrn" -> lrn)
+    collection.find(BsonDocument(filter.toString)).limit(1).toFuture.map(_.headOption)
+  }
 }
 
-case class Notification(
-  clientId: String,
-  operation: String,
-  lrn: String,
-  xml: String,
-  id: BSONObjectID = BSONObjectID.generate()
-)
+object NotificationRepository {
+  // clientId, operation and lrn constitute a natural key for notification; i.e. 1 notification per operation per client
+  val indexes: Seq[IndexModel] = List(IndexModel(ascending("clientId", "operation", "lrn"), IndexOptions().name("notificationIdx").unique(true)))
+}
+
+case class Notification(clientId: String, operation: String, lrn: String, xml: String)
 
 object Notification {
-
-  implicit val formats: Format[Notification] = mongoEntity {
-    Json.format[Notification]
-  }
-
+  implicit val format: Format[Notification] = Json.format[Notification]
 }

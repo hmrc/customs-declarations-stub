@@ -18,30 +18,20 @@ package uk.gov.hmrc.customs.declarations.stub.controllers
 
 import org.mockito.ArgumentMatchers.{anyString, eq => eqTo}
 import org.mockito.Mockito._
-import org.scalatest.concurrent.ScalaFutures
-import org.scalatest.BeforeAndAfterEach
-import org.scalatest.wordspec.AnyWordSpec
-import org.scalatest.matchers.must.Matchers
-import org.scalatestplus.mockito.MockitoSugar
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
-import scala.xml.XML
-import uk.gov.hmrc.customs.declarations.stub.base.AuthConnectorMock
+import uk.gov.hmrc.customs.declarations.stub.base.{AuthConnectorMock, UnitTestSpec}
 import uk.gov.hmrc.customs.declarations.stub.models.declarationstatus.DeclarationStatusResponse._
 import uk.gov.hmrc.customs.declarations.stub.services.DeclarationStatusResponseBuilder
-import uk.gov.hmrc.customs.declarations.stub.testdata.CommonTestData.{eori, mrn, signedInUser}
+import uk.gov.hmrc.customs.declarations.stub.testdata.CommonTestData.{eori, mrn}
 
-class DeclarationsInformationStubControllerSpec
-    extends AnyWordSpec with Matchers with MockitoSugar with ScalaFutures with BeforeAndAfterEach
-    with AuthConnectorMock {
+import scala.xml.XML
+
+class DeclarationsInformationStubControllerSpec extends UnitTestSpec with AuthConnectorMock {
 
   private val declarationsInformationStubService = mock[DeclarationStatusResponseBuilder]
 
-  private val controller = new DeclarationsInformationStubController(
-    stubControllerComponents(),
-    authActionMock,
-    declarationsInformationStubService
-  )
+  private val controller = new DeclarationsInformationStubController(stubControllerComponents(), authActionMock, declarationsInformationStubService)
 
   private val request = FakeRequest()
   private val successfulResponse = SuccessfulResponse(<testResponse/>)
@@ -49,35 +39,26 @@ class DeclarationsInformationStubControllerSpec
   override def beforeEach(): Unit = {
     super.beforeEach()
 
-    reset(declarationsInformationStubService)
-    authorizedUser(signedInUser(eori))
-    when(declarationsInformationStubService.buildDeclarationStatus(anyString(), anyString()))
-      .thenReturn(successfulResponse)
-  }
+    userWithEori()
 
-  override def afterEach(): Unit = {
     reset(declarationsInformationStubService)
-    super.afterEach()
+    when(declarationsInformationStubService.buildDeclarationStatus(anyString(), anyString())).thenReturn(successfulResponse)
   }
 
   "DeclarationsInformationStubController on getDeclarationStatus" when {
 
     "user is not authorized" should {
-
       "return Unauthorized response" in {
-
-        userWithoutEori()
+        userWithoutEori
 
         val result = controller.getDeclarationStatus(mrn)(request)
-        status(result) mustBe UNAUTHORIZED
+        status(result) shouldBe UNAUTHORIZED
 
       }
     }
 
     "user is authorized" should {
-
       "call DeclarationsInformationStubService" in {
-
         controller.getDeclarationStatus(mrn)(request).futureValue
 
         verify(declarationsInformationStubService).buildDeclarationStatus(eqTo(eori), eqTo(mrn))
@@ -87,30 +68,25 @@ class DeclarationsInformationStubControllerSpec
     "user is authorized" when {
 
       "DeclarationsInformationStubService returns Successful response" should {
-
         "return Ok (200) with that response" in {
-
           val result = controller.getDeclarationStatus(mrn)(request)
 
-          status(result) mustBe OK
-          XML.loadString(contentAsString(result)) mustBe successfulResponse.body
+          status(result) shouldBe OK
+          XML.loadString(contentAsString(result)) shouldBe successfulResponse.body
         }
       }
 
       "DeclarationsInformationStubService returns NotFound response" should {
-
         "return NotFound (404) response" in {
-
           when(declarationsInformationStubService.buildDeclarationStatus(anyString(), anyString()))
             .thenReturn(NotFoundResponse)
 
           val result = controller.getDeclarationStatus(mrn)(request)
 
-          status(result) mustBe NOT_FOUND
-          XML.loadString(contentAsString(result)) mustBe NotFoundResponse.body
+          status(result) shouldBe NOT_FOUND
+          XML.loadString(contentAsString(result)) shouldBe NotFoundResponse.body
         }
       }
     }
   }
-
 }

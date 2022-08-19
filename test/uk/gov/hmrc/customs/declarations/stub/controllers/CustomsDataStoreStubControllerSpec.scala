@@ -16,12 +16,11 @@
 
 package uk.gov.hmrc.customs.declarations.stub.controllers
 
-import org.scalatest.matchers.should.Matchers
-import org.scalatest.wordspec.AnyWordSpec
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
+import uk.gov.hmrc.customs.declarations.stub.base.UnitTestSpec
 
-class CustomsDataStoreStubControllerSpec extends AnyWordSpec with Matchers {
+class CustomsDataStoreStubControllerSpec extends UnitTestSpec {
 
   private val controller = new CustomsDataStoreStubController(stubControllerComponents())
   private val request = FakeRequest()

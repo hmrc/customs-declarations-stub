@@ -22,7 +22,8 @@ import play.api.http.{ContentTypes, HeaderNames}
 import uk.gov.hmrc.customs.declarations.stub.config.AppConfig
 import uk.gov.hmrc.customs.declarations.stub.generators.NotificationGenerator
 import uk.gov.hmrc.customs.declarations.stub.generators.NotificationGenerator._
-import uk.gov.hmrc.customs.declarations.stub.repositories.{Client, NotificationRepository}
+import uk.gov.hmrc.customs.declarations.stub.models.Client
+import uk.gov.hmrc.customs.declarations.stub.repositories.NotificationRepository
 import uk.gov.hmrc.http.HttpReads.Implicits.readRaw
 import uk.gov.hmrc.http.{HeaderCarrier, HttpClient, HttpReads, HttpResponse}
 import uk.gov.hmrc.wco.dec.MetaData
@@ -35,11 +36,11 @@ import scala.concurrent.duration.{Duration, _}
 import scala.util.{Failure, Random}
 
 @Singleton
-class NotificationConnector @Inject()(
-  http: HttpClient,
-  notificationRepo: NotificationRepository,
-  generator: NotificationGenerator
-)(implicit val appConfig: AppConfig, ec: ExecutionContext, actorSystem: ActorSystem) {
+class NotificationConnector @Inject() (http: HttpClient, notificationRepository: NotificationRepository, generator: NotificationGenerator)(
+  implicit val appConfig: AppConfig,
+  ec: ExecutionContext,
+  actorSystem: ActorSystem
+) {
 
   private val logger = Logger(this.getClass)
 
@@ -63,7 +64,7 @@ class NotificationConnector @Inject()(
     duration: FiniteDuration
   ): Unit =
     actorSystem.scheduler.scheduleOnce(duration) {
-      notificationRepo
+      notificationRepository
         .findByClientAndOperationAndMetaData(client.clientId, operation, meta)
         .map { maybeNotification =>
           logger.info("Entering async request notification")
@@ -91,8 +92,8 @@ class NotificationConnector @Inject()(
             sendNotificationWithDelay(client, id, xml, delay + 5.seconds)
           }
         }
-        .andThen {
-          case Failure(e) => logger.error("Problem on sending notification back", e)
+        .andThen { case Failure(e) =>
+          logger.error("Problem on sending notification back", e)
         }
     }
 
@@ -105,8 +106,8 @@ class NotificationConnector @Inject()(
       val charSection = random.shuffle("ABCDEFGHIJKLMNOPQRSTUVWXYZ".toSeq).take(2).mkString
       val secondCode = random.nextInt(8999999) + 1000000
       val witchoutCheck = s"${year}${country}${code}${charSection}${secondCode}"
-      val check = witchoutCheck.zipWithIndex.foldLeft(0) {
-        case (input, (char, index)) => input + (NotificationGenerator.characterValue(char) * (1 << index))
+      val check = witchoutCheck.zipWithIndex.foldLeft(0) { case (input, (char, index)) =>
+        input + (NotificationGenerator.characterValue(char) * (1 << index))
       }
       val controlDigit = ((check % 11) % 10).toString
       witchoutCheck + controlDigit
@@ -149,10 +150,8 @@ class NotificationConnector @Inject()(
     List(preliminaryNotification, finalNotification)
   }
 
-  private def getSubmissionNotificationSequence(
-    decType: Option[String],
-    notificationPrompt: Char
-  ): List[FunctionCode] = {
+  // scalastyle:off
+  private def getSubmissionNotificationSequence(decType: Option[String], notificationPrompt: Char): List[FunctionCode] = {
     val arrivedDeclarationCodes = List('A', 'C', 'B', 'J')
     val prelodgedDeclarationCodes = List('D', 'F', 'E', 'K')
 
@@ -172,6 +171,7 @@ class NotificationConnector @Inject()(
       case 'X' => preliminaryNotifications ++ List(Cleared, GoodsHaveExitedTheCommunity)
     }
   }
+  // scalastyle:on
 
   private def extractDelay(lrn: String): FiniteDuration =
     lrn.take(2) match {

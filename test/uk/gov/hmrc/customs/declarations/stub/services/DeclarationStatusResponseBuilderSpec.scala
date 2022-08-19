@@ -19,10 +19,7 @@ package uk.gov.hmrc.customs.declarations.stub.services
 import org.scalatest.matchers.must.Matchers
 import org.scalatest.wordspec.AnyWordSpec
 import uk.gov.hmrc.customs.declarations.stub.models.declarationstatus.DeclarationStatusResponse
-import uk.gov.hmrc.customs.declarations.stub.models.declarationstatus.DeclarationStatusResponse.{
-  NotFoundResponse,
-  SuccessfulResponse
-}
+import uk.gov.hmrc.customs.declarations.stub.models.declarationstatus.DeclarationStatusResponse.{NotFoundResponse, SuccessfulResponse}
 import uk.gov.hmrc.customs.declarations.stub.testdata.CommonTestData
 
 class DeclarationStatusResponseBuilderSpec extends AnyWordSpec with Matchers {

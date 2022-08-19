@@ -24,7 +24,7 @@ import uk.gov.hmrc.customs.declarations.stub.features.FeatureStatus.FeatureStatu
 import javax.inject.{Inject, Singleton}
 
 @Singleton
-class FeatureSwitchConfig @Inject()(configuration: Configuration) {
+class FeatureSwitchConfig @Inject() (configuration: Configuration) {
 
   private def loadConfig(key: String): String =
     configuration
