@@ -157,7 +157,8 @@ class NotificationConnector @Inject() (http: HttpClient, notificationRepository:
     val supplementaryDeclarationCodes = List('X', 'Y')
 
     val preliminaryNotifications = decType match {
-      case Some(typeCode) if arrivedDeclarationCodes.contains(typeCode.last) || supplementaryDeclarationCodes.contains(typeCode.last) => List(Accepted)
+      case Some(typeCode) if arrivedDeclarationCodes.contains(typeCode.last) || supplementaryDeclarationCodes.contains(typeCode.last) =>
+        List(Accepted)
       case Some(typeCode) if prelodgedDeclarationCodes.contains(typeCode.last) => List(Received, Accepted)
     }
 
