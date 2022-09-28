@@ -39,7 +39,7 @@ class NotificationRepository @Inject() (mongoComponent: MongoComponent)(implicit
   def findByClientAndOperationAndMetaData(clientId: String, operation: String, meta: MetaData): Future[Option[Notification]] = {
     val lrn = meta.declaration.flatMap(_.functionalReferenceId).getOrElse("")
     val filter = Json.obj("clientId" -> clientId, "operation" -> operation, "lrn" -> lrn)
-    collection.find(BsonDocument(filter.toString)).limit(1).toFuture.map(_.headOption)
+    collection.find(BsonDocument(filter.toString)).limit(1).toFuture().map(_.headOption)
   }
 }
 
