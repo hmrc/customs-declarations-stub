@@ -18,3 +18,13 @@ GET           /customs-data-store/eori/:eori/verified-email   uk.gov.hmrc.custom
 # Tariff API endpoints
 
 GET           /api/v2/commodities/:code                       uk.gov.hmrc.customs.declarations.stub.controllers.TariffApiController.commodities(code: String)
+
+#  Secure 2 way messaging endpoints
+
+GET           /secure-message-frontend/cds-file-upload-service/messages                                     uk.gov.hmrc.customs.declarations.stub.controllers.SecureTwoWayMessagingController.messages
+
+GET           /secure-message-frontend/cds-file-upload-service/conversation/:client/:conversationId         uk.gov.hmrc.customs.declarations.stub.controllers.SecureTwoWayMessagingController.conversation(client, conversationId)
+
+POST          /secure-message-frontend/cds-file-upload-service/conversation/:client/:conversationId         uk.gov.hmrc.customs.declarations.stub.controllers.SecureTwoWayMessagingController.reply(client, conversationId)
+
+GET           /secure-message-frontend/cds-file-upload-service/conversation/:client/:conversationId/result  uk.gov.hmrc.customs.declarations.stub.controllers.SecureTwoWayMessagingController.replyResult(client, conversationId)
