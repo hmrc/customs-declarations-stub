@@ -116,6 +116,29 @@ Otherwise, if the last digit of the given id is:
 
 For any other trailing digit, the body of the OK (200) response is the content of 'conf/messages/supplementary-units-not-required.json' 
 
+## SECURE TWO WAY MESSAGING
+Endpoint used by the CDS Exports service to simulate the secure-message-frontend service's endpoints (that provide partial html components that are displayed in the SFUS service).
+
+```
+GET           /secure-message-frontend/cds-file-upload-service/messages
+```
+Call to retrieve the html partial for the user's inbox
+
+```
+GET           /secure-message-frontend/cds-file-upload-service/conversation/:client/:conversationId
+```
+Call to retrieve the html partial for a specific message's content
+
+```
+POST          /secure-message-frontend/cds-file-upload-service/conversation/:client/:conversationId
+```
+Endpoint to send the form post to of the user's message in reply
+
+```
+GET           /secure-message-frontend/cds-file-upload-service/conversation/:client/:conversationId/result
+```
+Call to retrieve the html partial for the reply sent receipt page
+
 ## License
 
 This code is open source software licensed under the [Apache 2.0 License]("http://www.apache.org/licenses/LICENSE-2.0.html").
