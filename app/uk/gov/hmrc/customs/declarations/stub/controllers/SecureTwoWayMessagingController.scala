@@ -16,7 +16,7 @@
 
 package uk.gov.hmrc.customs.declarations.stub.controllers
 
-import play.api.mvc.{Action, AnyContent, ControllerComponents}
+import play.api.mvc.{Action, AnyContent, ControllerComponents, Cookie, Request}
 import uk.gov.hmrc.play.bootstrap.backend.controller.BackendController
 
 import javax.inject.Inject
@@ -24,26 +24,29 @@ import javax.inject.Inject
 class SecureTwoWayMessagingController @Inject() (cc: ControllerComponents) extends BackendController(cc) {
   import SecureTwoWayMessagingController._
 
-  def messages(): Action[AnyContent] = Action { _ =>
-    Ok(messagesResponse)
+  private def langCookieValue(implicit request: Request[AnyContent]) = request.cookies.get("PLAY_LANG").getOrElse(Cookie("", "")).value
+
+  def messages(): Action[AnyContent] = Action { implicit request =>
+    Ok(messagesResponse(langCookieValue))
   }
 
-  def conversation(client: String, conversationId: String): Action[AnyContent] = Action { _ =>
-    Ok(conversationResponse)
+  def conversation(client: String, conversationId: String): Action[AnyContent] = Action { implicit request =>
+    Ok(conversationResponse(langCookieValue))
   }
 
   def reply(client: String, conversationId: String): Action[AnyContent] = Action { _ =>
     Ok("")
   }
 
-  def replyResult(client: String, conversationId: String): Action[AnyContent] = Action { _ =>
-    Ok(replySubmissionResult)
+  def replyResult(client: String, conversationId: String): Action[AnyContent] = Action { implicit request =>
+    Ok(replySubmissionResult(langCookieValue))
   }
 }
 
 object SecureTwoWayMessagingController {
-  val messagesResponse =
-    """<style>
+  def messagesResponse(language: String) = {
+    val lang = if (language == "cy") language else ""
+    s"""<style>
       |@media screen and (max-width: 414px) {
       |  .mob-align-right {
       |    text-align: right
@@ -107,7 +110,7 @@ object SecureTwoWayMessagingController {
       |}
       |</style>
       |
-      |<h1 class="govuk-heading-xl">Messages between you and HMRC</h1>
+      |<h1 class="govuk-heading-xl">${lang}Messages between you and HMRC</h1>
       |<div class="govuk-body">
       |<table class="govuk-table">
       |  <caption class="govuk-table__caption govuk-table__caption--m">
@@ -146,121 +149,127 @@ object SecureTwoWayMessagingController {
       |</tbody>
       |</table>
       |</div>""".stripMargin
+  }
 
-  val conversationResponse =
-    """
-      |<style>
-      |@media screen and (max-width: 414px) {
-      | .custom-caption {
-      |    font-size: 14px !important;
-      | }
-      |}
-      |.govuk-heading-l {
-      |     margin-bottom: -15px;
-      |}
-      |.custom-caption {
-      |    font-size: 16px;
-      |    color: #505a5f;
-      |    display: block;
-      |    padding-top: 2px;
-      |}
-      |.break-long  {
-      |    word-break: break-word
-      |}
-      |</style>
-      |<div class="govuk-body-l">
-      |    <h1 class="govuk-heading-l margin-top-small margin-bottom-small">MRN 22GB597RCND4DHZAA0 case number D-155118</h1>
-      |    <p>
-      |    <span aria-hidden="true" class="custom-caption">
-      |        You sent this on 7 July 2022 at 11:40am
-      |    </span>
-      |    <span class="govuk-visually-hidden">
-      |        You sent this on 7 July 2022 at 11:40am
-      |    </span>
-      |    </p>
-      |    <div class="govuk-body break-long">
-      |       <p>asdd</p>
-      |    </div>
-      |    <style>
-      |    .govuk-character-count {
-      |        margin-bottom: 5px;
-      |    }
-      |    span#reply-form-error + textarea {
-      |        border: 2px solid #d4351c;
-      |    }
-      |    </style>
-      |    <hr aria-hidden="true" class="govuk-section-break govuk-section-break--m govuk-section-break--visible"/>
-      |    <form method="POST" novalidate action="/cds-file-upload-service/conversation/CDCM/Y29udmVyc2F0aW9uLzYyN2UzNTM3M2Q0ZDY3MDQ4NWI5YTg0Yg==">
-      |    <input type="hidden" name="csrfToken" value="a6e5b763d625a6bb3b843cd78306011933f42b62-1664793963148-22b95ba204237e1116b65d7c"/>
-      |    <div class="govuk-character-count" data-module="govuk-character-count"
-      |       data-maxlength="4000"
-      |       data-threshold="75">
-      |        <div class="govuk-form-group">
-      |          <label class="govuk-label govuk-label--s " for="reply-form">
-      |            Reply to this message
-      |          </label>
-      |          <textarea class="govuk-textarea govuk-js-character-count" id="reply-form" name="content" rows="5" aria-describedby="reply-form-info" spellcheck="true"></textarea>
-      |        </div>
-      |        <div id="reply-form-info" class="govuk-hint govuk-character-count__message" aria-live="polite">
-      |          You can enter up to 4000 characters
-      |        </div>
-      |    </div>
-      |    <button  class="govuk-button" data-module="govuk-button">
-      |        Send
-      |    </button>
-      |    </form>
-      |    <hr class="govuk-section-break govuk-section-break--l govuk-section-break--visible">
-      |    <p>
-      |    <span aria-hidden="true" class="custom-caption">
-      |        You sent this on 16 May 2022 at 2:13pm
-      |    </span>
-      |    <span class="govuk-visually-hidden">
-      |        You sent this on 16 May 2022 at 2:13pm
-      |    </span>
-      |    </p>
-      |    <div class="govuk-body break-long">
-      |        <p>dfgdfgdfgd</p>
-      |    </div>
-      |    <hr class="govuk-section-break govuk-section-break--l govuk-section-break--visible">
-      |    <p>
-      |    <span aria-hidden="true" class="custom-caption">
-      |        Border Force sent this on 13 May 2022 at 11:38am
-      |    </span>
-      |    <span class="govuk-visually-hidden">
-      |        Border Force sent this on 13 May 2022 at 11:38am
-      |    </span>
-      |    <span aria-hidden="true" class="custom-caption">
-      |            First read on 16 May 2022 at 11:46am
-      |    </span>
-      |    <span class="govuk-visually-hidden">First viewed on 16 May 2022 at 11:46am</span>
-      |    </p>
-      |    <div class="govuk-body break-long">
-      |        Testing CDSP_9819 TC05
-      |    </div>
-      |</div>""".stripMargin
+  def conversationResponse(language: String) = {
+    val lang = if (language == "cy") language else ""
+    s"""
+       |<style>
+       |@media screen and (max-width: 414px) {
+       | .custom-caption {
+       |    font-size: 14px !important;
+       | }
+       |}
+       |.govuk-heading-l {
+       |     margin-bottom: -15px;
+       |}
+       |.custom-caption {
+       |    font-size: 16px;
+       |    color: #505a5f;
+       |    display: block;
+       |    padding-top: 2px;
+       |}
+       |.break-long  {
+       |    word-break: break-word
+       |}
+       |</style>
+       |<div class="govuk-body-l">
+       |    <h1 class="govuk-heading-l margin-top-small margin-bottom-small">${lang}MRN 22GB597RCND4DHZAA0 case number D-155118</h1>
+       |    <p>
+       |    <span aria-hidden="true" class="custom-caption">
+       |        You sent this on 7 July 2022 at 11:40am
+       |    </span>
+       |    <span class="govuk-visually-hidden">
+       |        You sent this on 7 July 2022 at 11:40am
+       |    </span>
+       |    </p>
+       |    <div class="govuk-body break-long">
+       |       <p>asdd</p>
+       |    </div>
+       |    <style>
+       |    .govuk-character-count {
+       |        margin-bottom: 5px;
+       |    }
+       |    span#reply-form-error + textarea {
+       |        border: 2px solid #d4351c;
+       |    }
+       |    </style>
+       |    <hr aria-hidden="true" class="govuk-section-break govuk-section-break--m govuk-section-break--visible"/>
+       |    <form method="POST" novalidate action="/cds-file-upload-service/conversation/CDCM/Y29udmVyc2F0aW9uLzYyN2UzNTM3M2Q0ZDY3MDQ4NWI5YTg0Yg==">
+       |    <input type="hidden" name="csrfToken" value="a6e5b763d625a6bb3b843cd78306011933f42b62-1664793963148-22b95ba204237e1116b65d7c"/>
+       |    <div class="govuk-character-count" data-module="govuk-character-count"
+       |       data-maxlength="4000"
+       |       data-threshold="75">
+       |        <div class="govuk-form-group">
+       |          <label class="govuk-label govuk-label--s " for="reply-form">
+       |            Reply to this message
+       |          </label>
+       |          <textarea class="govuk-textarea govuk-js-character-count" id="reply-form" name="content" rows="5" aria-describedby="reply-form-info" spellcheck="true"></textarea>
+       |        </div>
+       |        <div id="reply-form-info" class="govuk-hint govuk-character-count__message" aria-live="polite">
+       |          You can enter up to 4000 characters
+       |        </div>
+       |    </div>
+       |    <button  class="govuk-button" data-module="govuk-button">
+       |        Send
+       |    </button>
+       |    </form>
+       |    <hr class="govuk-section-break govuk-section-break--l govuk-section-break--visible">
+       |    <p>
+       |    <span aria-hidden="true" class="custom-caption">
+       |        You sent this on 16 May 2022 at 2:13pm
+       |    </span>
+       |    <span class="govuk-visually-hidden">
+       |        You sent this on 16 May 2022 at 2:13pm
+       |    </span>
+       |    </p>
+       |    <div class="govuk-body break-long">
+       |        <p>dfgdfgdfgd</p>
+       |    </div>
+       |    <hr class="govuk-section-break govuk-section-break--l govuk-section-break--visible">
+       |    <p>
+       |    <span aria-hidden="true" class="custom-caption">
+       |        Border Force sent this on 13 May 2022 at 11:38am
+       |    </span>
+       |    <span class="govuk-visually-hidden">
+       |        Border Force sent this on 13 May 2022 at 11:38am
+       |    </span>
+       |    <span aria-hidden="true" class="custom-caption">
+       |            First read on 16 May 2022 at 11:46am
+       |    </span>
+       |    <span class="govuk-visually-hidden">First viewed on 16 May 2022 at 11:46am</span>
+       |    </p>
+       |    <div class="govuk-body break-long">
+       |        Testing CDSP_9819 TC05
+       |    </div>
+       |</div>""".stripMargin
+  }
 
-  val replySubmissionResult = """
-      |<style>
-      |   .govuk-panel--confirmation > * {
-      |        word-break: break-word;
-      |      }
-      | </style>
-      |
-      |<div class="govuk-panel govuk-panel--confirmation">
-      | <h1 class="govuk-panel__title">
-      |   Message sent
-      | </h1>
-      |   <div class="govuk-panel__body">
-      |     We received your message
-      |   </div>
-      |</div>
-      |
-      |<h2 class="govuk-heading-m">What happens next</h2>
-      |<p class="govuk-body">You do not need to do anything now.</p>
-      |<p class="govuk-body">We will contact you if we need more information.</p>
-      |<form action=/cds-file-upload-service/messages>
-      | <input type="hidden" name="sent" value="true" />
-      | <button class="govuk-button" data-module="govuk-button">Back to your messages</button>
-      |</form>
-      |""".stripMargin
+  def replySubmissionResult(language: String) = {
+    val lang = if (language == "cy") language else ""
+    s"""
+       |<style>
+       |   .govuk-panel--confirmation > * {
+       |        word-break: break-word;
+       |      }
+       | </style>
+       |
+       |<div class="govuk-panel govuk-panel--confirmation">
+       | <h1 class="govuk-panel__title">
+       |   ${lang}Message sent
+       | </h1>
+       |   <div class="govuk-panel__body">
+       |     We received your message
+       |   </div>
+       |</div>
+       |
+       |<h2 class="govuk-heading-m">What happens next</h2>
+       |<p class="govuk-body">You do not need to do anything now.</p>
+       |<p class="govuk-body">We will contact you if we need more information.</p>
+       |<form action=/cds-file-upload-service/messages>
+       | <input type="hidden" name="sent" value="true" />
+       | <button class="govuk-button" data-module="govuk-button">Back to your messages</button>
+       |</form>
+       |""".stripMargin
+  }
 }
