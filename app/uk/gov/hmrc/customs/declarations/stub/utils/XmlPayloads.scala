@@ -20,113 +20,178 @@ import java.time.{ZoneId, ZonedDateTime}
 import java.time.format.DateTimeFormatter
 
 object XmlPayloads {
-
-  val firstDate = ZonedDateTime.now(ZoneId.of("Europe/London"))
-  val secondDate = firstDate.plusMinutes(5)
-  val thirdDate = firstDate.plusMinutes(10)
-
-  def adjustTime(time: ZonedDateTime): String =
-    time.format(DateTimeFormatter.ofPattern("yyyyMMddHHmmssX"))
-
+  
   // scalastyle:off
-  def acceptedExportNotification(mrn: String = "18GBJCM3USAFD2WD51") =
-    <md:MetaData xmlns:md="urn:wco:datamodel:WCO:DocumentMetaData-DMS:2">
-    <md:WCODataModelVersionCode>3.6</md:WCODataModelVersionCode>
-    <md:WCOTypeName>RES</md:WCOTypeName>
-    <md:ResponsibleCountryCode/>
-    <md:ResponsibleAgencyName/>
-    <md:AgencyAssignedCustomizationCode/>
-    <md:AgencyAssignedCustomizationVersionCode/>
-    <resp:Response xmlns:resp="urn:wco:datamodel:WCO:RES-DMS:2">
-      <resp:FunctionCode>01</resp:FunctionCode>
-      <resp:FunctionalReferenceID>a5b4aeb03a384a5faf1b9afeff5dac97</resp:FunctionalReferenceID>
-      <resp:IssueDateTime>
-        <_2_2:DateTimeString formatCode="304" xmlns:_2_2="urn:wco:datamodel:WCO:Response_DS:DMS:2">{adjustTime(thirdDate)}</_2_2:DateTimeString>
-      </resp:IssueDateTime>
-      <resp:Declaration>
-        <resp:AcceptanceDateTime>
-          <_2_2:DateTimeString formatCode="304" xmlns:_2_2="urn:wco:datamodel:WCO:Response_DS:DMS:2">20181001000000Z</_2_2:DateTimeString>
-        </resp:AcceptanceDateTime>
-        <resp:FunctionalReferenceID>Export_Accepted</resp:FunctionalReferenceID>
-        <resp:ID>{mrn}</resp:ID>
-        <resp:VersionID>1</resp:VersionID>
-      </resp:Declaration>
-    </resp:Response>
-    <resp:Response xmlns:resp="urn:wco:datamodel:WCO:RES-DMS:2">
-      <resp:FunctionCode>16</resp:FunctionCode>
-      <resp:FunctionalReferenceID>d5710483848740849ce7415470c2886a</resp:FunctionalReferenceID>
-      <resp:IssueDateTime>
-        <_2_2:DateTimeString formatCode="304" xmlns:_2_2="urn:wco:datamodel:WCO:Response_DS:DMS:2">{adjustTime(firstDate)}</_2_2:DateTimeString>
-      </resp:IssueDateTime>
-      <resp:AppealOffice>
-        <resp:ID>GBLBA001</resp:ID>
-      </resp:AppealOffice>
-      <resp:Bank>
-        <resp:ReferenceID>CITIGB2LLON</resp:ReferenceID>
-        <resp:ID>GB25CITI08320011963155</resp:ID>
-      </resp:Bank>
-      <resp:ContactOffice>
-        <resp:ID>GBLBA001</resp:ID>
-        <resp:Communication>
-          <resp:ID>See Developer Hub</resp:ID>
-          <resp:TypeCode>EM</resp:TypeCode>
-        </resp:Communication>
-        <resp:Communication>
-          <resp:ID>+441234567891</resp:ID>
-          <resp:TypeCode>FX</resp:TypeCode>
-        </resp:Communication>
-      </resp:ContactOffice>
-      <resp:Status>
-        <resp:NameCode>4</resp:NameCode>
-      </resp:Status>
-      <resp:Declaration>
-        <resp:FunctionalReferenceID>Export_Accepted</resp:FunctionalReferenceID>
-        <resp:ID>{mrn}</resp:ID>
-        <resp:VersionID>1</resp:VersionID>
-        <resp:GoodsShipment>
-          <resp:GovernmentAgencyGoodsItem>
-            <resp:SequenceNumeric>1</resp:SequenceNumeric>
-            <resp:Commodity>
-              <resp:DutyTaxFee>
-                <resp:DeductAmount>0.00</resp:DeductAmount>
-                <resp:DutyRegimeCode>100</resp:DutyRegimeCode>
-                <resp:TaxRateNumeric>9.70</resp:TaxRateNumeric>
-                <resp:TypeCode>A00</resp:TypeCode>
-                <resp:Payment>
-                  <resp:TaxAssessedAmount>97.00</resp:TaxAssessedAmount>
-                  <resp:PaymentAmount>97.00</resp:PaymentAmount>
-                </resp:Payment>
-              </resp:DutyTaxFee>
-              <resp:DutyTaxFee>
-                <resp:DeductAmount>0.00</resp:DeductAmount>
-                <resp:DutyRegimeCode>100</resp:DutyRegimeCode>
-                <resp:TaxRateNumeric>20.00</resp:TaxRateNumeric>
-                <resp:TypeCode>B00</resp:TypeCode>
-                <resp:Payment>
-                  <resp:TaxAssessedAmount>219.40</resp:TaxAssessedAmount>
-                  <resp:PaymentAmount>219.40</resp:PaymentAmount>
-                </resp:Payment>
-              </resp:DutyTaxFee>
-            </resp:Commodity>
-          </resp:GovernmentAgencyGoodsItem>
-        </resp:GoodsShipment>
-      </resp:Declaration>
-    </resp:Response>
-    <resp:Response xmlns:resp="urn:wco:datamodel:WCO:RES-DMS:2">
-      <resp:FunctionCode>09</resp:FunctionCode>
-      <resp:FunctionalReferenceID>f634f77719d546a7b0eb83092bb3a015</resp:FunctionalReferenceID>
-      <resp:IssueDateTime>
-        <_2_2:DateTimeString formatCode="304" xmlns:_2_2="urn:wco:datamodel:WCO:Response_DS:DMS:2">{adjustTime(secondDate)}</_2_2:DateTimeString>
-      </resp:IssueDateTime>
-      <resp:AdditionalInformation>
-        <resp:StatementCode>A2</resp:StatementCode>
-        <resp:StatementTypeCode>AFB</resp:StatementTypeCode>
-      </resp:AdditionalInformation>
-      <resp:Declaration>
-        <resp:FunctionalReferenceID>Export_Accepted</resp:FunctionalReferenceID>
-        <resp:ID>{mrn}</resp:ID>
-        <resp:VersionID>1</resp:VersionID>
-      </resp:Declaration>
-    </resp:Response>
-  </md:MetaData>
+  def declaration(version: Int, mrn: String = "18GBJCM3USAFD2WD51") =
+    <p:DeclarationFullResponse xsi:schemaLocation="http://gov.uk/customs/FullDeclarationDataRetrievalService"
+                               xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                               xmlns:p4="urn:un:unece:uncefact:data:standard:UnqualifiedDataType:6"
+                               xmlns:p3="urn:wco:datamodel:WCO:Declaration_DS:DMS:2"
+                               xmlns:p2="urn:wco:datamodel:WCO:DEC-DMS:2" xmlns:p1="urn:wco:datamodel:WCO:Response_DS:DMS:2"
+                               xmlns:p="http://gov.uk/customs/FullDeclarationDataRetrievalService">
+      <p:FullDeclarationDataDetails>
+        <p:HighLevelSummaryDetails>
+          <p:MRN>{mrn}</p:MRN>
+          <p:LRN>TSLRN6901100X0pp</p:LRN>
+          <p:DUCRandPartID>2GB121212121212-INVOICE123/NEW</p:DUCRandPartID>
+          <p:VersionID>{version}</p:VersionID>
+          <p:GoodsLocationCode>GBAUBELBFSBEL</p:GoodsLocationCode>
+          <p:CreatedDateTime>
+            <p:DateTimeString formatCode="304">20220817122147Z</p:DateTimeString>
+          </p:CreatedDateTime>
+          <p:PrelodgedDateTime>
+            <p:DateTimeString formatCode="304">20220817080620Z</p:DateTimeString>
+          </p:PrelodgedDateTime>
+          <p:AcceptanceDateTime>
+            <p:DateTimeString formatCode="304">20180913085915Z</p:DateTimeString>
+          </p:AcceptanceDateTime>
+        </p:HighLevelSummaryDetails>
+        <p:GeneratedConsignmentDetails>
+          <p:ROE>H</p:ROE>
+          <p:StatusOfEntry-ICS>14</p:StatusOfEntry-ICS>
+          <p:DeclaredCustomsExitOffice>GB000041</p:DeclaredCustomsExitOffice>
+          <p:SubmitterID>GB239355053000</p:SubmitterID>
+          <p:StatisticalValue currencyID="GBP">1000.0</p:StatisticalValue>
+        </p:GeneratedConsignmentDetails>
+        <p:FullDeclarationObject>
+          <p:Declaration>
+            <p:AcceptanceDateTime>
+              <p:DateTimeString formatCode="304">20180913085915Z</p:DateTimeString>
+            </p:AcceptanceDateTime>
+            <p:FunctionCode>9</p:FunctionCode>
+            <p:FunctionalReferenceID>TSLRN6901100X0pp</p:FunctionalReferenceID>
+            <p:TypeCode>EXD</p:TypeCode>
+            <p:ProcedureCategory>B1</p:ProcedureCategory>
+            <p:GoodsItemQuantity>1</p:GoodsItemQuantity>
+            <p:InvoiceAmount currencyID="GBP">56764.0</p:InvoiceAmount>
+            <p:TotalPackageQuantity>1</p:TotalPackageQuantity>
+            <p:BorderTransportMeans>
+              <p:ID>Superfast Hawk Millenium</p:ID>
+              <p:IdentificationTypeCode>11</p:IdentificationTypeCode>
+              <p:RegistrationNationalityCode>GB</p:RegistrationNationalityCode>
+              <p:ModeCode>1</p:ModeCode>
+            </p:BorderTransportMeans>
+            <p:Consignment>
+              <p:Carrier>
+                <p:Name>Shirley Hitchcock</p:Name>
+                <p:Address>
+                  <p:CityName>Petersfield</p:CityName>
+                  <p:CountryCode>IE</p:CountryCode>
+                  <p:Line>54 Woodbury Avenue</p:Line>
+                  <p:PostcodeID>GU32 2EB</p:PostcodeID>
+                </p:Address>
+              </p:Carrier>
+              <p:ConsignmentItem>
+                <p:SequenceNumeric>1</p:SequenceNumeric>
+              </p:ConsignmentItem>
+              <p:Itinerary>
+                <p:SequenceNumeric>0</p:SequenceNumeric>
+                <p:RoutingCountryCode>GB</p:RoutingCountryCode>
+              </p:Itinerary>
+            </p:Consignment>
+            <p:CurrencyExchange>
+              <p:RateNumeric>1.49</p:RateNumeric>
+            </p:CurrencyExchange>
+            <p:Declarant>
+              <p:ID>GB239355053000</p:ID>
+            </p:Declarant>
+            <p:ExitOffice>
+              <p:ID>GB000041</p:ID>
+            </p:ExitOffice>
+            <p:Exporter>
+              <p:ID>GB239355053000</p:ID>
+            </p:Exporter>
+            <p:GoodsShipment>
+              <p:TransactionNatureCode>1</p:TransactionNatureCode>
+              <p:Consignee>
+                <p:Name>Bags Export</p:Name>
+                <p:Address>
+                  <p:CityName>New York</p:CityName>
+                  <p:CountryCode>US</p:CountryCode>
+                  <p:Line>1 Bags Avenue</p:Line>
+                  <p:PostcodeID>10001</p:PostcodeID>
+                </p:Address>
+              </p:Consignee>
+              <p:Consignment>
+                <p:ContainerCode>1</p:ContainerCode>
+                <p:DepartureTransportMeans>
+                  <p:ID>SHIP1</p:ID>
+                  <p:IdentificationTypeCode>11</p:IdentificationTypeCode>
+                  <p:ModeCode>1</p:ModeCode>
+                </p:DepartureTransportMeans>
+                <p:GoodsLocation>
+                  <p:Name>BELBFSBEL</p:Name>
+                  <p:TypeCode>A</p:TypeCode>
+                  <p:Address>
+                    <p:TypeCode>U</p:TypeCode>
+                    <p:CountryCode>GB</p:CountryCode>
+                  </p:Address>
+                </p:GoodsLocation>
+                <p:TransportEquipment>
+                  <p:SequenceNumeric>1</p:SequenceNumeric>
+                  <p:ID>123456</p:ID>
+                  <p:Seal>
+                    <p:SequenceNumeric>1</p:SequenceNumeric>
+                    <p:ID>NOSEALS</p:ID>
+                  </p:Seal>
+                </p:TransportEquipment>
+              </p:Consignment>
+              <p:Destination>
+                <p:CountryCode>GB</p:CountryCode>
+              </p:Destination>
+              <p:ExportCountry>
+                <p:ID>GB</p:ID>
+              </p:ExportCountry>
+              <p:GovernmentAgencyGoodsItem>
+                <p:SequenceNumeric>1</p:SequenceNumeric>
+                <p:StatisticalValueAmount currencyID="GBP">1000.0</p:StatisticalValueAmount>
+                <p:AdditionalDocument>
+                  <p:SequenceNumeric>1</p:SequenceNumeric>
+                  <p:CategoryCode>Y</p:CategoryCode>
+                  <p:ID>123456789012345678901234567890-rrrr</p:ID>
+                  <p:TypeCode>925</p:TypeCode>
+                </p:AdditionalDocument>
+                <p:AdditionalInformation>
+                  <p:SequenceNumeric>1</p:SequenceNumeric>
+                  <p:StatementCode>00400</p:StatementCode>
+                  <p:StatementDescription>EXPORTER</p:StatementDescription>
+                </p:AdditionalInformation>
+                <p:Commodity>
+                  <p:Description>Straw for bottles</p:Description>
+                  <p:Classification>
+                    <p:ID>46021910</p:ID>
+                    <p:IdentificationTypeCode>TSP</p:IdentificationTypeCode>
+                  </p:Classification>
+                  <p:GoodsMeasure>
+                    <p:GrossMassMeasure unitCode="KGM">700.0</p:GrossMassMeasure>
+                    <p:NetNetWeightMeasure unitCode="KGM">500.0</p:NetNetWeightMeasure>
+                    <p:TariffQuantity>10.0</p:TariffQuantity>
+                  </p:GoodsMeasure>
+                </p:Commodity>
+                <p:GovernmentProcedure>
+                  <p:CurrentCode>10</p:CurrentCode>
+                  <p:PreviousCode>40</p:PreviousCode>
+                </p:GovernmentProcedure>
+                <p:GovernmentProcedure>
+                  <p:CurrentCode>000</p:CurrentCode>
+                </p:GovernmentProcedure>
+                <p:Packaging>
+                  <p:SequenceNumeric>0</p:SequenceNumeric>
+                  <p:MarksNumbersID>Shipping description</p:MarksNumbersID>
+                  <p:QuantityQuantity>10</p:QuantityQuantity>
+                  <p:TypeCode>XD</p:TypeCode>
+                </p:Packaging>
+              </p:GovernmentAgencyGoodsItem>
+              <p:PreviousDocument>
+                <p:SequenceNumeric>1</p:SequenceNumeric>
+                <p:CategoryCode>Z</p:CategoryCode>
+                <p:ID>2GB121212121212-INVOICE123/NEW</p:ID>
+                <p:TypeCode>DCR</p:TypeCode>
+                <p:LineNumeric>1</p:LineNumeric>
+              </p:PreviousDocument>
+            </p:GoodsShipment>
+          </p:Declaration>
+        </p:FullDeclarationObject>
+      </p:FullDeclarationDataDetails>
+    </p:DeclarationFullResponse>
 }

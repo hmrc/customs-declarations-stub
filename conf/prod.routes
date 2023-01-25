@@ -7,6 +7,8 @@ POST          /                                               uk.gov.hmrc.custom
 
 POST          /cancellation-requests                          uk.gov.hmrc.customs.declarations.stub.controllers.DeclarationStubController.cancel
 
+GET           /mrn/:mrn/full                                  uk.gov.hmrc.customs.declarations.stub.controllers.DeclarationsInformationStubController.getDeclaration(mrn, declarationVersion: Option[Int] ?= None)
+
 GET           /mrn/:mrn/status                                uk.gov.hmrc.customs.declarations.stub.controllers.DeclarationsInformationStubController.getDeclarationStatus(mrn)
 
 POST          /file-upload                                    uk.gov.hmrc.customs.declarations.stub.controllers.UpscanStubController.handleBatchFileUploadRequest

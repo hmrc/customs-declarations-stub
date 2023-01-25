@@ -20,18 +20,22 @@ import org.mockito.ArgumentMatchers.{anyString, eq => eqTo}
 import org.mockito.Mockito._
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
-import uk.gov.hmrc.customs.declarations.stub.base.{AuthConnectorMock, UnitTestSpec}
+import uk.gov.hmrc.customs.declarations.stub.base.{AuthConnectorMock, IntegrationTestSpec, UnitTestSpec}
 import uk.gov.hmrc.customs.declarations.stub.models.declarationstatus.DeclarationStatusResponse._
 import uk.gov.hmrc.customs.declarations.stub.services.DeclarationStatusResponseBuilder
 import uk.gov.hmrc.customs.declarations.stub.testdata.CommonTestData.{eori, mrn}
 
-import scala.xml.XML
+import scala.xml.{Elem, XML}
 
-class DeclarationsInformationStubControllerSpec extends UnitTestSpec with AuthConnectorMock {
+class DeclarationsInformationStubControllerSpec extends IntegrationTestSpec with AuthConnectorMock {
 
   private val declarationsInformationStubService = mock[DeclarationStatusResponseBuilder]
 
-  private val controller = new DeclarationsInformationStubController(stubControllerComponents(), authActionMock, declarationsInformationStubService)
+  private val controller = new DeclarationsInformationStubController(
+    stubControllerComponents(),
+    authActionMock,
+    declarationsInformationStubService
+  )
 
   private val request = FakeRequest()
   private val successfulResponse = SuccessfulResponse(<testResponse/>)
@@ -43,6 +47,49 @@ class DeclarationsInformationStubControllerSpec extends UnitTestSpec with AuthCo
 
     reset(declarationsInformationStubService)
     when(declarationsInformationStubService.buildDeclarationStatus(anyString(), anyString())).thenReturn(successfulResponse)
+  }
+
+  "DeclarationsInformationStubController on getDeclaration" when {
+
+    "called with any mrn" when {
+      "without the 'declarationVersion' query string parameter" should {
+        "return v2 <DeclarationFullResponse> element replacing the MRN with whatever mrn was passed" in {
+          val result = controller.getDeclaration(mrn)(request)
+
+          status(result) shouldBe OK
+          (XML.loadString(contentAsString(result)) \ "FullDeclarationDataDetails" \ "HighLevelSummaryDetails" \ "VersionID").text shouldBe "2"
+          (XML.loadString(contentAsString(result)) \ "FullDeclarationDataDetails" \ "HighLevelSummaryDetails" \ "MRN").text shouldBe mrn
+        }
+      }
+
+      "the 'declarationVersion' query string parameter set to '2'" should {
+        "return the v2 <DeclarationFullResponse> element replacing the MRN with whatever mrn was passed" in {
+          val result = controller.getDeclaration(mrn, Some(2))(request)
+
+          status(result) shouldBe OK
+          (XML.loadString(contentAsString(result)) \ "FullDeclarationDataDetails" \ "HighLevelSummaryDetails" \ "VersionID").text shouldBe "2"
+          (XML.loadString(contentAsString(result)) \ "FullDeclarationDataDetails" \ "HighLevelSummaryDetails" \ "MRN").text shouldBe mrn
+        }
+      }
+
+      "the 'declarationVersion' query string parameter set to '1'" should {
+        "returns the v1 <DeclarationFullResponse> element replacing the MRN with whatever mrn was passed" in {
+          val result = controller.getDeclaration(mrn, Some(1))(request)
+
+          status(result) shouldBe OK
+          (XML.loadString(contentAsString(result)) \ "FullDeclarationDataDetails" \ "HighLevelSummaryDetails" \ "VersionID").text shouldBe "1"
+          (XML.loadString(contentAsString(result)) \ "FullDeclarationDataDetails" \ "HighLevelSummaryDetails" \ "MRN").text shouldBe mrn
+        }
+      }
+
+      "the 'declarationVersion' query string parameter set to anything other than '1' or '2'" should {
+        "return a 404 response" in {
+          val result = controller.getDeclaration(mrn, Some(4))(request)
+
+          status(result) shouldBe NOT_FOUND
+        }
+      }
+    }
   }
 
   "DeclarationsInformationStubController on getDeclarationStatus" when {

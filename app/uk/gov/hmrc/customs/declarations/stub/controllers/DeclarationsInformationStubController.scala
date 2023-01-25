@@ -16,12 +16,16 @@
 
 package uk.gov.hmrc.customs.declarations.stub.controllers
 
-import javax.inject.{Inject, Singleton}
-import play.api.mvc.{Action, AnyContent, ControllerComponents}
+import play.api.http.HttpEntity
+import play.api.http.Status.OK
+import play.api.mvc.{Action, AnyContent, ControllerComponents, ResponseHeader, Result}
 import uk.gov.hmrc.customs.declarations.stub.controllers.actions.AuthAction
 import uk.gov.hmrc.customs.declarations.stub.models.declarationstatus.DeclarationStatusResponse._
 import uk.gov.hmrc.customs.declarations.stub.services.DeclarationStatusResponseBuilder
+import uk.gov.hmrc.customs.declarations.stub.utils.XmlPayloads
 import uk.gov.hmrc.play.bootstrap.backend.controller.BackendController
+
+import javax.inject.{Inject, Singleton}
 
 @Singleton
 class DeclarationsInformationStubController @Inject() (
@@ -30,6 +34,15 @@ class DeclarationsInformationStubController @Inject() (
   declarationStatusResponseBuilder: DeclarationStatusResponseBuilder
 ) extends BackendController(cc) {
 
+  def getDeclaration(mrn: String, declarationVersion: Option[Int] = None): Action[AnyContent] = authenticate { _ =>
+    declarationVersion match {
+      case Some(1 | 2) | None =>
+
+        Ok(XmlPayloads.declaration(declarationVersion getOrElse 2, mrn))
+
+      case Some(_) => NotFound
+    }
+  }
   def getDeclarationStatus(mrn: String): Action[AnyContent] = authenticate { request =>
     val response = declarationStatusResponseBuilder.buildDeclarationStatus(request.eori, mrn)
 
