@@ -20,14 +20,14 @@ import org.mockito.ArgumentMatchers.{anyString, eq => eqTo}
 import org.mockito.Mockito._
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
-import uk.gov.hmrc.customs.declarations.stub.base.{AuthConnectorMock, IntegrationTestSpec, UnitTestSpec}
+import uk.gov.hmrc.customs.declarations.stub.base.{AuthConnectorMock, UnitTestSpec}
 import uk.gov.hmrc.customs.declarations.stub.models.declarationstatus.DeclarationStatusResponse._
 import uk.gov.hmrc.customs.declarations.stub.services.DeclarationStatusResponseBuilder
 import uk.gov.hmrc.customs.declarations.stub.testdata.CommonTestData.{eori, mrn}
 
-import scala.xml.{Elem, XML}
+import scala.xml.XML
 
-class DeclarationsInformationStubControllerSpec extends IntegrationTestSpec with AuthConnectorMock {
+class DeclarationsInformationStubControllerSpec extends UnitTestSpec with AuthConnectorMock {
 
   private val declarationsInformationStubService = mock[DeclarationStatusResponseBuilder]
 
