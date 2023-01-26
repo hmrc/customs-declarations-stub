@@ -16,9 +16,7 @@
 
 package uk.gov.hmrc.customs.declarations.stub.controllers
 
-import play.api.http.HttpEntity
-import play.api.http.Status.OK
-import play.api.mvc.{Action, AnyContent, ControllerComponents, ResponseHeader, Result}
+import play.api.mvc.{Action, AnyContent, ControllerComponents}
 import uk.gov.hmrc.customs.declarations.stub.controllers.actions.AuthAction
 import uk.gov.hmrc.customs.declarations.stub.models.declarationstatus.DeclarationStatusResponse._
 import uk.gov.hmrc.customs.declarations.stub.services.DeclarationStatusResponseBuilder

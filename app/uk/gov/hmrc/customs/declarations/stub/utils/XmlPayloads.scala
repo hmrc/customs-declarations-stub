@@ -16,9 +16,6 @@
 
 package uk.gov.hmrc.customs.declarations.stub.utils
 
-import java.time.{ZoneId, ZonedDateTime}
-import java.time.format.DateTimeFormatter
-
 object XmlPayloads {
   
   // scalastyle:off
