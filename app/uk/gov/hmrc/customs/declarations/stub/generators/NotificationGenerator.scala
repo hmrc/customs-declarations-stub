@@ -17,7 +17,6 @@
 package uk.gov.hmrc.customs.declarations.stub.generators
 
 import uk.gov.hmrc.customs.declarations.stub.generators.NotificationGenerator.FunctionCode
-import uk.gov.hmrc.customs.declarations.stub.utils.XmlPayloads._
 
 import java.time.{ZoneId, ZonedDateTime}
 import java.time.format.DateTimeFormatter
@@ -26,6 +25,12 @@ import javax.inject.Inject
 import scala.xml._
 
 class NotificationGenerator @Inject() (notificationValueGenerator: NotificationValueGenerator) {
+  private def adjustTime(time: ZonedDateTime): String =
+    time.format(DateTimeFormatter.ofPattern("yyyyMMddHHmmssX"))
+
+  val firstDate = ZonedDateTime.now(ZoneId.of("Europe/London"))
+  val secondDate = firstDate.plusMinutes(5)
+  val thirdDate = firstDate.plusMinutes(10)
 
   val format304: DateTimeFormatter = DateTimeFormatter.ofPattern("yyyyMMddHHmmssX")
 
