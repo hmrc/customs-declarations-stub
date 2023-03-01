@@ -11,6 +11,7 @@ This application provides a stubs for the following services:
 ## Customs Declarations API service
 
 ### How to deliver custom notifications
+#### Submissions
 If you send a declaration with specific letter at the beginning of the LRN you can control what notifications you receive.
 
 If LRN starts with:
@@ -26,9 +27,16 @@ If LRN starts with:
 
 In addition, if the 2nd character of the LRN is a digit (0-9) you can control the delay in seconds of the notification delivery.
 
+#### Cancellations
 The third character can be used to determine the notification response of a cancellation request:
 - 'S' - Stub sends 'Customs Position Granted' indicating successful cancellation
 - Any other letter - Stub sends 'Customs Position Denied' indicated a denied cancellation request
+
+#### Amendments
+The ID field of Means of Border Transport can determine the response of an amendment request (This field is modified by adding a vehicle ID on /departure-transport):
+- 'DENIED' - Return a 'Customs Position Denied' notification to indicate a denied request (Declaration in holding state).
+- 'REJECTED' - Return a 'Rejected' notification to indicate a rejected amendment that has errors.
+- Any other value - Return a 'Customs Position Granted' indicating a successful amendment.
 
 ### File Upload
 This stub also mocks the '/file-upload' endpoint of the Cust Dec API. This endpoint returns fake S3 urls that actually point 

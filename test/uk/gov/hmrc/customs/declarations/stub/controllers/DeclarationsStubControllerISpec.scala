@@ -29,6 +29,7 @@ class DeclarationsStubControllerISpec extends IntegrationTestSpec {
 
   val submissionUri = "/"
   val cancellationUri = "/cancellation-requests"
+  val amendmentUri = "/amendment-requests"
 
   val clientId = "customs-declare-exports"
 
@@ -47,6 +48,9 @@ class DeclarationsStubControllerISpec extends IntegrationTestSpec {
 
   val fakeCancellationXmlRequest: FakeRequest[String] =
     buildFakeRequest(validCancellationXml.toString, "POST", cancellationUri)
+
+  val fakeAmendmentXmlRequest: FakeRequest[String] =
+    buildFakeRequest(validAmendmentXml.toString, "POST", cancellationUri)
 
   override def beforeEach(): Unit = {
     super.beforeEach()
@@ -78,6 +82,20 @@ class DeclarationsStubControllerISpec extends IntegrationTestSpec {
       }
 
       "return BAD_REQUEST when invalidxml is sent to cancellation Endpoint" in {
+        val result = route(app, fakeCancellationXmlRequest.withBody("<some></some>")).get
+
+        status(result) should be(BAD_REQUEST)
+        verifyNoMoreInteractions(notificationConnectorMock)
+      }
+
+      "return ACCEPTED and send notification when amendment endpoint called " in {
+        val result = route(app, fakeCancellationXmlRequest).get
+
+        status(result) should be(ACCEPTED)
+        verify(notificationConnectorMock, times(1)).notifyInDueCourse(any(), any(), any(), any(), any(), any())
+      }
+
+      "return BAD_REQUEST when invalidxml is sent to amendment Endpoint" in {
         val result = route(app, fakeCancellationXmlRequest.withBody("<some></some>")).get
 
         status(result) should be(BAD_REQUEST)

@@ -35,7 +35,6 @@ class DeclarationsInformationStubController @Inject() (
   def getDeclaration(mrn: String, declarationVersion: Option[Int] = None): Action[AnyContent] = authenticate { _ =>
     declarationVersion match {
       case Some(1 | 2) | None =>
-
         Ok(XmlPayloads.declaration(declarationVersion getOrElse 2, mrn))
 
       case Some(_) => NotFound

@@ -64,13 +64,28 @@ class DeclarationStubController @Inject() (
   logger.warn(s"Schema Validation enabled? ${schemaValidationConfig.isEnabled}")
 
   def submit: Action[NodeSeq] = Action.async(parse.xml(maxLength = 1024 * 100000)) { implicit request =>
+    println(request.headers, request.body)
     validateHeaders() { headers =>
       authenticate(headers) { client =>
         validatePayload(submitSchemas) { meta =>
           val conversationId = UUID.randomUUID().toString
 
           notificationConnector
-            .notifyInDueCourse("submit", client, meta, conversationId = conversationId, submissionConversationId = None)
+            .notifyInDueCourse("submit", conversationId, None, client, meta)
+
+          Future.successful(Accepted.withHeaders("X-Conversation-ID" -> conversationId).as(ContentTypes.XML))
+        }
+      }
+    }
+  }
+
+  def amend: Action[NodeSeq] = Action.async(parse.xml) { implicit req =>
+    validateHeaders() { headers =>
+      authenticate(headers) { client =>
+        validatePayload(submitSchemas) { meta =>
+          val conversationId = UUID.randomUUID().toString
+
+          notificationConnector.notifyInDueCourse("amend", conversationId = conversationId, submissionConversationId = None, client, meta)
 
           Future.successful(Accepted.withHeaders("X-Conversation-ID" -> conversationId).as(ContentTypes.XML))
         }
@@ -87,10 +102,10 @@ class DeclarationStubController @Inject() (
 
           notificationConnector.notifyInDueCourse(
             "cancel",
-            client,
-            meta,
             conversationId = cancellationConversationId,
-            submissionConversationId = submissionConversationId
+            submissionConversationId = submissionConversationId,
+            client,
+            meta
           )
 
           Future.successful(Accepted.withHeaders("X-Conversation-ID" -> cancellationConversationId).as(ContentTypes.XML))
