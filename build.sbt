@@ -1,6 +1,5 @@
 import sbt._
-import uk.gov.hmrc.DefaultBuildSettings.addTestReportOption
-import uk.gov.hmrc.ForkedJvmPerTestSettings
+import uk.gov.hmrc.DefaultBuildSettings._
 import uk.gov.hmrc.sbtdistributables.SbtDistributablesPlugin.publishingSettings
 
 val appName = "customs-declarations-stub"
@@ -14,12 +13,11 @@ lazy val microservice = Project(appName, file("."))
     PlayKeys.playDefaultPort := 6790
   )
   .configs(IntegrationTest)
-  .settings(publishingSettings: _*)
   .settings(inConfig(IntegrationTest)(Defaults.itSettings): _*)
   .settings(
     IntegrationTest / Keys.fork                   := false,
     IntegrationTest / unmanagedSourceDirectories  := (IntegrationTest / baseDirectory) (base => Seq(base / "it")).value,
-    IntegrationTest / testGrouping                := ForkedJvmPerTestSettings.oneForkedJvmPerTest((IntegrationTest / definedTests).value),
+    IntegrationTest / testGrouping                := oneForkedJvmPerTest((IntegrationTest / definedTests).value),
     IntegrationTest / parallelExecution           := false,
     addTestReportOption(IntegrationTest, "int-test-reports")
   )

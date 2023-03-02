@@ -31,11 +31,7 @@ class DeclarationsInformationStubControllerSpec extends UnitTestSpec with AuthCo
 
   private val declarationsInformationStubService = mock[DeclarationStatusResponseBuilder]
 
-  private val controller = new DeclarationsInformationStubController(
-    stubControllerComponents(),
-    authActionMock,
-    declarationsInformationStubService
-  )
+  private val controller = new DeclarationsInformationStubController(stubControllerComponents(), authActionMock, declarationsInformationStubService)
 
   private val request = FakeRequest()
   private val successfulResponse = SuccessfulResponse(<testResponse/>)

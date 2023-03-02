@@ -17,7 +17,7 @@
 package uk.gov.hmrc.customs.declarations.stub.utils
 
 object XmlPayloads {
-  
+
   // scalastyle:off
   def declaration(version: Int, mrn: String = "18GBJCM3USAFD2WD51") =
     <p:DeclarationFullResponse xsi:schemaLocation="http://gov.uk/customs/FullDeclarationDataRetrievalService"

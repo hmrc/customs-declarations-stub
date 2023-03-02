@@ -34,7 +34,7 @@ class NotificationGenerator @Inject() (notificationValueGenerator: NotificationV
 
   val format304: DateTimeFormatter = DateTimeFormatter.ofPattern("yyyyMMddHHmmssX")
 
-  def generate(lrn: String, mrn: String, statuses: Seq[FunctionCode]) = {
+  def generate(lrn: String, mrn: String, statuses: Seq[FunctionCode]): String = {
     val issueAt = ZonedDateTime.now(ZoneId.of("Europe/London"))
 
     val declaration = {
