@@ -64,7 +64,6 @@ class DeclarationStubController @Inject() (
   logger.warn(s"Schema Validation enabled? ${schemaValidationConfig.isEnabled}")
 
   def submit: Action[NodeSeq] = Action.async(parse.xml(maxLength = 1024 * 100000)) { implicit request =>
-    println(request.headers, request.body)
     validateHeaders() { headers =>
       authenticate(headers) { client =>
         validatePayload(submitSchemas) { meta =>
