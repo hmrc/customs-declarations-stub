@@ -92,7 +92,7 @@ class DeclarationsInformationStubControllerSpec extends UnitTestSpec with AuthCo
 
     "user is not authorized" should {
       "return Unauthorized response" in {
-        userWithoutEori
+        userWithoutEori()
 
         val result = controller.getDeclarationStatus(mrn)(request)
         status(result) shouldBe UNAUTHORIZED

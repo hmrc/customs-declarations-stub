@@ -21,10 +21,11 @@ lazy val microservice = Project(appName, file("."))
     IntegrationTest / parallelExecution           := false,
     addTestReportOption(IntegrationTest, "int-test-reports")
   )
-  .settings(scoverageSettings)
+  // .settings(scoverageSettings)
   .settings(silencerSettings)
   .disablePlugins(JUnitXmlReportPlugin) //Required to prevent https://github.com/scalatest/scalatest/issues/1427
 
+/*
 lazy val scoverageSettings: Seq[Setting[_]] = Seq(
   coverageExcludedPackages := List(
     "<empty>",
@@ -39,6 +40,7 @@ lazy val scoverageSettings: Seq[Setting[_]] = Seq(
   coverageHighlighting := true,
   Test / parallelExecution := false
 )
+*/
 
 lazy val silencerSettings: Seq[Setting[_]] = {
   val silencerVersion = "1.7.12"

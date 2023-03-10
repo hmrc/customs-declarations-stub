@@ -68,10 +68,7 @@ class DeclarationStubController @Inject() (
       authenticate(headers) { client =>
         validatePayload(submitSchemas) { meta =>
           val conversationId = UUID.randomUUID().toString
-
-          notificationConnector
-            .notifyInDueCourse("submit", conversationId, None, client, meta)
-
+          notificationConnector.notifyInDueCourse("submit", conversationId, None, client, meta)
           Future.successful(Accepted.withHeaders("X-Conversation-ID" -> conversationId).as(ContentTypes.XML))
         }
       }
@@ -83,9 +80,7 @@ class DeclarationStubController @Inject() (
       authenticate(headers) { client =>
         validatePayload(submitSchemas) { meta =>
           val conversationId = UUID.randomUUID().toString
-
-          notificationConnector.notifyInDueCourse("amend", conversationId = conversationId, submissionConversationId = None, client, meta)
-
+          notificationConnector.notifyInDueCourse("amend", conversationId, None, client, meta)
           Future.successful(Accepted.withHeaders("X-Conversation-ID" -> conversationId).as(ContentTypes.XML))
         }
       }
@@ -99,14 +94,7 @@ class DeclarationStubController @Inject() (
           val cancellationConversationId = UUID.randomUUID().toString
           val submissionConversationId = req.headers.get("submissionConversationId")
 
-          notificationConnector.notifyInDueCourse(
-            "cancel",
-            conversationId = cancellationConversationId,
-            submissionConversationId = submissionConversationId,
-            client,
-            meta
-          )
-
+          notificationConnector.notifyInDueCourse("cancel", cancellationConversationId, submissionConversationId, client, meta)
           Future.successful(Accepted.withHeaders("X-Conversation-ID" -> cancellationConversationId).as(ContentTypes.XML))
         }
       }
@@ -141,7 +129,6 @@ class DeclarationStubController @Inject() (
     }
 
   private def validatePayload(schemas: Seq[String])(f: MetaData => Future[Result])(implicit req: Request[NodeSeq]): Future[Result] = {
-
     val xml = req.body.mkString
     logger.debug(s"Payload received:\n$xml")
 
@@ -176,14 +163,9 @@ class DeclarationStubController @Inject() (
     }
 
     result.recover {
-      case ex: SAXException =>
-        logAndRespond(s"Invalid XML: ${ex.getMessage}\n$xml", ex)
-
-      case ex: IOException =>
-        logAndRespond(s"Invalid XML: ${ex.getMessage}\n$xml", ex)
-
-      case ex: Exception =>
-        logAndRespond(s"Cannot deserialize XML: ${ex.getMessage}", ex)
+      case ex: SAXException => logAndRespond(s"Invalid XML: ${ex.getMessage}\n$xml", ex)
+      case ex: IOException  => logAndRespond(s"Invalid XML: ${ex.getMessage}\n$xml", ex)
+      case ex: Exception    => logAndRespond(s"Cannot deserialize XML: ${ex.getMessage}", ex)
     }.get
   }
 }

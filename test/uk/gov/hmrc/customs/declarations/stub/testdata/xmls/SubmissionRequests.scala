@@ -49,6 +49,7 @@ object SubmissionRequests {
       </Declaration>
     </md:MetaData>
 
+  // scalastyle:off
   val validAmendmentXml: Elem =
     <md:MetaData xmlns="urn:wco:datamodel:WCO:DEC-DMS:2" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:clm63055="urn:un:unece:uncefact:codelist:standard:UNECE:AgencyIdentificationCode:D12B" xmlns:ds="urn:wco:datamodel:WCO:MetaData_DS-DMS:2" xmlns:md="urn:wco:datamodel:WCO:DocumentMetaData-DMS:2" xsi:schemaLocation="urn:wco:datamodel:WCO:DocumentMetaData-DMS:2 ../DocumentMetaData_2_DMS.xsd">
       <md:WCODataModelVersionCode>3.6</md:WCODataModelVersionCode>
@@ -449,5 +450,5 @@ object SubmissionRequests {
         </ns3:SupervisingOffice>
       </ns3:Declaration>
     </MetaData>
-
+  // scalastyle:on
 }

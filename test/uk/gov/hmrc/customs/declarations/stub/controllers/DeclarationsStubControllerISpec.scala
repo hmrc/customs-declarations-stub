@@ -49,12 +49,9 @@ class DeclarationsStubControllerISpec extends IntegrationTestSpec {
   val fakeCancellationXmlRequest: FakeRequest[String] =
     buildFakeRequest(validCancellationXml.toString, "POST", cancellationUri)
 
-  val fakeAmendmentXmlRequest: FakeRequest[String] =
-    buildFakeRequest(validAmendmentXml.toString, "POST", cancellationUri)
-
   override def beforeEach(): Unit = {
     super.beforeEach()
-    authorizedUser
+    authorizedUser()
   }
 
   "DeclarationStubController" should {

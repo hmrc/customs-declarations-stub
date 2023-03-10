@@ -38,7 +38,7 @@ trait AuthConnectorMock extends BeforeAndAfterEach with MockitoSugar { self: Sui
 
   val authActionMock = new AuthActionImpl(authConnectorMock, stubControllerComponents())(global)
 
-  def authorizedUser: Unit =
+  def authorizedUser(): Unit =
     when(authConnectorMock.authorise(any[Predicate], any[Retrieval[Unit]])(any[HeaderCarrier], any[ExecutionContext]))
       .thenReturn(Future.successful(()))
 
@@ -46,7 +46,7 @@ trait AuthConnectorMock extends BeforeAndAfterEach with MockitoSugar { self: Sui
     when(authConnectorMock.authorise(any(), any[Retrieval[Enrolments]])(any(), any()))
       .thenReturn(Future.successful(user.enrolments))
 
-  def userWithoutEori: Unit =
+  def userWithoutEori(): Unit =
     when(authConnectorMock.authorise(any(), any[Retrieval[Enrolments]])(any(), any()))
       .thenReturn(Future.successful(Enrolments(Set())))
 

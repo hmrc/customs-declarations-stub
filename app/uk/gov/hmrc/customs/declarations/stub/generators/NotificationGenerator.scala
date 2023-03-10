@@ -16,7 +16,13 @@
 
 package uk.gov.hmrc.customs.declarations.stub.generators
 
-import uk.gov.hmrc.customs.declarations.stub.generators.NotificationGenerator.FunctionCode
+import uk.gov.hmrc.customs.declarations.stub.generators.NotificationGenerator.{
+  additionalInformation,
+  errorNode,
+  externalAmendment,
+  Amended,
+  FunctionCode
+}
 
 import java.time.{ZoneId, ZonedDateTime}
 import java.time.format.DateTimeFormatter
@@ -56,68 +62,39 @@ class NotificationGenerator @Inject() (notificationValueGenerator: NotificationV
       notificationResponse(status, declaration, issueAt.plusSeconds(index), lrn)
     }
 
-// scalastyle:off
+    if (statuses == List(Amended)) genExternalAmendmentNotifications(responses) else genNotification(responses)
+  }
+
+  // scalastyle:off
+  private def genExternalAmendmentNotifications(responses: Seq[Elem]): String =
+    <urn:MetaData xmlns:urn="urn:wco:datamodel:WCO:DocumentMetaData-DMS:2" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xs:schemaLocation="urn:wco:datamodel:WCO:DocumentMetaData-DMS:2 ../DocumentMetaData_2_DMS.xsd" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+      <md:WCODataModelVersionCode xmlns:md="urn:wco:datamodel:WCO:DocumentMetaData-DMS:2">3.6</md:WCODataModelVersionCode>
+      <md:WCOTypeName xmlns:md="urn:wco:datamodel:WCO:DocumentMetaData-DMS:2">RES</md:WCOTypeName>
+      <md:ResponsibleCountryCode/>
+      <md:ResponsibleAgencyName/>
+      <md:AgencyAssignedCustomizationCode/>
+      <md:AgencyAssignedCustomizationVersionCode/>
+      {responses}
+    </urn:MetaData>.toString
+  // scalastyle:on
+
+  // scalastyle:off
+  private def genNotification(responses: Seq[Elem]): String =
     <urn:MetaData xmlns:urn="urn:wco:datamodel:WCO:DocumentMetaData-DMS:2" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xs:schemaLocation="urn:wco:datamodel:WCO:DocumentMetaData-DMS:2 ../DocumentMetaData_2_DMS.xsd" xmlns:xs="http://www.w3.org/2001/XMLSchema">
       <md:WCODataModelVersionCode xmlns:md="urn:wco:datamodel:WCO:DocumentMetaData-DMS:2">3.6</md:WCODataModelVersionCode>
       <md:WCOTypeName xmlns:md="urn:wco:datamodel:WCO:DocumentMetaData-DMS:2">DEC</md:WCOTypeName>
       <md:ResponsibleCountryCode xmlns:md="urn:wco:datamodel:WCO:DocumentMetaData-DMS:2">NL</md:ResponsibleCountryCode>
       <md:ResponsibleAgencyName xmlns:md="urn:wco:datamodel:WCO:DocumentMetaData-DMS:2">Duane</md:ResponsibleAgencyName>
-      <md:AgencyAssignedCustomizationVersionCode xmlns:md="urn:wco:datamodel:WCO:DocumentMetaData-DMS:2">v2.1</md:AgencyAssignedCustomizationVersionCode>
-      {responses}
+      <md:AgencyAssignedCustomizationVersionCode xmlns:md="urn:wco:datamodel:WCO:DocumentMetaData-DMS:2">v2.1</md:AgencyAssignedCustomizationVersionCode>{
+      responses
+    }
     </urn:MetaData>.toString
-  }
-// scalastyle:on
+  // scalastyle:on
 
-// scalastyle:off
+  // scalastyle:off
   private def notificationResponse(code: FunctionCode, declaration: NodeSeq, issuedAt: ZonedDateTime, lrn: String): Elem = {
-
     val functionalReference = UUID.randomUUID().toString.replace("-", "")
-
-    val additionalInformation: NodeSeq = if (lrn.startsWith("Q")) {
-      <AdditionalInformation>
-        <StatementCode>Q01</StatementCode>
-        <StatementDescription>Urgent: Your Declaration or Goods are being queried. Customs authorities have
-          raised a query, or they have a further query for you. You must sign in to view and act on the query
-          message each time in order for your declaration to progress. Step 1. Search online for ‘Upload documents
-          and get messages for the Customs Declaration Service’ on the GOV.UK website. Step 2. Sign in using the
-          Government Gateway account that is linked to your EORI number. Step 3. Select the View messages option.
-        </StatementDescription>
-        <StatementTypeCode>QRY</StatementTypeCode>
-      </AdditionalInformation>
-    } else NodeSeq.Empty
-
-    val errorNode = if (code.isError) {
-      <_2_1:Error>
-        <_2_1:ValidationCode>CDS10020</_2_1:ValidationCode>
-        <_2_1:Pointer>
-          <_2_1:DocumentSectionCode>42A</_2_1:DocumentSectionCode>
-        </_2_1:Pointer>
-        <_2_1:Pointer>
-          <_2_1:DocumentSectionCode>67A</_2_1:DocumentSectionCode>
-        </_2_1:Pointer>
-        <_2_1:Pointer>
-          <_2_1:SequenceNumeric>1</_2_1:SequenceNumeric>
-          <_2_1:DocumentSectionCode>68A</_2_1:DocumentSectionCode>
-        </_2_1:Pointer>
-        <_2_1:Pointer>
-          <_2_1:SequenceNumeric>2</_2_1:SequenceNumeric>
-          <_2_1:DocumentSectionCode>02A</_2_1:DocumentSectionCode>
-          <_2_1:TagID>360</_2_1:TagID>
-        </_2_1:Pointer>
-      </_2_1:Error>
-    } else {
-      NodeSeq.Empty
-    }
-
-    val maybeNameCode: NodeSeq = if (code.nameCode.isDefined) {
-      <resp:Status>
-        <resp:NameCode>
-          {code.nameCode.get}
-        </resp:NameCode>
-      </resp:Status>
-    } else {
-      NodeSeq.Empty
-    }
+    val hasAdditionalInformationNode = lrn.startsWith("Q") && code != Amended
 
     <p:Response xmlns:p="urn:wco:datamodel:WCO:RES-DMS:2" xsi:schemaLocation="urn:wco:datamodel:WCO:RES-DMS:2 ../WCO_RES_2_DMS.xsd ">
       <p:FunctionCode>{code.functionCode}</p:FunctionCode>
@@ -125,13 +102,23 @@ class NotificationGenerator @Inject() (notificationValueGenerator: NotificationV
       <p:IssueDateTime>
         <p2:DateTimeString xmlns:p2="urn:wco:datamodel:WCO:Response_DS:DMS:2" formatCode="304">{format304.format(issuedAt)}</p2:DateTimeString>
       </p:IssueDateTime>
-      {additionalInformation}
-      {maybeNameCode}
+      {if (hasAdditionalInformationNode) additionalInformation else NodeSeq.Empty}
+      {nameCode(code)}
       {declaration}
-      {errorNode}
+      {if (code == Amended) externalAmendment else NodeSeq.Empty}
+      {if (code.isError) errorNode else NodeSeq.Empty}
     </p:Response>
   }
 // scalastyle:on
+
+  def nameCode(code: FunctionCode): NodeSeq =
+    if (code.nameCode.isDefined)
+      <resp:Status>
+        <resp:NameCode>
+          {code.nameCode.get}
+        </resp:NameCode>
+      </resp:Status>
+    else NodeSeq.Empty
 
   def generateAcceptNotificationWithRandomMRN(): Elem =
     generateAcceptNotification(notificationValueGenerator.generateMRN())
@@ -241,6 +228,66 @@ class NotificationGenerator @Inject() (notificationValueGenerator: NotificationV
 // scalastyle:on
 
 object NotificationGenerator {
+
+  val additionalInformation: NodeSeq =
+    <AdditionalInformation>
+      <StatementCode>Q01</StatementCode>
+      <StatementDescription>Urgent: Your Declaration or Goods are being queried. Customs authorities have
+        raised a query, or they have a further query for you. You must sign in to view and act on the query
+        message each time in order for your declaration to progress. Step 1. Search online for ‘Upload documents
+        and get messages for the Customs Declaration Service’ on the GOV.UK website. Step 2. Sign in using the
+        Government Gateway account that is linked to your EORI number. Step 3. Select the View messages option.
+      </StatementDescription>
+      <StatementTypeCode>QRY</StatementTypeCode>
+    </AdditionalInformation>
+
+  val errorNode: NodeSeq =
+    <_2_1:Error>
+      <_2_1:ValidationCode>CDS10020</_2_1:ValidationCode>
+      <_2_1:Pointer>
+        <_2_1:DocumentSectionCode>42A</_2_1:DocumentSectionCode>
+      </_2_1:Pointer>
+      <_2_1:Pointer>
+        <_2_1:DocumentSectionCode>67A</_2_1:DocumentSectionCode>
+      </_2_1:Pointer>
+      <_2_1:Pointer>
+        <_2_1:SequenceNumeric>1</_2_1:SequenceNumeric>
+        <_2_1:DocumentSectionCode>68A</_2_1:DocumentSectionCode>
+      </_2_1:Pointer>
+      <_2_1:Pointer>
+        <_2_1:SequenceNumeric>2</_2_1:SequenceNumeric>
+        <_2_1:DocumentSectionCode>02A</_2_1:DocumentSectionCode>
+        <_2_1:TagID>360</_2_1:TagID>
+      </_2_1:Pointer>
+    </_2_1:Error>
+
+  val externalAmendment: NodeSeq =
+    <_2_1:AdditionalInformation>
+        <_2_1:StatementDescription>Test amending item price</_2_1:StatementDescription>
+        <_2_1:StatementTypeCode>AES</_2_1:StatementTypeCode>
+        <_2_1:Pointer>
+          <_2_1:SequenceNumeric>1</_2_1:SequenceNumeric>
+          <_2_1:DocumentSectionCode>07B</_2_1:DocumentSectionCode>
+        </_2_1:Pointer>
+        <_2_1:Pointer>
+          <_2_1:SequenceNumeric>1</_2_1:SequenceNumeric>
+          <_2_1:DocumentSectionCode>06A</_2_1:DocumentSectionCode>
+        </_2_1:Pointer>
+      </_2_1:AdditionalInformation>
+      <_2_1:Amendment>
+        <_2_1:ChangeReasonCode>32</_2_1:ChangeReasonCode>
+        <_2_1:Pointer>
+          <_2_1:DocumentSectionCode>42A</_2_1:DocumentSectionCode>
+        </_2_1:Pointer>
+        <_2_1:Pointer>
+          <_2_1:DocumentSectionCode>67A</_2_1:DocumentSectionCode>
+        </_2_1:Pointer>
+        <_2_1:Pointer>
+          <_2_1:DocumentSectionCode>99B</_2_1:DocumentSectionCode>
+          <_2_1:TagID>465</_2_1:TagID>
+        </_2_1:Pointer>
+      </_2_1:Amendment>
+
   val characterValue: Map[Char, Int] = Map(
     '0' -> 0,
     '1' -> 1,

@@ -40,14 +40,13 @@ class NotificationConnector @Inject() (http: HttpClient, generator: Notification
   ec: ExecutionContext,
   actorSystem: ActorSystem
 ) {
-
   private val logger = Logger(this.getClass)
   private val defaultDelay = 0.seconds
 
   def notifyInDueCourse(
     operation: String,
     conversationId: String,
-    submissionConversationId: Option[String],
+    maybeSubmissionConversationId: Option[String],
     client: Client,
     meta: MetaData,
     duration: FiniteDuration = Duration(2, "secs")
@@ -55,7 +54,7 @@ class NotificationConnector @Inject() (http: HttpClient, generator: Notification
     actorSystem.scheduler.scheduleOnce(duration) {
       logger.info("Entering async request notification")
 
-      val (delay, xml, secondaryXml) = {
+      val (delay, primaryXml, maybeAuxiliaryXml) = {
         lazy val default = generator.generateAcceptNotificationWithRandomMRN().toString
 
         meta.declaration.fold(throw new Exception("No declaration found in metadata")) { declaration =>
@@ -63,55 +62,66 @@ class NotificationConnector @Inject() (http: HttpClient, generator: Notification
         }
       }
 
-      logger.debug(s"Scheduling primary notification call $xml")
-      sendNotificationWithDelay(client, conversationId, xml, delay)
-      for {
-        id <- submissionConversationId
-        xml <- secondaryXml
-      } {
-        logger.info("Sending DMSREJ notification with original Submission Id")
-        sendNotificationWithDelay(client, id, xml, delay + 5.seconds)
+      logger.debug(s"Scheduling transmission of primary notifications:\n$primaryXml")
+      sendNotificationWithDelay(client, conversationId, primaryXml, delay)
+
+      maybeAuxiliaryXml.map { auxiliaryXml =>
+        logger.info("Sending auxiliary notification with original X-Conversation-ID")
+        logger.debug(s"Scheduling transmission of auxiliary notifications:\n$auxiliaryXml")
+        val id = maybeSubmissionConversationId.fold(conversationId)(identity)
+        sendNotificationWithDelay(client, id, auxiliaryXml, delay + 5.seconds)
       }
     }
+
+  private val validPrompts = List('B', 'C', 'D', 'G', 'Q', 'R', 'U', 'X')
 
   // scalastyle:off
   private def generate(default: String, operation: String, declaration: Declaration): (FiniteDuration, String, Option[String]) = {
-    val validPrompts = List('B', 'C', 'D', 'G', 'Q', 'R', 'U', 'X')
-    val delay = extractDelay(declaration)
     val mrn = extractMrn(declaration)
-    val decType = declaration.typeCode
-    val lrn = declaration.functionalReferenceId
-    val borderTransportId = declaration.borderTransportMeans.flatMap(_.id)
+    val maybeLrn = declaration.functionalReferenceId
+    val maybeBorderTransportId = declaration.borderTransportMeans.flatMap(_.id)
 
-    val (primaryNotifications, secondaryNotifications) = lrn.fold(throw new Exception("No LRN found in declaration")) { lrn =>
-      operation match {
-        case "cancel" =>
-          val cancellationActionNotificationsSequence = getCancellationNotificationSequence(lrn.charAt(2))
-          val cancellationActionNotifications = generator.generate(lrn, mrn, cancellationActionNotificationsSequence)
-          val submissionActionNotification =
-            if (cancellationActionNotificationsSequence.last.equals(CustomsPositionGranted))
-              Some(generator.generate(lrn, mrn, List(Rejected(isError = false))))
-            else None
-          (cancellationActionNotifications, submissionActionNotification)
-        case "submit" =>
-          lrn.headOption match {
-            case Some(notificationPrompt) if validPrompts.contains(notificationPrompt) =>
-              (generator.generate(lrn, mrn, getSubmissionNotificationSequence(decType, notificationPrompt)), None)
-            case _ => (importsSpecificErrors(lrn, mrn, default), None)
-          }
-        case "amend" =>
-          val notificationSequence = borderTransportId match {
-            case Some("REJECTED") => List(Rejected(isError = true))
-            case Some("DENIED")   => List(CustomsPositionDenied)
-            case _                => List(CustomsPositionGranted)
-          }
-          (generator.generate(lrn, mrn, notificationSequence), None)
+    val (primaryNotifications, maybeAuxiliaryNotifications) =
+      maybeLrn.fold(throw new Exception("No LRN found in declaration")) { lrn =>
+        operation match {
+          case "cancel" =>
+            val cancellationActionNotificationsSequence = getCancellationNotificationSequence(lrn.charAt(2))
+            val cancellationActionNotifications = generator.generate(lrn, mrn, cancellationActionNotificationsSequence)
+            val submissionActionNotification =
+              if (!cancellationActionNotificationsSequence.last.equals(CustomsPositionGranted)) None
+              else Some(generator.generate(lrn, mrn, List(Rejected(isError = false))))
+
+            (cancellationActionNotifications, submissionActionNotification)
+
+          case "submit" =>
+            lrn.headOption match {
+              case Some(notificationPrompt) if validPrompts.contains(notificationPrompt) =>
+                val notificationForSubmission =
+                  generator.generate(lrn, mrn, getSubmissionNotificationSequence(declaration.typeCode, notificationPrompt))
+
+                val maybeNotificationForExternalAmendment =
+                  if (!maybeBorderTransportId.exists(_ == "EXTERNAL AMEND")) None
+                  else Some(generator.generate(lrn, mrn, List(Amended)))
+
+                (notificationForSubmission, maybeNotificationForExternalAmendment)
+
+              case _ => (importsSpecificErrors(lrn, mrn, default), None)
+            }
+
+          case "amend" =>
+            val notificationSequence = maybeBorderTransportId match {
+              case Some("REJECTED") => List(Rejected(isError = true))
+              case Some("DENIED")   => List(CustomsPositionDenied)
+              case _                => List(CustomsPositionGranted)
+            }
+            (generator.generate(lrn, mrn, notificationSequence), None)
+        }
       }
-    }
-    (delay, primaryNotifications, secondaryNotifications)
+    (extractDelay(declaration), primaryNotifications, maybeAuxiliaryNotifications)
   }
+  // scalastyle:on
 
-  private def extractMrn(declaration: Declaration) =
+  private def extractMrn(declaration: Declaration): String =
     declaration.id.getOrElse {
       val year = ZonedDateTime.now(ZoneId.of("Europe/London")).getYear % 100
       val country = "GB"
@@ -135,15 +145,12 @@ class NotificationConnector @Inject() (http: HttpClient, generator: Notification
     List(preliminaryNotification, finalNotification)
   }
 
+  // scalastyle:off
   private def getSubmissionNotificationSequence(decType: Option[String], notificationPrompt: Char): List[FunctionCode] = {
-    val arrivedDeclarationCodes = List('A', 'C', 'B', 'J')
-    val prelodgedDeclarationCodes = List('D', 'F', 'E', 'K')
-    val supplementaryDeclarationCodes = List('X', 'Y')
-
     val preliminaryNotifications = decType match {
-      case Some(typeCode) if arrivedDeclarationCodes.contains(typeCode.last) || supplementaryDeclarationCodes.contains(typeCode.last) =>
-        List(Accepted)
-      case Some(typeCode) if prelodgedDeclarationCodes.contains(typeCode.last) => List(Received, Accepted)
+      case Some(typeCode) if isAccepted(typeCode)            => List(Accepted)
+      case Some(typeCode) if isReceivedAndAccepted(typeCode) => List(Received, Accepted)
+      case _                                                 => List.empty
     }
 
     notificationPrompt match {
@@ -158,6 +165,16 @@ class NotificationConnector @Inject() (http: HttpClient, generator: Notification
     }
   }
   // scalastyle:on
+
+  private lazy val arrivedDeclarationCodes = List('A', 'C', 'B', 'J')
+  private lazy val prelodgedDeclarationCodes = List('D', 'F', 'E', 'K')
+  private lazy val supplementaryDeclarationCodes = List('X', 'Y')
+
+  private def isAccepted(typeCode: String): Boolean =
+    arrivedDeclarationCodes.contains(typeCode.last) || supplementaryDeclarationCodes.contains(typeCode.last)
+
+  private def isReceivedAndAccepted(typeCode: String): Boolean =
+    prelodgedDeclarationCodes.contains(typeCode.last)
 
   private def extractDelay(declaration: Declaration): FiniteDuration =
     declaration.functionalReferenceId.take(2).toSeq match {
@@ -183,7 +200,7 @@ class NotificationConnector @Inject() (http: HttpClient, generator: Notification
     implicit rds: HttpReads[HttpResponse],
     ec: ExecutionContext
   ): Unit =
-    (new Timer).schedule(
+    (new Timer()).schedule(
       new TimerTask() {
         val payload = List(
           HeaderNames.AUTHORIZATION -> s"Bearer ${client.token}",

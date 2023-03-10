@@ -37,13 +37,12 @@ trait IntegrationTestSpec extends UnitTestSpec with AuthConnectorMock with Guice
     GuiceApplicationBuilder()
       .overrides(bind[AuthConnector].to(authConnectorMock), bind[NotificationConnector].to(notificationConnectorMock))
       .configure(Map("mongodb.uri" -> s"mongodb://localhost/$databaseName"))
-      .build
+      .build()
 
   implicit val actorSystem = ActorSystem()
 
-  override def beforeEach() {
+  override def beforeEach(): Unit =
     reset(notificationConnectorMock)
-  }
 
   def instanceOf[T](implicit classTag: ClassTag[T]): T = app.injector.instanceOf[T]
 }

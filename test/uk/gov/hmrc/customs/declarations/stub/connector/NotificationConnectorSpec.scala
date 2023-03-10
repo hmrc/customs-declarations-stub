@@ -18,7 +18,7 @@ package uk.gov.hmrc.customs.declarations.stub.connector
 
 import akka.actor.ActorSystem
 import org.mockito.ArgumentCaptor
-import org.mockito.ArgumentMatchers.{any, anyString, eq => meq}
+import org.mockito.ArgumentMatchers.{any, anyString}
 import org.mockito.Mockito._
 import uk.gov.hmrc.customs.declarations.stub.base.UnitTestSpec
 import uk.gov.hmrc.customs.declarations.stub.config.AppConfig
