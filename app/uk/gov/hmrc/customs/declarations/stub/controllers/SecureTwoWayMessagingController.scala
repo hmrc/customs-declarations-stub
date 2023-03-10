@@ -26,7 +26,7 @@ class SecureTwoWayMessagingController @Inject() (cc: ControllerComponents) exten
 
   private def langCookieValue(implicit request: Request[AnyContent]) = request.cookies.get("PLAY_LANG").getOrElse(Cookie("", "")).value
 
-  def messages(): Action[AnyContent] = Action { implicit request =>
+  val messages: Action[AnyContent] = Action { implicit request =>
     Ok(messagesResponse(langCookieValue))
   }
 
@@ -43,6 +43,7 @@ class SecureTwoWayMessagingController @Inject() (cc: ControllerComponents) exten
   }
 }
 
+// scalastyle:off
 object SecureTwoWayMessagingController {
   def messagesResponse(language: String) = {
     val lang = if (language == "cy") language else ""
@@ -244,6 +245,7 @@ object SecureTwoWayMessagingController {
        |    </div>
        |</div>""".stripMargin
   }
+// scalastyle:on
 
   def replySubmissionResult(language: String) = {
     val lang = if (language == "cy") language else ""

@@ -17,7 +17,7 @@
 package uk.gov.hmrc.customs.declarations.stub.controllers
 
 import org.mockito.ArgumentMatchers.{anyString, eq => eqTo}
-import org.mockito.Mockito._
+import org.mockito.MockitoSugar.{mock, reset, verify, when}
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import uk.gov.hmrc.customs.declarations.stub.base.{AuthConnectorMock, UnitTestSpec}

@@ -20,6 +20,5 @@ import org.scalatest.concurrent.ScalaFutures
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AnyWordSpec
 import org.scalatest.{BeforeAndAfterEach, EitherValues, OptionValues}
-import org.scalatestplus.mockito.MockitoSugar
 
-trait UnitTestSpec extends AnyWordSpec with BeforeAndAfterEach with EitherValues with Matchers with MockitoSugar with OptionValues with ScalaFutures
+trait UnitTestSpec extends AnyWordSpec with BeforeAndAfterEach with EitherValues with Matchers with OptionValues with ScalaFutures

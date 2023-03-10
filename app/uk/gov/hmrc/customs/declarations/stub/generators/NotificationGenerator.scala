@@ -59,7 +59,7 @@ class NotificationGenerator @Inject() (notificationValueGenerator: NotificationV
     }
 
     val responses = statuses.zipWithIndex.map { case (status, index) =>
-      notificationResponse(status, declaration, issueAt.plusSeconds(index), lrn)
+      notificationResponse(status, declaration, issueAt.plusSeconds(index.toLong), lrn)
     }
 
     if (statuses == List(Amended)) genExternalAmendmentNotifications(responses) else genNotification(responses)

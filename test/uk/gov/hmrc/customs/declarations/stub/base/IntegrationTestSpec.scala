@@ -17,7 +17,7 @@
 package uk.gov.hmrc.customs.declarations.stub.base
 
 import akka.actor.ActorSystem
-import org.mockito.Mockito.reset
+import org.mockito.MockitoSugar.{mock, reset}
 import org.scalatestplus.play.guice.GuiceOneAppPerSuite
 import play.api.Application
 import play.api.inject.bind
@@ -29,14 +29,11 @@ import scala.reflect.ClassTag
 
 trait IntegrationTestSpec extends UnitTestSpec with AuthConnectorMock with GuiceOneAppPerSuite {
 
-  val databaseName = "test-customs-declarations-stub"
-
   val notificationConnectorMock: NotificationConnector = mock[NotificationConnector]
 
   override implicit lazy val app: Application =
     GuiceApplicationBuilder()
       .overrides(bind[AuthConnector].to(authConnectorMock), bind[NotificationConnector].to(notificationConnectorMock))
-      .configure(Map("mongodb.uri" -> s"mongodb://localhost/$databaseName"))
       .build()
 
   implicit val actorSystem = ActorSystem()

@@ -19,7 +19,8 @@ package uk.gov.hmrc.customs.declarations.stub.connector
 import akka.actor.ActorSystem
 import org.mockito.ArgumentCaptor
 import org.mockito.ArgumentMatchers.{any, anyString}
-import org.mockito.Mockito._
+import org.mockito.MockitoSugar.{mock, reset, times, verify, when}
+import org.mockito.stubbing.ScalaOngoingStubbing
 import uk.gov.hmrc.customs.declarations.stub.base.UnitTestSpec
 import uk.gov.hmrc.customs.declarations.stub.config.AppConfig
 import uk.gov.hmrc.customs.declarations.stub.generators.{NotificationGenerator, NotificationValueGenerator}
@@ -66,9 +67,9 @@ class NotificationConnectorSpec extends UnitTestSpec {
     }
   }
 
-  private def returnResponseForRequest(eventualResponse: Future[HttpResponse]) =
+  private def returnResponseForRequest(eventualResponse: Future[HttpResponse]): ScalaOngoingStubbing[Future[HttpResponse]] =
     when(
       mockHttpClient
-        .POSTString(anyString, anyString, any[Seq[(String, String)]])(any[HttpReads[HttpResponse]](), any[HeaderCarrier](), any[ExecutionContext])
+        .POSTString(anyString(), anyString(), any[Seq[(String, String)]])(any[HttpReads[HttpResponse]](), any[HeaderCarrier](), any[ExecutionContext])
     ).thenReturn(eventualResponse)
 }

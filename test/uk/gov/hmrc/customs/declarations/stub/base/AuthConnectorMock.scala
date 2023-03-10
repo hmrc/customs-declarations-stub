@@ -17,9 +17,8 @@
 package uk.gov.hmrc.customs.declarations.stub.base
 
 import org.mockito.ArgumentMatchers.any
-import org.mockito.Mockito._
+import org.mockito.MockitoSugar.{mock, reset, when}
 import org.scalatest.{BeforeAndAfterEach, Suite}
-import org.scalatestplus.mockito.MockitoSugar
 import play.api.test.Helpers._
 import uk.gov.hmrc.auth.core._
 import uk.gov.hmrc.auth.core.authorise.Predicate
@@ -32,7 +31,7 @@ import uk.gov.hmrc.http.HeaderCarrier
 import scala.concurrent.ExecutionContext.global
 import scala.concurrent.{ExecutionContext, Future}
 
-trait AuthConnectorMock extends BeforeAndAfterEach with MockitoSugar { self: Suite =>
+trait AuthConnectorMock extends BeforeAndAfterEach { self: Suite =>
 
   val authConnectorMock: AuthConnector = mock[AuthConnector]
 
