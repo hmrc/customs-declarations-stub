@@ -44,8 +44,8 @@ class DeclarationsInformationStubController @Inject() (
     val response = declarationStatusResponseBuilder.buildDeclarationStatus(request.eori, mrn)
 
     response match {
-      case SuccessfulResponse(_) => Ok(response.body)
-      case NotFoundResponse      => NotFound(response.body)
+      case NotFoundResponse => NotFound(response.body)
+      case _                => Ok(response.body)
     }
   }
 }

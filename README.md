@@ -33,9 +33,10 @@ The third character can be used to determine the notification response of a canc
 - Any other letter - Stub sends 'Customs Position Denied' indicated a denied cancellation request
 
 #### Amendments
-The ID field of Means of Border Transport can determine the response of an amendment request (This field is modified by adding a vehicle ID on /departure-transport):
+The ID field of Means of Border Transport can determine the response of an amendment request (This field is modified by adding a vehicle ID on /border-transport):
 - 'DENIED' - Return a 'Customs Position Denied' notification to indicate a denied request (Declaration in holding state).
 - 'REJECTED' - Return a 'Rejected' notification to indicate a rejected amendment that has errors.
+- 'EXTERNAL AMEND' Return an 'External Amendment' notification to indicate that the "Customs" made a modification to the declaration
 - Any other value - Return a 'Customs Position Granted' indicating a successful amendment.
 
 ### File Upload

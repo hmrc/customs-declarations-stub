@@ -5,7 +5,7 @@
 
 POST          /                                               uk.gov.hmrc.customs.declarations.stub.controllers.DeclarationStubController.submit
 
-POST          /amendment-requests                             uk.gov.hmrc.customs.declarations.stub.controllers.DeclarationStubController.amend
+POST          /amend                                          uk.gov.hmrc.customs.declarations.stub.controllers.DeclarationStubController.amend
 
 POST          /cancellation-requests                          uk.gov.hmrc.customs.declarations.stub.controllers.DeclarationStubController.cancel
 

@@ -21,8 +21,9 @@ import uk.gov.hmrc.customs.declarations.stub.models.declarationstatus.Declaratio
 
 class DeclarationStatusResponseBuilder {
 
-  def buildDeclarationStatus(eori: String, mrn: String): DeclarationStatusResponse = mrn match {
-    case mrn if mrn.endsWith("9999") => NotFoundResponse
-    case _                           => SuccessfulResponse(successfulResponseBody(eori, mrn))
-  }
+  def buildDeclarationStatus(eori: String, mrn: String): DeclarationStatusResponse =
+    mrn match {
+      case mrn if mrn.endsWith("9999") => NotFoundResponse
+      case _                           => SuccessfulResponse(successfulResponseBody(eori, mrn))
+    }
 }
