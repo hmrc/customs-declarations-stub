@@ -31,17 +31,16 @@ import javax.inject.Inject
 import scala.xml._
 
 class NotificationGenerator @Inject() (notificationValueGenerator: NotificationValueGenerator) {
+
   private def adjustTime(time: ZonedDateTime): String =
     time.format(DateTimeFormatter.ofPattern("yyyyMMddHHmmssX"))
 
-  val firstDate = ZonedDateTime.now(ZoneId.of("Europe/London"))
-  val secondDate = firstDate.plusMinutes(5)
-  val thirdDate = firstDate.plusMinutes(10)
-
-  val format304: DateTimeFormatter = DateTimeFormatter.ofPattern("yyyyMMddHHmmssX")
+  private val format304: DateTimeFormatter = DateTimeFormatter.ofPattern("yyyyMMddHHmmssX")
 
   def generate(lrn: String, mrn: String, statuses: Seq[FunctionCode]): String = {
-    val issueAt = ZonedDateTime.now(ZoneId.of("Europe/London"))
+    val issueAt =
+      if (statuses == List(Amended)) ZonedDateTime.now(ZoneId.of("Europe/London")).plusMinutes(5)
+      else ZonedDateTime.now(ZoneId.of("Europe/London"))
 
     val declaration = {
       val acceptanceDateTime: NodeSeq = if (!lrn.startsWith("Q")) {
@@ -123,7 +122,11 @@ class NotificationGenerator @Inject() (notificationValueGenerator: NotificationV
   def generateAcceptNotificationWithRandomMRN(): Elem =
     generateAcceptNotification(notificationValueGenerator.generateMRN())
 
-// scalastyle:off
+  private val firstDate = ZonedDateTime.now(ZoneId.of("Europe/London"))
+  private val secondDate = firstDate.plusMinutes(5)
+  private val thirdDate = firstDate.plusMinutes(10)
+
+  // scalastyle:off
   def generateAcceptNotification(mrn: String = "18GBJCM3USAFD2WD51"): Elem =
     <md:MetaData xmlns:md="urn:wco:datamodel:WCO:DocumentMetaData-DMS:2">
       <md:WCODataModelVersionCode>3.6</md:WCODataModelVersionCode>
