@@ -38,6 +38,7 @@ The ID field of Means of Border Transport can determine the response of an amend
 - 'REJECTED' - Return a 'Rejected' notification to indicate a rejected amendment that has errors.
 - 'EXTERNAL AMEND' Return an 'External Amendment' notification to indicate that the "Customs" made a modification to the declaration
 - Any other value - Return a 'Customs Position Granted' indicating a successful amendment.
+Note that to receive any sort of 'Amendment' notification the LRN must start with one of 'B', 'C', 'D', 'G', 'Q', 'R', 'U', 'X'.
 
 ### File Upload
 This stub also mocks the '/file-upload' endpoint of the Cust Dec API. This endpoint returns fake S3 urls that actually point 
