@@ -40,6 +40,12 @@ The ID field of Means of Border Transport can determine the response of an amend
 - Any other value - Return a 'Customs Position Granted' indicating a successful amendment.
 Note that to receive any sort of 'Amendment' notification the LRN must start with one of 'B', 'C', 'D', 'G', 'Q', 'R', 'U', 'X'.
 
+#### No Notifications
+Sometimes you may wish to test the behaviour of a service when no notifications are returned by DMS. 
+
+To achieve this you can set the ID field of Means of Border Transport (This field is modified by adding a vehicle ID on /border-transport) to the value "NONOTIFY". 
+Any submission of a declaration to the stub with this value will suppress any expected notifications from being sent by the stub.  
+
 ### File Upload
 This stub also mocks the '/file-upload' endpoint of the Cust Dec API. This endpoint returns fake S3 urls that actually point 
 to the testOnly endpoint '/cds-file-upload-service/test-only/s3-bucket' of the CDS File Upload Frontend service.
