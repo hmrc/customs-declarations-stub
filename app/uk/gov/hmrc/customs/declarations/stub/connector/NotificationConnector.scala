@@ -54,22 +54,24 @@ class NotificationConnector @Inject() (http: HttpClient, generator: Notification
     actorSystem.scheduler.scheduleOnce(duration) {
       logger.info("Entering async request notification")
 
-      val (delay, primaryXml, maybeAuxiliaryXml) = {
-        lazy val default = generator.generateAcceptNotificationWithRandomMRN().toString
+      meta.declaration.fold(throw new Exception("No declaration found in metadata")) { declaration =>
+        if (declaration.borderTransportMeans.flatMap(_.id) != Some("NONOTIFY")) {
 
-        meta.declaration.fold(throw new Exception("No declaration found in metadata")) { declaration =>
-          generate(default, operation, declaration)
+          val (delay, primaryXml, maybeAuxiliaryXml) = {
+            lazy val default = generator.generateAcceptNotificationWithRandomMRN().toString
+            generate(default, operation, declaration)
+          }
+
+          logger.debug(s"Scheduling transmission of primary notifications:\n$primaryXml")
+          sendNotificationWithDelay(client, conversationId, primaryXml, delay)
+
+          maybeAuxiliaryXml.map { auxiliaryXml =>
+            logger.info("Sending auxiliary notification with original X-Conversation-ID")
+            logger.debug(s"Scheduling transmission of auxiliary notifications:\n$auxiliaryXml")
+            val id = maybeSubmissionConversationId.fold(conversationId)(identity)
+            sendNotificationWithDelay(client, id, auxiliaryXml, delay + 5.seconds)
+          }
         }
-      }
-
-      logger.debug(s"Scheduling transmission of primary notifications:\n$primaryXml")
-      sendNotificationWithDelay(client, conversationId, primaryXml, delay)
-
-      maybeAuxiliaryXml.map { auxiliaryXml =>
-        logger.info("Sending auxiliary notification with original X-Conversation-ID")
-        logger.debug(s"Scheduling transmission of auxiliary notifications:\n$auxiliaryXml")
-        val id = maybeSubmissionConversationId.fold(conversationId)(identity)
-        sendNotificationWithDelay(client, id, auxiliaryXml, delay + 5.seconds)
       }
     }
 
