@@ -42,23 +42,14 @@ class NotificationGenerator @Inject() (notificationValueGenerator: NotificationV
       if (statuses == List(Amended)) ZonedDateTime.now(ZoneId.of("Europe/London")).plusMinutes(5)
       else ZonedDateTime.now(ZoneId.of("Europe/London"))
 
-    val declaration = {
-      val acceptanceDateTime: NodeSeq = if (!lrn.startsWith("Q")) {
-        <p:AcceptanceDateTime>
-          <p2:DateTimeString xmlns:p2="urn:wco:datamodel:WCO:Response_DS:DMS:2" formatCode="304">{format304.format(issueAt)}</p2:DateTimeString>
-        </p:AcceptanceDateTime>
-      } else NodeSeq.Empty
-
-      <p:Declaration>
-        {acceptanceDateTime}
-        <p:FunctionalReferenceID>{lrn}</p:FunctionalReferenceID>
-        <p:ID>{mrn}</p:ID>
-        <p:VersionID>1</p:VersionID>
-      </p:Declaration>
-    }
+    val acceptanceDateTime: NodeSeq = if (!lrn.startsWith("Q")) {
+      <p:AcceptanceDateTime>
+        <p2:DateTimeString xmlns:p2="urn:wco:datamodel:WCO:Response_DS:DMS:2" formatCode="304">{format304.format(issueAt)}</p2:DateTimeString>
+      </p:AcceptanceDateTime>
+    } else NodeSeq.Empty
 
     val responses = statuses.zipWithIndex.map { case (status, index) =>
-      notificationResponse(status, declaration, issueAt.plusSeconds(index.toLong), lrn)
+      notificationResponse(status, mrn, acceptanceDateTime, issueAt.plusSeconds(index.toLong), lrn)
     }
 
     if (statuses == List(Amended)) genExternalAmendmentNotifications(responses) else genNotification(responses)
@@ -91,7 +82,7 @@ class NotificationGenerator @Inject() (notificationValueGenerator: NotificationV
   // scalastyle:on
 
   // scalastyle:off
-  private def notificationResponse(code: FunctionCode, declaration: NodeSeq, issuedAt: ZonedDateTime, lrn: String): Elem = {
+  private def notificationResponse(code: FunctionCode, mrn: String, acceptanceDateTime: NodeSeq, issuedAt: ZonedDateTime, lrn: String): Elem = {
     val functionalReference = UUID.randomUUID().toString.replace("-", "")
     val hasAdditionalInformationNode = lrn.startsWith("Q") && code != Amended
 
@@ -103,7 +94,12 @@ class NotificationGenerator @Inject() (notificationValueGenerator: NotificationV
       </p:IssueDateTime>
       {if (hasAdditionalInformationNode) additionalInformation else NodeSeq.Empty}
       {nameCode(code)}
-      {declaration}
+      <p:Declaration>
+        {acceptanceDateTime}
+        <p:FunctionalReferenceID>{lrn}</p:FunctionalReferenceID>
+        <p:ID>{mrn}</p:ID>
+        <p:VersionID>{if (code == Amended) 2 else 1}</p:VersionID>
+      </p:Declaration>
       {if (code == Amended) externalAmendment else NodeSeq.Empty}
       {if (code.isError) errorNode else NodeSeq.Empty}
     </p:Response>
