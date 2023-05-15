@@ -27,6 +27,11 @@ If LRN starts with:
 
 In addition, if the 2nd character of the LRN is a digit (0-9) you can control the delay in seconds of the notification delivery.
 
+Also note that, in case of **pre-lodged** declarations with LRNs like 'C' and 'Q', the stub could also send more than two notifications to the Exports Backend, so requiring more time, by the latter, to fully parse them.
+And, due to this additional time for the parsing, also causing the "Confirmation" page on the Frontend side to show the "*declaration is still being checked*" message.
+
+-
+
 #### Cancellations
 The third character can be used to determine the notification response of a cancellation request:
 - 'S' - Stub sends 'Customs Position Granted' indicating successful cancellation
