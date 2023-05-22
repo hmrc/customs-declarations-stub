@@ -27,8 +27,14 @@ If LRN starts with:
 
 In addition, if the 2nd character of the LRN is a digit (0-9) you can control the delay in seconds of the notification delivery.
 
-Also note that, in case of **pre-lodged** declarations with LRNs like 'C' and 'Q', the stub could also send more than two notifications to the Exports Backend, so requiring more time, by the latter, to fully parse them.
-And, due to this additional time for the parsing, also causing the "Confirmation" page on the Frontend side to show the "*declaration is still being checked*" message.
+Note that, frontend side, the **content** of the "Confirmation" page displayed after the declaration submission will be specific only for the following LRN's initials:
+- 'C' - 'Cleared' status (only if an 'Arrived' declaration)
+- 'D' - 'Additional Documents Required' status
+- 'G' - 'Accepted' status
+- 'R' - 'Received' status
+- 'U' - 'Undergoing Physical Check' status
+
+For other LRN's initials the "Confirmation" page will just show a generic "*the declaration is still being checked*".
 
 -
 
