@@ -46,8 +46,9 @@ The third character can be used to determine the notification response of a canc
 #### Amendments
 The ID field of Means of Border Transport can determine the response of an amendment request (This field is modified by adding a vehicle ID on /border-transport):
 - 'DENIED' - Return a 'Customs Position Denied' notification to indicate a denied request (Declaration in holding state).
-- 'REJECTED' - Return a 'Rejected' notification to indicate a rejected amendment that has errors.
 - 'EXTERNAL AMEND' Return an 'External Amendment' notification to indicate that the "Customs" made a modification to the declaration
+- 'PENDING' - Does not return any notification. Just accept the submission.
+- 'REJECTED' - Return a 'Rejected' notification to indicate a rejected amendment that has errors.
 - Any other value - Return a 'Customs Position Granted' indicating a successful amendment.
 Note that to receive any sort of 'Amendment' notification the LRN must start with one of 'B', 'C', 'D', 'G', 'Q', 'R', 'U', 'X'.
 
