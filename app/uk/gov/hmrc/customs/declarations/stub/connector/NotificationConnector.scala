@@ -62,8 +62,10 @@ class NotificationConnector @Inject() (http: HttpClient, generator: Notification
             generate(default, operation, declaration)
           }
 
-          logger.debug(s"Scheduling transmission of primary notifications:\n$primaryXml")
-          sendNotificationWithDelay(client, conversationId, primaryXml, delay)
+          if (primaryXml.trim.length > 0) {
+            logger.debug(s"Scheduling transmission of primary notifications:\n$primaryXml")
+            sendNotificationWithDelay(client, conversationId, primaryXml, delay)
+          } else logger.debug(s"No notification will be sent (probably due to the 'PENDING' flag)")
 
           maybeAuxiliaryXml.map { auxiliaryXml =>
             logger.info("Sending auxiliary notification with original X-Conversation-ID")
@@ -112,11 +114,12 @@ class NotificationConnector @Inject() (http: HttpClient, generator: Notification
 
           case "amend" =>
             val notificationSequence = maybeBorderTransportId match {
-              case Some("REJECTED") => List(Rejected(isError = true))
               case Some("DENIED")   => List(CustomsPositionDenied)
+              case Some("PENDING")  => List.empty
+              case Some("REJECTED") => List(Rejected(isError = true))
               case _                => List(CustomsPositionGranted)
             }
-            (generator.generate(lrn, mrn, notificationSequence), None)
+            (if (notificationSequence.isEmpty) "" else generator.generate(lrn, mrn, notificationSequence), None)
         }
       }
     (extractDelay(declaration), primaryNotifications, maybeAuxiliaryNotifications)
