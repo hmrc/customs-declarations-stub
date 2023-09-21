@@ -181,24 +181,49 @@ object NotificationGenerator {
 
   val errorNode: NodeSeq =
     <_2_1:Error>
-      <_2_1:Description>Weight appears too high per item</_2_1:Description>
-      <_2_1:ValidationCode>CDS10020</_2_1:ValidationCode>
+      <_2_1:ValidationCode>CDS12056</_2_1:ValidationCode>
       <_2_1:Pointer>
         <_2_1:DocumentSectionCode>42A</_2_1:DocumentSectionCode>
       </_2_1:Pointer>
       <_2_1:Pointer>
-        <_2_1:DocumentSectionCode>67A</_2_1:DocumentSectionCode>
-      </_2_1:Pointer>
-      <_2_1:Pointer>
         <_2_1:SequenceNumeric>1</_2_1:SequenceNumeric>
-        <_2_1:DocumentSectionCode>68A</_2_1:DocumentSectionCode>
-      </_2_1:Pointer>
-      <_2_1:Pointer>
-        <_2_1:SequenceNumeric>2</_2_1:SequenceNumeric>
-        <_2_1:DocumentSectionCode>02A</_2_1:DocumentSectionCode>
-        <_2_1:TagID>360</_2_1:TagID>
+        <_2_1:DocumentSectionCode>17C</_2_1:DocumentSectionCode>
+        <_2_1:TagID>R145</_2_1:TagID>
       </_2_1:Pointer>
     </_2_1:Error>
+      <_2_1:Error>
+        <_2_1:ValidationCode>CDS12056</_2_1:ValidationCode>
+        <_2_1:Pointer>
+          <_2_1:DocumentSectionCode>42A</_2_1:DocumentSectionCode>
+        </_2_1:Pointer>
+        <_2_1:Pointer>
+          <_2_1:DocumentSectionCode>67A</_2_1:DocumentSectionCode>
+        </_2_1:Pointer>
+        <_2_1:Pointer>
+          <_2_1:DocumentSectionCode>68A</_2_1:DocumentSectionCode>
+        </_2_1:Pointer>
+        <_2_1:Pointer>
+          <_2_1:DocumentSectionCode>02A</_2_1:DocumentSectionCode>
+          <_2_1:TagID>D006</_2_1:TagID>
+        </_2_1:Pointer>
+      </_2_1:Error>
+      <_2_1:Error>
+        <_2_1:Description>Weight appears too high per item</_2_1:Description>
+        <_2_1:ValidationCode>CDS12056</_2_1:ValidationCode>
+        <_2_1:Pointer>
+          <_2_1:DocumentSectionCode>42A</_2_1:DocumentSectionCode>
+        </_2_1:Pointer>
+        <_2_1:Pointer>
+          <_2_1:DocumentSectionCode>67A</_2_1:DocumentSectionCode>
+        </_2_1:Pointer>
+        <_2_1:Pointer>
+          <_2_1:DocumentSectionCode>68A</_2_1:DocumentSectionCode>
+        </_2_1:Pointer>
+        <_2_1:Pointer>
+          <_2_1:DocumentSectionCode>02A</_2_1:DocumentSectionCode>
+          <_2_1:TagID>D031</_2_1:TagID>
+        </_2_1:Pointer>
+      </_2_1:Error>
 
   val externalAmendment: NodeSeq =
     <_2_1:AdditionalInformation>
