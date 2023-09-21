@@ -181,6 +181,7 @@ object NotificationGenerator {
 
   val errorNode: NodeSeq =
     <_2_1:Error>
+      <_2_1:Description>Weight appears too high per item</_2_1:Description>
       <_2_1:ValidationCode>CDS10020</_2_1:ValidationCode>
       <_2_1:Pointer>
         <_2_1:DocumentSectionCode>42A</_2_1:DocumentSectionCode>
