@@ -16,13 +16,7 @@
 
 package uk.gov.hmrc.customs.declarations.stub.generators
 
-import uk.gov.hmrc.customs.declarations.stub.generators.NotificationGenerator.{
-  additionalInformation,
-  errorNode,
-  externalAmendment,
-  Amended,
-  FunctionCode
-}
+import uk.gov.hmrc.customs.declarations.stub.generators.NotificationGenerator.{additionalInformation, externalAmendment, Amended, FunctionCode}
 
 import java.time.{ZoneId, ZonedDateTime}
 import java.time.format.DateTimeFormatter
@@ -85,6 +79,11 @@ class NotificationGenerator @Inject() (notificationValueGenerator: NotificationV
   private def notificationResponse(code: FunctionCode, mrn: String, acceptanceDateTime: NodeSeq, issuedAt: ZonedDateTime, lrn: String): Elem = {
     val functionalReference = UUID.randomUUID().toString.replace("-", "")
     val hasAdditionalInformationNode = lrn.startsWith("Q") && code != Amended
+
+    val errorNode = if (lrn.startsWith("BCDS")) {
+      val CDSErrorCode = lrn.substring(1, 9)
+      ErrorsGenerator.errors.get(CDSErrorCode).getOrElse(ErrorsGenerator.errors("CDS10020"))
+    } else ErrorsGenerator.errors("CDS10020")
 
     <p:Response xmlns:p="urn:wco:datamodel:WCO:RES-DMS:2" xsi:schemaLocation="urn:wco:datamodel:WCO:RES-DMS:2 ../WCO_RES_2_DMS.xsd ">
       <p:FunctionCode>{code.functionCode}</p:FunctionCode>
@@ -178,27 +177,6 @@ object NotificationGenerator {
       </StatementDescription>
       <StatementTypeCode>QRY</StatementTypeCode>
     </AdditionalInformation>
-
-  val errorNode: NodeSeq =
-    <_2_1:Error>
-      <_2_1:Description>Weight appears too high per item</_2_1:Description>
-      <_2_1:ValidationCode>CDS10020</_2_1:ValidationCode>
-      <_2_1:Pointer>
-        <_2_1:DocumentSectionCode>42A</_2_1:DocumentSectionCode>
-      </_2_1:Pointer>
-      <_2_1:Pointer>
-        <_2_1:DocumentSectionCode>67A</_2_1:DocumentSectionCode>
-      </_2_1:Pointer>
-      <_2_1:Pointer>
-        <_2_1:SequenceNumeric>1</_2_1:SequenceNumeric>
-        <_2_1:DocumentSectionCode>68A</_2_1:DocumentSectionCode>
-      </_2_1:Pointer>
-      <_2_1:Pointer>
-        <_2_1:SequenceNumeric>2</_2_1:SequenceNumeric>
-        <_2_1:DocumentSectionCode>02A</_2_1:DocumentSectionCode>
-        <_2_1:TagID>360</_2_1:TagID>
-      </_2_1:Pointer>
-    </_2_1:Error>
 
   val externalAmendment: NodeSeq =
     <_2_1:AdditionalInformation>

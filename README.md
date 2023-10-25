@@ -15,7 +15,7 @@ This application provides a stubs for the following services:
 If you send a declaration with specific letter at the beginning of the LRN you can control what notifications you receive.
 
 If LRN starts with:
-- 'B' - Stub will send a 'Rejected' notification
+- 'B' - Stub will send a 'Rejected' notification (see section below on how to specify what error code is returned)
 - 'C' - Stub will send a 'Cleared' notification
 - 'D' - Stub will send an 'Accepted' and an 'Additional Documents Required' notifications
 - 'G' - Stub will send an 'Accepted' notification
@@ -33,6 +33,10 @@ Note that, frontend side, the **content** of the "Confirmation" page displayed a
 - 'G' - 'Accepted' status
 - 'R' - 'Received' status
 - 'U' - 'Undergoing Physical Check' status
+
+For 'Rejected' notifications it is possible to control what error codes are returned by the stub. If LRN starts with 'BCDS' then the stub will treat the next four digits as the
+CDS error code you want it to return. Not all error codes are supported, if the code requested is not supported then the stub by default will return a CDS10020 error. Currently
+supported codes are: CDS10020, CDS12056, CDS12062 & CDS12119
 
 For other LRN's initials the "Confirmation" page will just show a generic "*the declaration is still being checked*".
 
