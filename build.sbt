@@ -22,7 +22,7 @@ lazy val microservice = Project(appName, file("."))
 
 lazy val commonSettings = Seq(
   majorVersion := 0,
-  scalaVersion := "2.13.8",
+  scalaVersion := "2.13.12",
   scalacOptions ++= scalacFlags,
   libraryDependencies ++= AppDependencies.compile ++ AppDependencies.test
 )

@@ -18,7 +18,7 @@ package uk.gov.hmrc.customs.declarations.stub.utils
 
 import java.nio.file.{Files, Path}
 
-import akka.stream.scaladsl.FileIO
+import org.apache.pekko.stream.scaladsl.FileIO
 import play.api.http.HttpEntity
 import play.api.http.Status.OK
 import play.api.mvc.{ResponseHeader, Result}
