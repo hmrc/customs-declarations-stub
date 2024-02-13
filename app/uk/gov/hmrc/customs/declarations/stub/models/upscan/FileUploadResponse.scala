@@ -22,19 +22,19 @@ import play.api.libs.json._
 case class UploadRequest(href: String, fields: Map[String, String])
 
 object UploadRequest {
-  implicit val format = Json.format[UploadRequest]
+  implicit val format: OFormat[UploadRequest] = Json.format[UploadRequest]
 }
 
 case class FileUpload(reference: String, state: FileState, filename: String = "", id: String)
 
 object FileUpload {
-  implicit val format = Json.format[FileUpload]
+  implicit val format: OFormat[FileUpload] = Json.format[FileUpload]
 }
 
 abstract case class FileUploadResponse(uploads: List[FileUpload])
 
 object FileUploadResponse extends Logging {
-  implicit val format = Json.format[FileUploadResponse]
+  implicit val format: OFormat[FileUploadResponse] = Json.format[FileUploadResponse]
 
   def apply(files: List[FileUpload]): FileUploadResponse = new FileUploadResponse(files.sortBy(_.reference)) {}
 }

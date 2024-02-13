@@ -26,13 +26,14 @@ import uk.gov.hmrc.http.HttpClient
 import uk.gov.hmrc.play.bootstrap.backend.controller.BackendController
 
 import javax.inject.{Inject, Singleton}
+import scala.concurrent.ExecutionContext
 import scala.xml._
 
 @Singleton
 class UpscanStubController @Inject() (appConfig: AppConfig, httpClient: HttpClient, mcc: MessagesControllerComponents)
     extends BackendController(mcc) with Logging {
 
-  implicit val ec = mcc.executionContext
+  implicit val ec: ExecutionContext = mcc.executionContext
 
   def waiting(sequenceNo: String) = {
     /*

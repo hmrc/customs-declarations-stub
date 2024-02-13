@@ -16,7 +16,7 @@
 
 package uk.gov.hmrc.customs.declarations.stub.connector
 
-import akka.actor.ActorSystem
+import org.apache.pekko.actor.ActorSystem
 import org.mockito.ArgumentCaptor
 import org.mockito.ArgumentMatchers.{any, anyString}
 import org.mockito.MockitoSugar.{mock, reset, times, verify, when}

@@ -16,7 +16,7 @@
 
 package uk.gov.hmrc.customs.declarations.stub.connector
 
-import akka.actor.ActorSystem
+import org.apache.pekko.actor.ActorSystem
 import play.api.Logger
 import play.api.http.{ContentTypes, HeaderNames}
 import uk.gov.hmrc.customs.declarations.stub.config.AppConfig

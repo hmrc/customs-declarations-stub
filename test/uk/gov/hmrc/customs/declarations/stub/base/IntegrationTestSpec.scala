@@ -16,7 +16,7 @@
 
 package uk.gov.hmrc.customs.declarations.stub.base
 
-import akka.actor.ActorSystem
+import org.apache.pekko.actor.ActorSystem
 import org.mockito.MockitoSugar.{mock, reset}
 import org.scalatestplus.play.guice.GuiceOneAppPerSuite
 import play.api.Application
@@ -36,7 +36,7 @@ trait IntegrationTestSpec extends UnitTestSpec with AuthConnectorMock with Guice
       .overrides(bind[AuthConnector].to(authConnectorMock), bind[NotificationConnector].to(notificationConnectorMock))
       .build()
 
-  implicit val actorSystem = ActorSystem()
+  implicit val actorSystem: ActorSystem = ActorSystem()
 
   override def beforeEach(): Unit =
     reset(notificationConnectorMock)

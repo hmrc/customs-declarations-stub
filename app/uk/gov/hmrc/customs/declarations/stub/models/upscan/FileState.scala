@@ -16,7 +16,7 @@
 
 package uk.gov.hmrc.customs.declarations.stub.models.upscan
 
-import play.api.libs.json.{Format, JsError, JsObject, JsResult, JsString, JsSuccess, JsValue, Json}
+import play.api.libs.json.{Format, JsError, JsObject, JsResult, JsString, JsSuccess, JsValue, Json, OFormat}
 
 sealed trait FileState
 final case class Waiting(uploadRequest: UploadRequest) extends FileState
@@ -28,7 +28,7 @@ case object UnacceptableMimeType extends FileState
 
 object Waiting {
 
-  implicit val format = Json.format[Waiting]
+  implicit val format: OFormat[Waiting] = Json.format[Waiting]
 }
 
 object FileState {
@@ -40,7 +40,7 @@ object FileState {
   private val virus = "virus"
   private val mimeType = "mimeType`"
 
-  implicit val format = new Format[FileState] {
+  implicit val format: Format[FileState] = new Format[FileState] {
     override def writes(o: FileState): JsValue = o match {
       case Waiting(request)     => Json.obj(waiting -> Json.toJson(request))
       case Uploaded             => JsString(uploaded)
