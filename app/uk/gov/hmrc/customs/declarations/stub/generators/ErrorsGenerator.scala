@@ -40,6 +40,29 @@ object ErrorsGenerator {
     </_2_1:Pointer>
   </_2_1:Error>
 
+  val CDSSEALS: NodeSeq = <_2_1:Error>
+    <_2_1:Description>Invalid seal</_2_1:Description>
+    <_2_1:ValidationCode>CDS10020</_2_1:ValidationCode>
+    <_2_1:Pointer>
+      <_2_1:DocumentSectionCode>42A</_2_1:DocumentSectionCode>
+    </_2_1:Pointer>
+    <_2_1:Pointer>
+      <_2_1:DocumentSectionCode>67A</_2_1:DocumentSectionCode>
+    </_2_1:Pointer>
+    <_2_1:Pointer>
+      <_2_1:DocumentSectionCode>28A</_2_1:DocumentSectionCode>
+    </_2_1:Pointer>
+    <_2_1:Pointer>
+      <_2_1:SequenceNumeric>1</_2_1:SequenceNumeric>
+      <_2_1:DocumentSectionCode>31B</_2_1:DocumentSectionCode>
+    </_2_1:Pointer>
+    <_2_1:Pointer>
+      <_2_1:SequenceNumeric>1</_2_1:SequenceNumeric>
+      <_2_1:DocumentSectionCode>44B</_2_1:DocumentSectionCode>
+      <_2_1:TagID>165</_2_1:TagID>
+    </_2_1:Pointer>
+  </_2_1:Error>
+
   val CDS12056: NodeSeq = <_2_1:Error>
     <_2_1:ValidationCode>CDS12056</_2_1:ValidationCode>
     <_2_1:Pointer>
@@ -106,6 +129,7 @@ object ErrorsGenerator {
   </_2_1:Error>
 
   val errors: Map[String, NodeSeq] = Map(
+    "CDSSEALS" -> CDSSEALS,
     "CDS10020" -> CDS10020,
     "CDS12056" -> CDS12056,
     "CDS12062" -> CDS12062,
