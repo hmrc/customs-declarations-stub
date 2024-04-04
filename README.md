@@ -81,11 +81,17 @@ slow down the operation of the stub so there is a feature flag to disable the Sc
 ```
 This endpoint returns mocked DeclarationStatusResponse with dynamic EORI and MRN taken from the request.
 MRN is part of the url, but EORI is taken from Auth service using `Authorization` token.
+```
+    GET    /mrn/:mrn/full
+```
+This endpoint returns mocked XML with dynamic EORI, declaration version and MRN taken from the request.
+MRN nd dec version are part of the url, but EORI is taken from Auth service using `Authorization` token.
+
 
 By default the response is successful.
 
-In case you need unsuccessful response to be returned, these can be triggered by providing MRN as per rules below:
-- ends with '9999' - Not Found (404) response
+In case you need unsuccessful response to be returned, these can be triggered by providing MRN or EORI as per rules below:
+- ends with '8888' - Not Found (404) response
 
 ## Customs Data Store service
 ### eMail Address Verification
