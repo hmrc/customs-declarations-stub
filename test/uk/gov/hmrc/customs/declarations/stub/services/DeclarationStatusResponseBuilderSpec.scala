@@ -30,11 +30,11 @@ class DeclarationStatusResponseBuilderSpec extends AnyWordSpec with Matchers {
 
     val eori = CommonTestData.eori
 
-    "provided with MRN ending with '9999'" should {
+    "provided with MRN ending with '8888'" should {
 
       "return NotFoundResponse with correct body" in {
 
-        val mrn = "18GB9JLC3CU1LF9999"
+        val mrn = "18GB9JLC3CU1LF8888"
 
         val result = declarationStatusResponseBuilder.buildDeclarationStatus(eori, mrn)
 
@@ -44,7 +44,7 @@ class DeclarationStatusResponseBuilderSpec extends AnyWordSpec with Matchers {
       }
     }
 
-    "provided with MRN not ending with '9999'" should {
+    "provided with MRN not ending with '8888'" should {
 
       "return SuccessfulResponse with correct body" in {
 
