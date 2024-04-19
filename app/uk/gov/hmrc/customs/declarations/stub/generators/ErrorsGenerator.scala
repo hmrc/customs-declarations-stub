@@ -107,6 +107,41 @@ object ErrorsGenerator {
       </_2_1:Pointer>
     </_2_1:Error>
 
+  val CDS12075 = <_2_1:Error>
+    <_2_1:ValidationCode>CDS12075</_2_1:ValidationCode>
+    <_2_1:Pointer>
+      <_2_1:DocumentSectionCode>42A</_2_1:DocumentSectionCode>
+    </_2_1:Pointer>
+    <_2_1:Pointer>
+      <_2_1:DocumentSectionCode>67A</_2_1:DocumentSectionCode>
+    </_2_1:Pointer>
+    <_2_1:Pointer>
+      <_2_1:SequenceNumeric>1</_2_1:SequenceNumeric>
+      <_2_1:DocumentSectionCode>68A</_2_1:DocumentSectionCode>
+    </_2_1:Pointer>
+    <_2_1:Pointer>
+      <_2_1:DocumentSectionCode>02A</_2_1:DocumentSectionCode>
+      <_2_1:TagID>D006</_2_1:TagID>
+    </_2_1:Pointer>
+  </_2_1:Error>
+    <_2_1:Error>
+      <_2_1:ValidationCode>CDS12075</_2_1:ValidationCode>
+      <_2_1:Pointer>
+        <_2_1:DocumentSectionCode>42A</_2_1:DocumentSectionCode>
+      </_2_1:Pointer>
+      <_2_1:Pointer>
+        <_2_1:DocumentSectionCode>67A</_2_1:DocumentSectionCode>
+      </_2_1:Pointer>
+      <_2_1:Pointer>
+        <_2_1:SequenceNumeric>1</_2_1:SequenceNumeric>
+        <_2_1:DocumentSectionCode>68A</_2_1:DocumentSectionCode>
+      </_2_1:Pointer>
+      <_2_1:Pointer>
+        <_2_1:DocumentSectionCode>02A</_2_1:DocumentSectionCode>
+        <_2_1:TagID>D031</_2_1:TagID>
+      </_2_1:Pointer>
+    </_2_1:Error>
+
   val CDS12062 = <_2_1:Error>
         <_2_1:ValidationCode>CDS12062</_2_1:ValidationCode>
       </_2_1:Error>
@@ -128,12 +163,230 @@ object ErrorsGenerator {
     </_2_1:Pointer>
   </_2_1:Error>
 
+  val CDS12077_1 = <_2_1:Error>
+      <_2_1:ValidationCode>CDS12077</_2_1:ValidationCode>
+      <_2_1:Pointer>
+        <_2_1:DocumentSectionCode>42A</_2_1:DocumentSectionCode>
+      </_2_1:Pointer>
+      <_2_1:Pointer>
+        <_2_1:DocumentSectionCode>67A</_2_1:DocumentSectionCode>
+      </_2_1:Pointer>
+      <_2_1:Pointer>
+        <_2_1:SequenceNumeric>1</_2_1:SequenceNumeric>
+        <_2_1:DocumentSectionCode>68A</_2_1:DocumentSectionCode>
+      </_2_1:Pointer>
+      <_2_1:Pointer>
+        <_2_1:DocumentSectionCode>70A</_2_1:DocumentSectionCode>
+        <_2_1:TagID>166</_2_1:TagID>
+      </_2_1:Pointer>
+    </_2_1:Error>
+  val CDS12077_2 = <_2_1:Error>
+      <_2_1:ValidationCode>CDS12077</_2_1:ValidationCode>
+      <_2_1:Pointer>
+        <_2_1:DocumentSectionCode>42A</_2_1:DocumentSectionCode>
+      </_2_1:Pointer>
+      <_2_1:Pointer>
+        <_2_1:DocumentSectionCode>67A</_2_1:DocumentSectionCode>
+      </_2_1:Pointer>
+      <_2_1:Pointer>
+        <_2_1:SequenceNumeric>1</_2_1:SequenceNumeric>
+        <_2_1:DocumentSectionCode>68A</_2_1:DocumentSectionCode>
+      </_2_1:Pointer>
+      <_2_1:Pointer>
+        <_2_1:DocumentSectionCode>02A</_2_1:DocumentSectionCode>
+        <_2_1:TagID>D006</_2_1:TagID>
+      </_2_1:Pointer>
+    </_2_1:Error>
+  val CDS12077_3 = <_2_1:Error>
+      <_2_1:ValidationCode>CDS12077</_2_1:ValidationCode>
+      <_2_1:Pointer>
+        <_2_1:DocumentSectionCode>42A</_2_1:DocumentSectionCode>
+      </_2_1:Pointer>
+      <_2_1:Pointer>
+        <_2_1:DocumentSectionCode>67A</_2_1:DocumentSectionCode>
+      </_2_1:Pointer>
+      <_2_1:Pointer>
+        <_2_1:SequenceNumeric>1</_2_1:SequenceNumeric>
+        <_2_1:DocumentSectionCode>68A</_2_1:DocumentSectionCode>
+      </_2_1:Pointer>
+      <_2_1:Pointer>
+        <_2_1:DocumentSectionCode>02A</_2_1:DocumentSectionCode>
+        <_2_1:TagID>D031</_2_1:TagID>
+      </_2_1:Pointer>
+    </_2_1:Error>
+
+  val CDS12120 = <_2_1:Error>
+    <_2_1:ValidationCode>CDS12120</_2_1:ValidationCode>
+    <_2_1:Pointer>
+      <_2_1:DocumentSectionCode>42A</_2_1:DocumentSectionCode>
+    </_2_1:Pointer>
+    <_2_1:Pointer>
+      <_2_1:DocumentSectionCode>06A</_2_1:DocumentSectionCode>
+    </_2_1:Pointer>
+  </_2_1:Error>
+    <_2_1:Error>
+      <_2_1:ValidationCode>CDS12120</_2_1:ValidationCode>
+      <_2_1:Pointer>
+        <_2_1:DocumentSectionCode>42A</_2_1:DocumentSectionCode>
+      </_2_1:Pointer>
+      <_2_1:Pointer>
+        <_2_1:DocumentSectionCode>17C</_2_1:DocumentSectionCode>
+        <_2_1:TagID>R145</_2_1:TagID>
+      </_2_1:Pointer>
+    </_2_1:Error>
+
+  val CDS10010 = <_2_1:Error>
+    <_2_1:ValidationCode>CDS10010</_2_1:ValidationCode>
+    <_2_1:Pointer>
+      <_2_1:DocumentSectionCode>42A</_2_1:DocumentSectionCode>
+    </_2_1:Pointer>
+    <_2_1:Pointer>
+      <_2_1:DocumentSectionCode>67A</_2_1:DocumentSectionCode>
+    </_2_1:Pointer>
+    <_2_1:Pointer>
+      <_2_1:SequenceNumeric>1</_2_1:SequenceNumeric>
+      <_2_1:DocumentSectionCode>68A</_2_1:DocumentSectionCode>
+    </_2_1:Pointer>
+    <_2_1:Pointer>
+      <_2_1:DocumentSectionCode>23A</_2_1:DocumentSectionCode>
+    </_2_1:Pointer>
+    <_2_1:Pointer>
+      <_2_1:SequenceNumeric>2</_2_1:SequenceNumeric>
+      <_2_1:DocumentSectionCode>21A</_2_1:DocumentSectionCode>
+      <_2_1:TagID>145</_2_1:TagID>
+    </_2_1:Pointer>
+  </_2_1:Error>
+
+  val CDS12070 = <_2_1:Error>
+    <_2_1:ValidationCode>CDS12070</_2_1:ValidationCode>
+    <_2_1:Pointer>
+      <_2_1:DocumentSectionCode>42A</_2_1:DocumentSectionCode>
+    </_2_1:Pointer>
+    <_2_1:Pointer>
+      <_2_1:DocumentSectionCode>28A</_2_1:DocumentSectionCode>
+    </_2_1:Pointer>
+    <_2_1:Pointer>
+      <_2_1:DocumentSectionCode>81A</_2_1:DocumentSectionCode>
+      <_2_1:TagID>064</_2_1:TagID>
+    </_2_1:Pointer>
+  </_2_1:Error>
+
+  // Non-existant error codes used to test specific pointer combinations
+  val CDS90001 = <_2_1:Error>
+    <_2_1:ValidationCode>CDS12120</_2_1:ValidationCode>
+    <_2_1:Pointer>
+      <_2_1:DocumentSectionCode>42A</_2_1:DocumentSectionCode>
+    </_2_1:Pointer>
+    <_2_1:Pointer>
+      <_2_1:DocumentSectionCode>97B</_2_1:DocumentSectionCode>
+    </_2_1:Pointer>
+  </_2_1:Error>
+
+  val CDS90002 = <_2_1:Error>
+    <_2_1:ValidationCode>CDS12056</_2_1:ValidationCode>
+    <_2_1:Pointer>
+      <_2_1:DocumentSectionCode>42A</_2_1:DocumentSectionCode>
+    </_2_1:Pointer>
+    <_2_1:Pointer>
+      <_2_1:DocumentSectionCode>67A</_2_1:DocumentSectionCode>
+    </_2_1:Pointer>
+    <_2_1:Pointer>
+      <_2_1:SequenceNumeric>1</_2_1:SequenceNumeric>
+      <_2_1:DocumentSectionCode>68A</_2_1:DocumentSectionCode>
+    </_2_1:Pointer>
+    <_2_1:Pointer>
+      <_2_1:DocumentSectionCode>70A</_2_1:DocumentSectionCode>
+      <_2_1:TagID>166</_2_1:TagID>
+    </_2_1:Pointer>
+  </_2_1:Error>
+    <_2_1:Error>
+      <_2_1:ValidationCode>CDS12056</_2_1:ValidationCode>
+      <_2_1:Pointer>
+        <_2_1:DocumentSectionCode>42A</_2_1:DocumentSectionCode>
+      </_2_1:Pointer>
+      <_2_1:Pointer>
+        <_2_1:DocumentSectionCode>67A</_2_1:DocumentSectionCode>
+      </_2_1:Pointer>
+      <_2_1:Pointer>
+        <_2_1:SequenceNumeric>1</_2_1:SequenceNumeric>
+        <_2_1:DocumentSectionCode>68A</_2_1:DocumentSectionCode>
+      </_2_1:Pointer>
+      <_2_1:Pointer>
+        <_2_1:DocumentSectionCode>70A</_2_1:DocumentSectionCode>
+        <_2_1:TagID>161</_2_1:TagID>
+      </_2_1:Pointer>
+    </_2_1:Error>
+
+  val CDS90003 = <_2_1:Error>
+    <_2_1:ValidationCode>CDS12077</_2_1:ValidationCode>
+    <_2_1:Pointer>
+      <_2_1:DocumentSectionCode>42A</_2_1:DocumentSectionCode>
+    </_2_1:Pointer>
+    <_2_1:Pointer>
+      <_2_1:DocumentSectionCode>67A</_2_1:DocumentSectionCode>
+    </_2_1:Pointer>
+    <_2_1:Pointer>
+      <_2_1:SequenceNumeric>1</_2_1:SequenceNumeric>
+      <_2_1:DocumentSectionCode>68A</_2_1:DocumentSectionCode>
+    </_2_1:Pointer>
+    <_2_1:Pointer>
+      <_2_1:DocumentSectionCode>03A</_2_1:DocumentSectionCode>
+      <_2_1:TagID>226</_2_1:TagID>
+    </_2_1:Pointer>
+  </_2_1:Error>
+
+  // a list of all the suppressed pointers (ones that we can not directly link to a field in our model)
+  val CDS90004 = <_2_1:Error>
+    <_2_1:ValidationCode>CDS10010</_2_1:ValidationCode>
+    <_2_1:Pointer>
+      <_2_1:DocumentSectionCode>42A</_2_1:DocumentSectionCode>
+    </_2_1:Pointer>
+    <_2_1:Pointer>
+      <_2_1:SequenceNumeric>1</_2_1:SequenceNumeric>
+      <_2_1:DocumentSectionCode>06A</_2_1:DocumentSectionCode>
+      <_2_1:TagID>97A</_2_1:TagID>
+    </_2_1:Pointer>
+  </_2_1:Error>
+    <_2_1:Error>
+      <_2_1:ValidationCode>CDS10010</_2_1:ValidationCode>
+      <_2_1:Pointer>
+        <_2_1:DocumentSectionCode>42A</_2_1:DocumentSectionCode>
+      </_2_1:Pointer>
+    </_2_1:Error>
+    <_2_1:Error>
+      <_2_1:ValidationCode>CDS10010</_2_1:ValidationCode>
+      <_2_1:Pointer>
+        <_2_1:DocumentSectionCode>42A</_2_1:DocumentSectionCode>
+      </_2_1:Pointer>
+      <_2_1:Pointer>
+        <_2_1:DocumentSectionCode>06A</_2_1:DocumentSectionCode>
+      </_2_1:Pointer>
+    </_2_1:Error>
+    <_2_1:Error>
+      <_2_1:ValidationCode>CDS10010</_2_1:ValidationCode>
+      <_2_1:Pointer>
+        <_2_1:DocumentSectionCode>42A</_2_1:DocumentSectionCode>
+      </_2_1:Pointer>
+      <_2_1:Pointer>
+        <_2_1:DocumentSectionCode>D014</_2_1:DocumentSectionCode>
+      </_2_1:Pointer>
+    </_2_1:Error>
+
   val errors: Map[String, NodeSeq] = Map(
+    "CDS10010" -> CDS10010,
     "CDSSEALS" -> CDSSEALS,
     "CDS10020" -> CDS10020,
     "CDS12056" -> CDS12056,
     "CDS12062" -> CDS12062,
+    "CDS12070" -> CDS12070,
+    "CDS12075" -> CDS12075,
+    "CDS12077" -> (CDS12077_1 ++ CDS12077_2 ++ CDS12077_3),
     "CDS12119" -> CDS12119,
+    "CDS12120" -> CDS12120,
+    "CDS90001" -> CDS90001,
+    "CDS90002" -> CDS90002,
+    "CDS90003" -> CDS90003,
+    "CDS90004" -> CDS90004,
     "CDSCOM01" -> (CDS10020 ++ CDS12056 ++ CDS12062 ++ CDS12119)
   )
 }
