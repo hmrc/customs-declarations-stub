@@ -27,18 +27,20 @@ If LRN starts with:
 
 In addition, if the 2nd character of the LRN is a digit (0-9) you can control the delay in seconds of the notification delivery.
 
-Note that, frontend side, the **content** of the "Confirmation" page displayed after the declaration submission will be specific only for the following LRN's initials:
-- 'C' - 'Cleared' status (only if an 'Arrived' declaration)
-- 'D' - 'Additional Documents Required' status
-- 'G' - 'Accepted' status
-- 'R' - 'Received' status
-- 'U' - 'Undergoing Physical Check' status
-
 For 'Rejected' notifications it is possible to control what error codes are returned by the stub. If LRN starts with 'BCDS' then the stub will treat the next four digits as the
 CDS error code you want it to return. Not all error codes are supported, if the code requested is not supported then the stub by default will return a CDS10020 error. Currently
 supported codes are: CDS10020, CDS12056, CDS12062 & CDS12119
 
-For other LRN's initials the "Confirmation" page will just show a generic "*the declaration is still being checked*".
+Note that, frontend side, the **content** of the "Confirmation" page displayed after the declaration submission will be specific only for the following LRN's initials:
+- 'C' - 'Cleared' status (only if an 'Arrived' declaration) => "**Declaration accepted, goods have permission to progress**" content
+- 'C' - 'Cleared' status (when not an 'Arrived' declaration) => "**Your declaration is still being checked**" content
+- 'D' - 'Additional Documents Required' status => "**Your declaration needs documents attached**" content
+- 'Q' - 'Query Notification Message' => "**Your declaration is still being checked**" content
+- 'R' - 'Received' status => "**Your declaration has been pre-lodged with HMRC**" content
+- 'U' - 'Undergoing Physical Check' status => "**Your declaration needs documents attached**" content
+- 'X' - 'Goods Have Exited The Community' status => "**Your declaration is still being checked**" content
+
+For any other LRN's initial letter the "Confirmation" page will show the "**Declaration accepted**" page.
 
 -
 
@@ -81,11 +83,17 @@ slow down the operation of the stub so there is a feature flag to disable the Sc
 ```
 This endpoint returns mocked DeclarationStatusResponse with dynamic EORI and MRN taken from the request.
 MRN is part of the url, but EORI is taken from Auth service using `Authorization` token.
+```
+    GET    /mrn/:mrn/full
+```
+This endpoint returns mocked XML with dynamic EORI, declaration version and MRN taken from the request.
+MRN nd dec version are part of the url, but EORI is taken from Auth service using `Authorization` token.
+
 
 By default the response is successful.
 
-In case you need unsuccessful response to be returned, these can be triggered by providing MRN as per rules below:
-- ends with '9999' - Not Found (404) response
+In case you need unsuccessful response to be returned, these can be triggered by providing MRN or EORI as per rules below:
+- ends with '8888' - Not Found (404) response
 
 ## Customs Data Store service
 ### eMail Address Verification
