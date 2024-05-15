@@ -308,6 +308,10 @@ object ErrorsGenerator {
     </_2_1:Pointer>
   </_2_1:Error>
 
+  val CDS12046: NodeSeq = <_2_1:Error>
+    <_2_1:ValidationCode>CDS12046</_2_1:ValidationCode>
+  </_2_1:Error>
+
   // Non-existant error codes used to test specific pointer combinations
   val CDS90001 = <_2_1:Error>
     <_2_1:ValidationCode>CDS12120</_2_1:ValidationCode>
@@ -456,6 +460,7 @@ object ErrorsGenerator {
     "CDS10010" -> CDS10010,
     "CDSSEALS" -> CDSSEALS,
     "CDS10020" -> CDS10020,
+    "CDS12046" -> CDS12046,
     "CDS12056" -> CDS12056,
     "CDS12062" -> CDS12062,
     "CDS12070" -> CDS12070,
