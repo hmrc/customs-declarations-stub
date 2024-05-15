@@ -22,8 +22,9 @@ If LRN starts with:
 - 'Q' - Stub will send a 'Query Notification Message' notification
 - 'I' - Stub will send a 'Awaiting exit results' notification
 - 'J' - Stub will send a 'Declaration handled externally' notification
-- 'K' - Stub will send a 'Declaration expired (no arrival)' notification (NOT WORKING ATM)
+- 'K' - Stub will send a 'Declaration expired (no arrival)' notification
 - 'L' - Stub will send a 'Declaration expired (no departure)' notification
+- 'P' - Stub will not send any notifications, resulting in a 'Declaration Pending' state
 - 'R' - Stub will send a 'Received' notification
 - 'U' - Stub will send an 'Undergoing Physical Check' notification
 - 'X' - Stub will send a 'Goods Have Exited The Community' notification
