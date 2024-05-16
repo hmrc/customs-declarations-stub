@@ -83,7 +83,10 @@ class NotificationGenerator @Inject() (notificationValueGenerator: NotificationV
     val errorNode = if (lrn.startsWith("BCDS")) {
       val CDSErrorCode = lrn.substring(1, 9)
       ErrorsGenerator.errors.get(CDSErrorCode).getOrElse(ErrorsGenerator.errors("CDS10020"))
-    } else ErrorsGenerator.errors("CDS12046")
+    } else if (lrn.startsWith("K"))
+      ErrorsGenerator.errors("CDS12046")
+    else
+      ErrorsGenerator.errors("CDS10020")
 
     <p:Response xmlns:p="urn:wco:datamodel:WCO:RES-DMS:2" xsi:schemaLocation="urn:wco:datamodel:WCO:RES-DMS:2 ../WCO_RES_2_DMS.xsd ">
       <p:FunctionCode>{code.functionCode}</p:FunctionCode>
