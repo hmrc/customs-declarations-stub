@@ -77,7 +77,7 @@ class NotificationConnector @Inject() (http: HttpClient, generator: Notification
       }
     }
 
-  private val validPrompts = List('B', 'C', 'D', 'G', 'Q', 'I', 'J', 'K', 'L', 'M', 'P', 'R', 'U', 'X')
+  private val validPrompts = List('B', 'C', 'D', 'G', 'Q', 'I', 'J', 'K', 'L', 'N', 'P', 'R', 'U', 'X')
 
   // scalastyle:off
   private def generate(default: String, operation: String, declaration: Declaration): (FiniteDuration, String, Option[String]) = {
@@ -167,7 +167,7 @@ class NotificationConnector @Inject() (http: HttpClient, generator: Notification
       case 'J' => preliminaryNotifications :+ DeclarationHandledExternally
       case 'K' => preliminaryNotifications :+ Rejected(true)
       case 'L' => preliminaryNotifications :+ Cancelled
-      case 'M' => preliminaryNotifications :+ Released
+      case 'N' => preliminaryNotifications :+ Released
       case 'P' => List.empty[FunctionCode]
       case 'Q' => preliminaryNotifications :+ QueryNotificationMessage
       case 'R' => List(Received)
