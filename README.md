@@ -24,6 +24,7 @@ If LRN starts with:
 - 'J' - Stub will send a 'Declaration handled externally' notification
 - 'K' - Stub will send a 'Declaration expired (no arrival)' notification
 - 'L' - Stub will send a 'Declaration expired (no departure)' notification
+- 'M' - Stub will send a 'Released' notification
 - 'P' - Stub will not send any notifications, resulting in a 'Declaration Pending' state
 - 'R' - Stub will send a 'Received' notification
 - 'U' - Stub will send an 'Undergoing Physical Check' notification
