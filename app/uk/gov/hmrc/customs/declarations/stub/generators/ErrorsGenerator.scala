@@ -16,6 +16,8 @@
 
 package uk.gov.hmrc.customs.declarations.stub.generators
 
+import uk.gov.hmrc.customs.declarations.stub.generators.ErrorsForAcceptanceTests.additionalDocuments
+
 import scala.xml.NodeSeq
 
 object ErrorsGenerator {
@@ -473,6 +475,7 @@ object ErrorsGenerator {
     "CDS90002" -> CDS90002,
     "CDS90003" -> CDS90003,
     "CDS90004" -> CDS90004,
-    "CDSCOM01" -> (CDS10020 ++ CDS12056 ++ CDS12062 ++ CDS12119)
+    "CDSCOM01" -> (CDS10020 ++ CDS12056 ++ CDS12062 ++ CDS12119),
+    "CDSCOM02" -> additionalDocuments
   )
 }
