@@ -19,13 +19,13 @@ If LRN starts with:
 - 'C' - Stub will send a 'Cleared' notification
 - 'D' - Stub will send an 'Accepted' and an 'Additional Documents Required' notifications
 - 'G' - Stub will send an 'Accepted' notification
-- 'Q' - Stub will send a 'Query Notification Message' notification
 - 'I' - Stub will send a 'Awaiting exit results' notification
 - 'J' - Stub will send a 'Declaration handled externally' notification
 - 'K' - Stub will send a 'Declaration expired (no arrival)' notification
 - 'L' - Stub will send a 'Declaration expired (no departure)' notification
 - 'N' - Stub will send a 'Released' notification
 - 'P' - Stub will not send any notifications, resulting in a 'Declaration Pending' state
+- 'Q' - Stub will send a 'Query Notification Message' notification
 - 'R' - Stub will send a 'Received' notification
 - 'U' - Stub will send an 'Undergoing Physical Check' notification
 - 'X' - Stub will send a 'Goods Have Exited The Community' notification
