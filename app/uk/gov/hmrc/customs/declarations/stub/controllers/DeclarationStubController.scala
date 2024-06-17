@@ -87,6 +87,11 @@ class DeclarationStubController @Inject() (
     }
   }
 
+  def externalAmendment(lrn: String, mrn: String, actionId: String): Action[AnyContent] = Action { _ =>
+    notificationConnector.sendExternalAmendment(appConfig.defaultClient, actionId, lrn, mrn)
+    Accepted.as(ContentTypes.JSON)
+  }
+
   def cancel: Action[NodeSeq] = Action.async(parse.xml) { implicit req =>
     validateHeaders() { headers =>
       authenticate(headers) { client =>
@@ -102,11 +107,11 @@ class DeclarationStubController @Inject() (
   }
 
   // a dirty approximation of the header validation process implemented by customs declarations API
-  private def validateHeaders()(f: ApiHeaders => Future[Result])(implicit req: Request[NodeSeq]): Future[Result] = {
-    val accept = req.headers.get(HeaderNames.ACCEPT)
-    val contentType = req.headers.get(HeaderNames.CONTENT_TYPE)
-    val clientId = req.headers.get("X-Client-ID")
-    val badgeId = req.headers.get("X-Badge-Identifier")
+  private def validateHeaders()(f: ApiHeaders => Future[Result])(implicit request: Request[_]): Future[Result] = {
+    val accept = request.headers.get(HeaderNames.ACCEPT)
+    val contentType = request.headers.get(HeaderNames.CONTENT_TYPE)
+    val clientId = request.headers.get("X-Client-ID")
+    val badgeId = request.headers.get("X-Badge-Identifier")
 
     if (!permissibleAcceptHeaders.contains(accept.get.toLowerCase)) Future.successful(NotAcceptable)
     else if (!permissibleContentTypes.contains(contentType.get.toLowerCase)) Future.successful(UnsupportedMediaType)
