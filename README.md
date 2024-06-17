@@ -77,6 +77,13 @@ to the testOnly endpoint '/cds-file-upload-service/test-only/s3-bucket' of the C
 The fake S3 bucket urls have to point to a url that is available in the MTDP public zone (to allow the user's browser to upload
 files to it). This is why fake S3 urls can not point to a endpoint on this service (as it is deployed in the protected zone). 
 
+When users upload their files with SFUS UI it must be through public DNS 'www.development.tax.service.gov.uk' (including when uploading files to test-only endpoint). 
+However, the SFUS service itself (not the user's browser) uploads the generated 'contacts' file as the first file, so this file need to use the internal DNS 'cds-file-upload-frontend.public.mdtp'.
+
+This stub therefore has special logic that returns the first S3 url pointing to the internal DNS 'cds-file-upload-frontend.public.mdtp' (for the contacts file) 
+and all subsequent urls point to the external public DNS 'www.development.tax.service.gov.uk'
+
+
 ### Schema Validation
 By default the stub validates all XML payloads it receives with the corrisponding schema. However in performance test scenarios this can
 slow down the operation of the stub so there is a feature flag to disable the Schema validation work to speed up response times:
