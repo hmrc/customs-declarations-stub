@@ -64,6 +64,11 @@ The ID field of Means of Border Transport can determine the response of an amend
 - Any other value - Return a 'Customs Position Granted' indicating a successful amendment.
 Note that to receive any sort of 'Amendment' notification the LRN must start with one of 'B', 'C', 'D', 'G', 'Q', 'R', 'U', 'X'.
 
+(**Local-only**)
+The endpoint **/external-amendment/:lrn/:mrn/:actionId**, where **actionId** is the id of the **SubmissionRequest** action, sends an "*External amendment*" notification without necessarily also submitting a declaration.
+e.g. (with httpie) =>
+> $ http :6790/external-amendment/CSLRN5317100/24GB1955OS54767262/430f51dc-7d38-40a1-9a52-592f8da99510
+
 #### No Notifications
 Sometimes you may wish to test the behaviour of a service when no notifications are returned by DMS. 
 
@@ -78,7 +83,7 @@ The fake S3 bucket urls have to point to a url that is available in the MTDP pub
 files to it). This is why fake S3 urls can not point to a endpoint on this service (as it is deployed in the protected zone). 
 
 ### Schema Validation
-By default the stub validates all XML payloads it receives with the corrisponding schema. However in performance test scenarios this can
+By default, the stub validates all XML payloads it receives with the corresponding schema. However, in performance test scenarios this can
 slow down the operation of the stub so there is a feature flag to disable the Schema validation work to speed up response times:
 
 `sbt "run -Dmicroservice.services.features.schemaValidation=disabled"`
