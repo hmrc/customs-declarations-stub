@@ -43,6 +43,11 @@ class NotificationConnector @Inject() (http: HttpClient, generator: Notification
   private val logger = Logger(this.getClass)
   private val defaultDelay = 0.seconds
 
+  def sendExternalAmendment(client: Client, conversationId: String, lrn: String, mrn: String): Unit = {
+    val notificationForExternalAmendment = generator.generate(lrn, mrn, List(Amended))
+    sendNotificationWithDelay(client, conversationId, notificationForExternalAmendment, Duration.Zero)
+  }
+
   def notifyInDueCourse(
     operation: String,
     conversationId: String,
@@ -55,14 +60,14 @@ class NotificationConnector @Inject() (http: HttpClient, generator: Notification
       logger.info("Entering async request notification")
 
       meta.declaration.fold(throw new Exception("No declaration found in metadata")) { declaration =>
-        if (declaration.borderTransportMeans.flatMap(_.id) != Some("NONOTIFY")) {
+        if (!declaration.borderTransportMeans.flatMap(_.id).contains("NONOTIFY")) {
 
           val (delay, primaryXml, maybeAuxiliaryXml) = {
             lazy val default = generator.generateAcceptNotificationWithRandomMRN().toString
             generate(default, operation, declaration)
           }
 
-          if (primaryXml.trim.length > 0) {
+          if (primaryXml.trim.nonEmpty) {
             logger.debug(s"Scheduling transmission of primary notifications:\n$primaryXml")
             sendNotificationWithDelay(client, conversationId, primaryXml, delay)
           } else logger.debug(s"No notification will be sent (probably due to the 'PENDING' flag)")
@@ -104,7 +109,7 @@ class NotificationConnector @Inject() (http: HttpClient, generator: Notification
                   generator.generate(lrn, mrn, getSubmissionNotificationSequence(declaration.typeCode, notificationPrompt))
 
                 val maybeNotificationForExternalAmendment =
-                  if (!maybeBorderTransportId.exists(_ == "EXTERNAL AMEND")) None
+                  if (!maybeBorderTransportId.contains("EXTERNAL AMEND")) None
                   else Some(generator.generate(lrn, mrn, List(Amended)))
 
                 (notificationForSubmission, maybeNotificationForExternalAmendment)
