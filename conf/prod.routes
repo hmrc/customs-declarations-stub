@@ -9,6 +9,8 @@ POST          /amend                                          uk.gov.hmrc.custom
 
 POST          /cancellation-requests                          uk.gov.hmrc.customs.declarations.stub.controllers.DeclarationStubController.cancel
 
+GET           /external-amendment/:lrn/:mrn/:actionId         uk.gov.hmrc.customs.declarations.stub.controllers.DeclarationStubController.externalAmendment(lrn, mrn, actionId)
+
 GET           /mrn/:mrn/full                                  uk.gov.hmrc.customs.declarations.stub.controllers.DeclarationsInformationStubController.getDeclaration(mrn, declarationVersion: Option[Int] ?= None)
 
 GET           /mrn/:mrn/status                                uk.gov.hmrc.customs.declarations.stub.controllers.DeclarationsInformationStubController.getDeclarationStatus(mrn)
