@@ -33,9 +33,9 @@ If LRN starts with:
 
 In addition, if the 2nd character of the LRN is a digit (0-9) you can control the delay in seconds of the notification delivery.
 
-For 'Rejected' notifications it is possible to control what error codes are returned by the stub. If LRN starts with 'BCDS' then the stub will treat the next four digits as the
+For 'Rejected' notifications it is possible to control what error codes are returned by the stub. If LRN starts with 'BCDS' then the stub will treat the next five digits as the
 CDS error code you want it to return. Not all error codes are supported, if the code requested is not supported then the stub by default will return a CDS10020 error. Currently
-supported codes are: CDS10020, CDS12056, CDS12062 & CDS12119
+supported codes are: CDS10010, CDS10020, CDS12046, CDS12056, CDS12062, CDS12070,CDS12075, CDS12077, CDS12119 & CDS12120
 
 Note that, frontend side, the **content** of the "Confirmation" page displayed after the declaration submission will be specific only for the following LRN's initials:
 - 'C' - 'Cleared' status (only if an 'Arrived' declaration) => "**Declaration accepted, goods have permission to progress**" content
