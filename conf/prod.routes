@@ -21,10 +21,6 @@ POST          /file-upload                                    uk.gov.hmrc.custom
 
 GET           /customs-data-store/eori/:eori/verified-email   uk.gov.hmrc.customs.declarations.stub.controllers.CustomsDataStoreStubController.emailIfVerified(eori)
 
-# Tariff API endpoints
-
-GET           /api/v2/commodities/:code                       uk.gov.hmrc.customs.declarations.stub.controllers.TariffApiController.commodities(code: String)
-
 #  Secure 2 way messaging endpoints
 
 GET           /secure-message-frontend/cds-file-upload-service/messages                                     uk.gov.hmrc.customs.declarations.stub.controllers.SecureTwoWayMessagingController.messages
