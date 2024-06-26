@@ -108,6 +108,24 @@ object ErrorsGenerator {
         <_2_1:TagID>D013</_2_1:TagID>
       </_2_1:Pointer>
     </_2_1:Error>
+    <_2_1:Error>
+      <_2_1:ValidationCode>CDS12056</_2_1:ValidationCode>
+      <_2_1:Pointer>
+        <_2_1:DocumentSectionCode>42A</_2_1:DocumentSectionCode>
+      </_2_1:Pointer>
+      <_2_1:Pointer>
+        <_2_1:DocumentSectionCode>67A</_2_1:DocumentSectionCode>
+      </_2_1:Pointer>
+      <_2_1:Pointer>
+        <_2_1:SequenceNumeric>1</_2_1:SequenceNumeric>
+        <_2_1:DocumentSectionCode>68A</_2_1:DocumentSectionCode>
+      </_2_1:Pointer>
+      <_2_1:Pointer>
+        <_2_1:SequenceNumeric>2</_2_1:SequenceNumeric>
+        <_2_1:DocumentSectionCode>70A</_2_1:DocumentSectionCode>
+        <_2_1:TagID>166</_2_1:TagID>
+      </_2_1:Pointer>
+    </_2_1:Error>
 
   val CDS12075_1 = <_2_1:Error>
     <_2_1:ValidationCode>CDS12075</_2_1:ValidationCode>
