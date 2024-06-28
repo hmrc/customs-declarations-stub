@@ -24,25 +24,26 @@ import uk.gov.hmrc.play.bootstrap.backend.controller.BackendController
 class CustomsDataStoreStubController @Inject() (cc: ControllerComponents) extends BackendController(cc) {
 
   lazy val verified = """{"address":"some@email.com","timestamp":"1987-03-20T01:02:03Z"}"""
-  lazy val undeliverable: String = """{
-                             |    "address": "some@email.com",
-                             |    "timestamp": "2020-03-20T01:02:03Z",
-                             |    "undeliverable": {
-                             |          "subject": "subject-example",
-                             |          "eventId": "example-id",
-                             |          "groupId": "example-group-id",
-                             |          "timestamp": "2021-05-14T10:59:45.811+01:00",
-                             |          "event": {
-                             |                     "id": "example-id",
-                             |                    "event": "someEvent",
-                             |                    "emailAddress": "some@email.com",
-                             |                    "detected": "2021-05-14T10:59:45.811+01:00",
-                             |                    "code": 12,
-                             |                    "reason": "Inbox full",
-                             |                    "enrolment": "HMRC-CUS-ORG~EORINumber~testEori"
-                             |        }
-                             |     }
-                             |}""".stripMargin
+  lazy val undeliverable: String = """
+      |{
+      |  "address": "some@email.com",
+      |  "timestamp": "2024-06-26T08:06:19Z",
+      |  "undeliverable": {
+      |    "subject": "subject-example",
+      |    "eventId": "example-id",
+      |    "groupId": "example-group-id",
+      |    "timestamp": "2024-06-26T13:39:08.990219239",
+      |    "event": {
+      |      "id": "example-id",
+      |      "event": "PermanentBounce",
+      |      "emailAddress": "some@email.com",
+      |      "detected": "2024-06-26T14:37:26.906Z",
+      |      "code": 9002,
+      |      "reason": "Recipient has not consented to message",
+      |      "enrolment": "HMRC-CUS-ORG~EORINumber~testEori"
+      |    }
+      |  }
+      |}""".stripMargin
 
   def emailIfVerified(eori: String): Action[AnyContent] = Action {
     eori.takeRight(2) match {
