@@ -6,7 +6,6 @@
 This application provides a stubs for the following services:
 * Customs Declarations API service - that enables frontend services that use Customs Declarations API with a stub to develop locally without depending on the API. 
 * Customs Data Store service - just for the email verification endpoint (no other endpoints are stubbed here)
-* Tariff API
 
 ## Customs Declarations API service
 
