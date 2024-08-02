@@ -1,17 +1,17 @@
 
 val appName = "customs-declarations-stub"
 
-PlayKeys.devSettings := Seq("play.server.http.port" -> "6790")
+PlayKeys.devSettings := List("play.server.http.port" -> "6790")
 
 lazy val microservice = Project(appName, file("."))
   .enablePlugins(play.sbt.PlayScala, SbtDistributablesPlugin)
   .settings(
     majorVersion := 0,
-    scalaVersion := "2.13.12",
+    scalaVersion := "2.13.14",
     scalacOptions ++= scalacFlags,
     libraryDependencies ++= AppDependencies.compile ++ AppDependencies.test
   )
-  .disablePlugins(JUnitXmlReportPlugin) //Required to prevent https://github.com/scalatest/scalatest/issues/1427
+  .disablePlugins(JUnitXmlReportPlugin) // Required to prevent https://github.com/scalatest/scalatest/issues/1427
 
 lazy val scalacFlags = Seq(
   "-deprecation",            // warn about use of deprecated APIs
@@ -20,6 +20,5 @@ lazy val scalacFlags = Seq(
   "-unchecked",              // warn about unchecked type parameters
   "-Ywarn-numeric-widen",
   "-Xfatal-warnings",        // warnings are fatal!!
-  "-Wconf:cat=unused-imports&src=routes/.*:s",       // silent "unused import" warnings from Play routes
-  "-Wconf:site=Module.*&cat=lint-byname-implicit:s"  // silent warnings from Pureconfig/Shapeless
+  "-Wconf:cat=unused-imports&src=routes/.*:s"  // silent "unused import" warnings from Play routes
 )
