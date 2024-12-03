@@ -146,19 +146,19 @@ object SecureTwoWayMessagingController {
         |               <span class="govuk-visually-hidden">Neges a welwyd eisoes.&nbsp;</span>
         |            </td>
         |            <td class="govuk-table__cell">
-        |               <a href="/cds-file-upload-service/conversation/CDCM/Y29udmVyc2F0aW9uLzY0NjRhMWNlMDliN2Q4MWMxNTYwNzBiMA==" class="govuk-!-font-weight-bold hover-effect" style="font-weight:400; text-decoration: none;" data-sso="false">
-        |               <span class="govuk-visually-hidden">oddi wrth:</span><span style="font-weight:400; text-decoration: none;">HMRC Imports(CDS) needs actions yet<span class="govuk-visually-hidden">.&nbsp;</span></span>
+        |               <a href="/cds-file-upload-service/conversation/CDCM/Y29udmVyc2F0aW9uLzY3NGYxZDJhMGUzNDZmNWFjYzBiOTVlYQ==" class="govuk-!-font-weight-bold hover-effect" style="font-weight:400; text-decoration: none;" data-sso="false">
+        |               <span class="govuk-visually-hidden">oddi wrth:</span><span style="font-weight:400; text-decoration: none;">National Clearance Hub yet<span class="govuk-visually-hidden">.&nbsp;</span></span>
         |               </a>
         |               <br>
         |               <div class="govuk-task-list__name-and-hint black-text">
-        |                  <a class="govuk-link" href="/cds-file-upload-service/conversation/CDCM/Y29udmVyc2F0aW9uLzY0NjRhMWNlMDliN2Q4MWMxNTYwNzBiMA==" aria-describedby="company-details-1-status" data-sso="false">
-        |                  <span class="govuk-visually-hidden">Pwnc:</span><span class="black-text no--underline">about import doc test</span><span class="govuk-visually-hidden">,&nbsp;</span>
+        |                  <a class="govuk-link" href="/cds-file-upload-service/conversation/CDCM/Y29udmVyc2F0aW9uLzY3NGYxZDJhMGUzNDZmNWFjYzBiOTVlYQ==" aria-describedby="company-details-1-status" data-sso="false">
+        |                  <span class="govuk-visually-hidden">Pwnc:</span><span class="black-text no--underline">MRN123456789098765 needs some action</span><span class="govuk-visually-hidden">,&nbsp;</span>
         |                  </a>
         |               </div>
         |            </td>
         |            <td class="govuk-table__cell mob-align-right">
-        |               <span class="">17 Mai 2023</span>
-        |               <span class="govuk-visually-hidden">17 Mai 2023</span>
+        |               <span class="">3:00yh</span>
+        |               <span class="govuk-visually-hidden">3:00yh</span>
         |            </td>
         |         </tr>
         |      </tbody>
@@ -261,19 +261,19 @@ object SecureTwoWayMessagingController {
          |                  <span class="govuk-visually-hidden">Previously viewed message.&nbsp;</span>
          |               </td>
          |               <td class="govuk-table__cell">
-         |                  <a href="/cds-file-upload-service/conversation/CDCM/Y29udmVyc2F0aW9uLzY0NjRhMWNlMDliN2Q4MWMxNTYwNzBiMA==" class="govuk-!-font-weight-bold hover-effect" style="font-weight:400; text-decoration: none;" data-sso="false">
-         |                  <span class="govuk-visually-hidden">from:</span><span style="font-weight:400; text-decoration: none;">HMRC Imports(CDS) needs actions yet<span class="govuk-visually-hidden">.&nbsp;</span></span>
+         |                  <a href="/cds-file-upload-service/conversation/CDCM/Y29udmVyc2F0aW9uLzY3NGYxZDJhMGUzNDZmNWFjYzBiOTVlYQ==" class="govuk-!-font-weight-bold hover-effect" style="font-weight:400; text-decoration: none;" data-sso="false">
+         |                  <span class="govuk-visually-hidden">from:</span><span style="font-weight:400; text-decoration: none;">National Clearance Hub yet<span class="govuk-visually-hidden">.&nbsp;</span></span>
          |                  </a>
          |                  <br>
          |                  <div class="govuk-task-list__name-and-hint black-text">
-         |                     <a class="govuk-link" href="/cds-file-upload-service/conversation/CDCM/Y29udmVyc2F0aW9uLzY0NjRhMWNlMDliN2Q4MWMxNTYwNzBiMA==" aria-describedby="company-details-1-status" data-sso="false">
-         |                     <span class="govuk-visually-hidden">Subject:</span><span class="black-text no--underline">about import doc test</span><span class="govuk-visually-hidden">,&nbsp;</span>
+         |                     <a class="govuk-link" href="/cds-file-upload-service/conversation/CDCM/Y29udmVyc2F0aW9uLzY3NGYxZDJhMGUzNDZmNWFjYzBiOTVlYQ==" aria-describedby="company-details-1-status" data-sso="false">
+         |                     <span class="govuk-visually-hidden">Subject:</span><span class="black-text no--underline">MRN123456789098765 needs some action</span><span class="govuk-visually-hidden">,&nbsp;</span>
          |                     </a>
          |                  </div>
          |               </td>
          |               <td class="govuk-table__cell mob-align-right">
-         |                  <span class="">17 May 2023</span>
-         |                  <span class="govuk-visually-hidden">17 May 2023</span>
+         |                  <span class="">3:00pm</span>
+         |                  <span class="govuk-visually-hidden">3:00pm</span>
          |               </td>
          |            </tr>
          |         </tbody>
@@ -305,21 +305,21 @@ object SecureTwoWayMessagingController {
         |   }
         |</style>
         |<div class="govuk-body-l">
-        |   <h1 class="govuk-heading-l margin-top-small margin-bottom-small">about import doc test</h1>
+        |   <h1 class="govuk-heading-l margin-top-small margin-bottom-small">MRN123456789098765 needs some action</h1>
         |   <p>
         |      <span aria-hidden="true" class="custom-caption">
-        |      HMRC Imports(CDS) needs actions wnaeth anfon y neges hon ar 17 Mai 2023 am 10:43yb
+        |      National Clearance Hub wnaeth anfon y neges hon ar 3 Rhagfyr 2024 am 3:00yh
         |      </span>
         |      <span class="govuk-visually-hidden">
-        |      HMRC Imports(CDS) needs actions wnaeth anfon y neges hon ar 17 Mai 2023 am 10:43yb
+        |      National Clearance Hub wnaeth anfon y neges hon ar 3 Rhagfyr 2024 am 3:00yh
         |      </span>
         |      <span aria-hidden="true" class="custom-caption">
-        |      Darllenwyd am y tro cyntaf ar 10 Gorffennaf 2023 am 1:13yh
+        |      Darllenwyd am y tro cyntaf ar 3 Rhagfyr 2024 am 3:01yh
         |      </span>
-        |      <span class="govuk-visually-hidden">Gwelwyd am y tro cyntaf ar 10 Gorffennaf 2023 am 1:13yh</span>
+        |      <span class="govuk-visually-hidden">Gwelwyd am y tro cyntaf ar 3 Rhagfyr 2024 am 3:01yh</span>
         |   </p>
         |   <div class="govuk-body break-long">
-        |      {"regime":"ztZAlnDY2qUTNFeBD6m3MQ==","templateId":"udALJyIbKapI/7d2Hhh9XOm2nRKxrP1ZQqGXLASQL8o=","platform":"4PRiqswj7rqtjhES3PWcdg==","ContactPolicyGroupId":"yk7_hM8eQQeFwA3zHyfRgg"}
+        |      this is small test for cds raise a query
         |   </div>
         |   <style>
         |      .govuk-character-count {
@@ -330,18 +330,16 @@ object SecureTwoWayMessagingController {
         |      }
         |   </style>
         |   <hr aria-hidden="true" class="govuk-section-break govuk-section-break--m govuk-section-break--visible">
-        |   <form method="POST" novalidate="" action="/cds-file-upload-service/conversation/CDCM/Y29udmVyc2F0aW9uLzY0NjRhMWNlMDliN2Q4MWMxNTYwNzBiMA==">
-        |      <input type="hidden" name="csrfToken" value="b341e549f7ac51bd4f72b671c71733b682649b56-1733154314554-7e9211d2eb67745dd698abf7">
+        |   <form method="POST" novalidate="" action="/cds-file-upload-service/conversation/CDCM/Y29udmVyc2F0aW9uLzY3NGYxZDJhMGUzNDZmNWFjYzBiOTVlYQ==">
+        |      <input type="hidden" name="csrfToken" value="e5df1dd7da0f6967462d02322e20c7ae48a9bc96-1733243186957-a8cc32f42cd75e9aa0eaf36f">
         |      <div class="govuk-form-group govuk-character-count" data-i18n.characters-under-limit.one="Mae gennych 1 cymeriad yn weddill" data-module="govuk-character-count" data-i18n.words-over-limit.one="Mae gennych 1 gair yn ormod" data-i18n.words-at-limit="Mae gennych 0 o eiriau yn weddill" data-threshold="75" data-maxlength="4000" data-i18n.characters-over-limit.other="Mae gennych %{count} o gymeriadau yn ormod" data-i18n.characters-at-limit="Mae gennych 0 o gymeriadau yn weddill" data-i18n.words-over-limit.other="Mae gennych %{count} o eiriau yn ormod" data-i18n.words-under-limit.other="Mae gennych %{count} o eiriau yn weddill" data-i18n.words-under-limit.one="Mae gennych 1 gair yn weddill" data-i18n.characters-over-limit.one="Mae gennych 1 cymeriad yn ormod" data-i18n.characters-under-limit.other="Mae gennych %{count} o gymeriadau yn weddill">
         |         <label class="govuk-label govuk-label--s " for="reply-form">
         |         Ateb y neges hon
         |         </label>
         |         <textarea class="govuk-textarea govuk-js-character-count" id="reply-form" name="content" rows="5" aria-describedby="reply-form-info" spellcheck="true"></textarea>
-        |         <div id="reply-form-info" class="govuk-hint govuk-character-count__message govuk-visually-hidden">
+        |         <div id="reply-form-info" class="govuk-hint govuk-character-count__message">
         |            Gallwch nodi hyd at 4000 o gymeriadau
         |         </div>
-        |         <div class="govuk-hint govuk-character-count__message govuk-character-count__status govuk-character-count__message--disabled" aria-hidden="true">Mae gennych 4,000 o gymeriadau yn weddill</div>
-        |         <div class="govuk-character-count__sr-status govuk-visually-hidden" aria-live="polite" aria-hidden="true">Mae gennych 4,000 o gymeriadau yn weddill</div>
         |      </div>
         |      <button type="submit" class="govuk-button" data-module="govuk-button">
         |      Anfon
@@ -370,21 +368,21 @@ object SecureTwoWayMessagingController {
         |   }
         |</style>
         |<div class="govuk-body-l">
-        |   <h1 class="govuk-heading-l margin-top-small margin-bottom-small">about import doc test</h1>
+        |   <h1 class="govuk-heading-l margin-top-small margin-bottom-small">MRN123456789098765 needs some action</h1>
         |   <p>
         |      <span aria-hidden="true" class="custom-caption">
-        |      HMRC Imports(CDS) needs actions sent this on 17 May 2023 at 10:43am
+        |      National Clearance Hub sent this on 3 December 2024 at 3:00pm
         |      </span>
         |      <span class="govuk-visually-hidden">
-        |      HMRC Imports(CDS) needs actions sent this on 17 May 2023 at 10:43am
+        |      National Clearance Hub sent this on 3 December 2024 at 3:00pm
         |      </span>
         |      <span aria-hidden="true" class="custom-caption">
-        |      First read on 10 July 2023 at 1:13pm
+        |      First read on 3 December 2024 at 3:01pm
         |      </span>
-        |      <span class="govuk-visually-hidden">First viewed on 10 July 2023 at 1:13pm</span>
+        |      <span class="govuk-visually-hidden">First viewed on 3 December 2024 at 3:01pm</span>
         |   </p>
         |   <div class="govuk-body break-long">
-        |      {"regime":"ztZAlnDY2qUTNFeBD6m3MQ==","templateId":"udALJyIbKapI/7d2Hhh9XOm2nRKxrP1ZQqGXLASQL8o=","platform":"4PRiqswj7rqtjhES3PWcdg==","ContactPolicyGroupId":"yk7_hM8eQQeFwA3zHyfRgg"}
+        |      this is small test for cds raise a query
         |   </div>
         |   <style>
         |      .govuk-character-count {
@@ -395,18 +393,16 @@ object SecureTwoWayMessagingController {
         |      }
         |   </style>
         |   <hr aria-hidden="true" class="govuk-section-break govuk-section-break--m govuk-section-break--visible">
-        |   <form method="POST" novalidate="" action="/cds-file-upload-service/conversation/CDCM/Y29udmVyc2F0aW9uLzY0NjRhMWNlMDliN2Q4MWMxNTYwNzBiMA==">
-        |      <input type="hidden" name="csrfToken" value="fcf89627456633bd9814b94205b5f42a30874f6f-1733154227460-7e9211d2eb67745dd698abf7">
+        |   <form method="POST" novalidate="" action="/cds-file-upload-service/conversation/CDCM/Y29udmVyc2F0aW9uLzY3NGYxZDJhMGUzNDZmNWFjYzBiOTVlYQ==">
+        |      <input type="hidden" name="csrfToken" value="61fa6b1645e08d6f36cabf4e0906439bb54172c9-1733243312130-a8cc32f42cd75e9aa0eaf36f">
         |      <div class="govuk-form-group govuk-character-count" data-module="govuk-character-count" data-threshold="75" data-maxlength="4000">
         |         <label class="govuk-label govuk-label--s " for="reply-form">
         |         Reply to this message
         |         </label>
         |         <textarea class="govuk-textarea govuk-js-character-count" id="reply-form" name="content" rows="5" aria-describedby="reply-form-info" spellcheck="true"></textarea>
-        |         <div id="reply-form-info" class="govuk-hint govuk-character-count__message govuk-visually-hidden">
+        |         <div id="reply-form-info" class="govuk-hint govuk-character-count__message">
         |            You can enter up to 4000 characters
         |         </div>
-        |         <div class="govuk-hint govuk-character-count__message govuk-character-count__status govuk-character-count__message--disabled" aria-hidden="true">You have 4,000 characters remaining</div>
-        |         <div class="govuk-character-count__sr-status govuk-visually-hidden" aria-live="polite" aria-hidden="true">You have 4,000 characters remaining</div>
         |      </div>
         |      <button type="submit" class="govuk-button" data-module="govuk-button">
         |      Send
@@ -451,21 +447,21 @@ object SecureTwoWayMessagingController {
         |         </div>
         |      </div>
         |   </div>
-        |   <h1 class="govuk-heading-l margin-top-small margin-bottom-small">about import doc</h1>
+        |   <h1 class="govuk-heading-l margin-top-small margin-bottom-small">MRN123456789098765 needs some action</h1>
         |   <p>
         |      <span aria-hidden="true" class="custom-caption">
-        |      HMRC Imports(CDS) needs actions wnaeth anfon y neges hon ar 5 Gorffennaf 2022 am 5:33yh
+        |      National Clearance Hub wnaeth anfon y neges hon ar 3 Rhagfyr 2024 am 3:00yh
         |      </span>
         |      <span class="govuk-visually-hidden">
-        |      HMRC Imports(CDS) needs actions wnaeth anfon y neges hon ar 5 Gorffennaf 2022 am 5:33yh
+        |      National Clearance Hub wnaeth anfon y neges hon ar 3 Rhagfyr 2024 am 3:00yh
         |      </span>
         |      <span aria-hidden="true" class="custom-caption">
-        |      Darllenwyd am y tro cyntaf ar 28 Medi 2022 am 12:26yh
+        |      Darllenwyd am y tro cyntaf ar 3 Rhagfyr 2024 am 3:01yh
         |      </span>
-        |      <span class="govuk-visually-hidden">Gwelwyd am y tro cyntaf ar 28 Medi 2022 am 12:26yh</span>
+        |      <span class="govuk-visually-hidden">Gwelwyd am y tro cyntaf ar 3 Rhagfyr 2024 am 3:01yh</span>
         |   </p>
         |   <div class="govuk-body break-long">
-        |      This is a test message
+        |      this is small test for cds raise a query
         |   </div>
         |   <style>
         |      .govuk-character-count {
@@ -476,22 +472,20 @@ object SecureTwoWayMessagingController {
         |      }
         |   </style>
         |   <hr aria-hidden="true" class="govuk-section-break govuk-section-break--m govuk-section-break--visible">
-        |   <form method="POST" novalidate="" action="/cds-file-upload-service/conversation/CDCM/Y29udmVyc2F0aW9uLzYyYzQ2N2M3Mzk4ZWM2N2E2ZGY3ZGM0OQ==">
-        |      <input type="hidden" name="csrfToken" value="ca735da57120289f5dee74e5d88f8b61c79f1f0e-1733153098084-7e9211d2eb67745dd698abf7">
+        |   <form method="POST" novalidate="" action="/cds-file-upload-service/conversation/CDCM/Y29udmVyc2F0aW9uLzY3NGYxZDJhMGUzNDZmNWFjYzBiOTVlYQ==">
+        |      <input type="hidden" name="csrfToken" value="80d80d2d920ef26ab805ad00d3979d3b03aca703-1733243429206-a8cc32f42cd75e9aa0eaf36f">
         |      <div class="govuk-form-group govuk-form-group--error govuk-character-count" data-i18n.characters-under-limit.one="Mae gennych 1 cymeriad yn weddill" data-module="govuk-character-count" data-i18n.words-over-limit.one="Mae gennych 1 gair yn ormod" data-i18n.words-at-limit="Mae gennych 0 o eiriau yn weddill" data-threshold="75" data-maxlength="4000" data-i18n.characters-over-limit.other="Mae gennych %{count} o gymeriadau yn ormod" data-i18n.characters-at-limit="Mae gennych 0 o gymeriadau yn weddill" data-i18n.words-over-limit.other="Mae gennych %{count} o eiriau yn ormod" data-i18n.words-under-limit.other="Mae gennych %{count} o eiriau yn weddill" data-i18n.words-under-limit.one="Mae gennych 1 gair yn weddill" data-i18n.characters-over-limit.one="Mae gennych 1 cymeriad yn ormod" data-i18n.characters-under-limit.other="Mae gennych %{count} o gymeriadau yn weddill">
         |         <label class="govuk-label govuk-label--s " for="reply-form">
         |         Ateb y neges hon
         |         </label>
-        |         <p id="reply-form-error" class="govuk-error-message" data-gtm-vis-recent-on-screen8267218_1730="61" data-gtm-vis-first-on-screen8267218_1730="61" data-gtm-vis-total-visible-time8267218_1730="100" data-gtm-vis-has-fired8267218_1730="1">
+        |         <p id="reply-form-error" class="govuk-error-message">
         |            <span class="govuk-visually-hidden">Error:</span>
         |            Mae’n rhaid i chi ysgrifennu neges er mwyn ateb
         |         </p>
-        |         <textarea class="govuk-textarea govuk-js-character-count" id="reply-form" name="content" rows="5" aria-describedby="reply-form-info reply-form-error" spellcheck="true"></textarea>
-        |         <div id="reply-form-info" class="govuk-hint govuk-character-count__message govuk-visually-hidden">
+        |         <textarea class="govuk-textarea govuk-textarea--error govuk-js-character-count" id="reply-form" name="content" rows="5" aria-describedby="reply-form-info reply-form-error" spellcheck="true"></textarea>
+        |         <div id="reply-form-info" class="govuk-hint govuk-character-count__message">
         |            Gallwch nodi hyd at 4000 o gymeriadau
         |         </div>
-        |         <div class="govuk-hint govuk-character-count__message govuk-character-count__status govuk-character-count__message--disabled" aria-hidden="true">Mae gennych 4,000 o gymeriadau yn weddill</div>
-        |         <div class="govuk-character-count__sr-status govuk-visually-hidden" aria-live="polite" aria-hidden="true">Mae gennych 4,000 o gymeriadau yn weddill</div>
         |      </div>
         |      <button type="submit" class="govuk-button" data-module="govuk-button">
         |      Anfon
@@ -532,21 +526,21 @@ object SecureTwoWayMessagingController {
         |         </div>
         |      </div>
         |   </div>
-        |   <h1 class="govuk-heading-l margin-top-small margin-bottom-small">about import doc test</h1>
+        |   <h1 class="govuk-heading-l margin-top-small margin-bottom-small">MRN123456789098765 needs some action</h1>
         |   <p>
         |      <span aria-hidden="true" class="custom-caption">
-        |      HMRC Imports(CDS) needs actions sent this on 17 May 2023 at 10:43am
+        |      National Clearance Hub sent this on 3 December 2024 at 3:00pm
         |      </span>
         |      <span class="govuk-visually-hidden">
-        |      HMRC Imports(CDS) needs actions sent this on 17 May 2023 at 10:43am
+        |      National Clearance Hub sent this on 3 December 2024 at 3:00pm
         |      </span>
         |      <span aria-hidden="true" class="custom-caption">
-        |      First read on 10 July 2023 at 1:13pm
+        |      First read on 3 December 2024 at 3:01pm
         |      </span>
-        |      <span class="govuk-visually-hidden">First viewed on 10 July 2023 at 1:13pm</span>
+        |      <span class="govuk-visually-hidden">First viewed on 3 December 2024 at 3:01pm</span>
         |   </p>
         |   <div class="govuk-body break-long">
-        |      {"regime":"ztZAlnDY2qUTNFeBD6m3MQ==","templateId":"udALJyIbKapI/7d2Hhh9XOm2nRKxrP1ZQqGXLASQL8o=","platform":"4PRiqswj7rqtjhES3PWcdg==","ContactPolicyGroupId":"yk7_hM8eQQeFwA3zHyfRgg"}
+        |      this is small test for cds raise a query
         |   </div>
         |   <style>
         |      .govuk-character-count {
@@ -557,22 +551,20 @@ object SecureTwoWayMessagingController {
         |      }
         |   </style>
         |   <hr aria-hidden="true" class="govuk-section-break govuk-section-break--m govuk-section-break--visible">
-        |   <form method="POST" novalidate="" action="/cds-file-upload-service/conversation/CDCM/Y29udmVyc2F0aW9uLzY0NjRhMWNlMDliN2Q4MWMxNTYwNzBiMA==">
-        |      <input type="hidden" name="csrfToken" value="a9e325275abcd116023dbeec52c1d424b2868ff1-1733154382877-7e9211d2eb67745dd698abf7">
+        |   <form method="POST" novalidate="" action="/cds-file-upload-service/conversation/CDCM/Y29udmVyc2F0aW9uLzY3NGYxZDJhMGUzNDZmNWFjYzBiOTVlYQ==">
+        |      <input type="hidden" name="csrfToken" value="9e3064aa0d8a9434fea3fe818c5427161bd56f6a-1733243368031-a8cc32f42cd75e9aa0eaf36f">
         |      <div class="govuk-form-group govuk-form-group--error govuk-character-count" data-module="govuk-character-count" data-threshold="75" data-maxlength="4000">
         |         <label class="govuk-label govuk-label--s " for="reply-form">
         |         Reply to this message
         |         </label>
-        |         <p id="reply-form-error" class="govuk-error-message" data-gtm-vis-recent-on-screen8267218_1730="73" data-gtm-vis-first-on-screen8267218_1730="73" data-gtm-vis-total-visible-time8267218_1730="100" data-gtm-vis-has-fired8267218_1730="1">
+        |         <p id="reply-form-error" class="govuk-error-message">
         |            <span class="govuk-visually-hidden">Error:</span>
         |            You must write a message to reply
         |         </p>
-        |         <textarea class="govuk-textarea govuk-js-character-count" id="reply-form" name="content" rows="5" aria-describedby="reply-form-info reply-form-error" spellcheck="true"></textarea>
-        |         <div id="reply-form-info" class="govuk-hint govuk-character-count__message govuk-visually-hidden">
+        |         <textarea class="govuk-textarea govuk-textarea--error govuk-js-character-count" id="reply-form" name="content" rows="5" aria-describedby="reply-form-info reply-form-error" spellcheck="true"></textarea>
+        |         <div id="reply-form-info" class="govuk-hint govuk-character-count__message">
         |            You can enter up to 4000 characters
         |         </div>
-        |         <div class="govuk-hint govuk-character-count__message govuk-character-count__status govuk-character-count__message--disabled" aria-hidden="true">You have 4,000 characters remaining</div>
-        |         <div class="govuk-character-count__sr-status govuk-visually-hidden" aria-live="polite" aria-hidden="true">You have 4,000 characters remaining</div>
         |      </div>
         |      <button type="submit" class="govuk-button" data-module="govuk-button">
         |      Send
