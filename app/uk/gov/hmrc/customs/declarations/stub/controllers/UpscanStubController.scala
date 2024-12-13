@@ -25,6 +25,7 @@ import uk.gov.hmrc.customs.declarations.stub.models.upscan.Field._
 import uk.gov.hmrc.http.HttpClient
 import uk.gov.hmrc.play.bootstrap.backend.controller.BackendController
 
+import java.util.UUID
 import javax.inject.{Inject, Singleton}
 import scala.concurrent.ExecutionContext
 import scala.xml._
@@ -35,7 +36,7 @@ class UpscanStubController @Inject() (appConfig: AppConfig, httpClient: HttpClie
 
   implicit val ec: ExecutionContext = mcc.executionContext
 
-  def waiting(sequenceNo: String) = {
+  def waiting(fileReference: String, sequenceNo: Int) = {
     /*
       The first file in a batch upload is always the contacts file created and uploaded by the SFUS frontend itself.
 
@@ -48,7 +49,7 @@ class UpscanStubController @Inject() (appConfig: AppConfig, httpClient: HttpClie
       SFUS frontend can reach.
      */
     val sfusFrontendBaseUrl =
-      if (sequenceNo == "1")
+      if (sequenceNo == 0)
         appConfig.cdsFileUploadFrontendInternalBaseUrl
       else
         appConfig.cdsFileUploadFrontendPublicBaseUrl
@@ -63,8 +64,8 @@ class UpscanStubController @Inject() (appConfig: AppConfig, httpClient: HttpClie
           ACL.toString -> "private",
           Credentials.toString -> "ASIAxxxxxxxxx/20180202/eu-west-2/s3/aws4_request",
           Policy.toString -> "xxxxxxxx==",
-          SuccessRedirect.toString -> s"${appConfig.cdsFileUploadFrontendPublicBaseUrl}/cds-file-upload-service/upload/upscan-success/${sequenceNo}",
-          ErrorRedirect.toString -> s"${appConfig.cdsFileUploadFrontendPublicBaseUrl}/cds-file-upload-service/upload/upscan-error/${sequenceNo}"
+          SuccessRedirect.toString -> s"${appConfig.cdsFileUploadFrontendPublicBaseUrl}/cds-file-upload-service/upload/upscan-success/${fileReference}",
+          ErrorRedirect.toString -> s"${appConfig.cdsFileUploadFrontendPublicBaseUrl}/cds-file-upload-service/upload/upscan-error/${fileReference}"
         )
       )
     )
@@ -78,10 +79,9 @@ class UpscanStubController @Inject() (appConfig: AppConfig, httpClient: HttpClie
 
     val files = (scala.xml.XML.loadString(xmlBodyString) \\ "File").toSeq
 
-    val fileUploads = files.map { node =>
-      val fileSequenceNo = node \ "FileSequenceNo"
-
-      FileUpload(fileSequenceNo.text, waiting(fileSequenceNo.text), id = fileSequenceNo.text)
+    val fileUploads = files.zipWithIndex.map { case (node, idx) =>
+      val fileReference = UUID.randomUUID().toString
+      FileUpload(fileReference, waiting(fileReference, idx), id = fileReference)
     }.toList
 
     val resp = FileUploadResponse(fileUploads.toList)
