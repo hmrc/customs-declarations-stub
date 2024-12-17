@@ -82,7 +82,7 @@ class UpscanStubController @Inject() (appConfig: AppConfig, httpClient: HttpClie
 
     val files = (scala.xml.XML.loadString(xmlBodyString) \\ "File").toSeq
 
-    val fileUploads = files.zipWithIndex.map { case (node, idx) =>
+    val fileUploads = files.zipWithIndex.map { case (node, idx) =>   //TODO: zipWithIndex may not guarentee the order of the returned seq, this might be causing the issues
       val fileReference = UUID.randomUUID().toString
       FileUpload(fileReference, waiting(fileReference, idx), id = fileReference)
     }.toList
