@@ -54,6 +54,9 @@ class UpscanStubController @Inject() (appConfig: AppConfig, httpClient: HttpClie
       else
         appConfig.cdsFileUploadFrontendPublicBaseUrl
 
+    logger.info(s"cdsFileUploadFrontendInternalBaseUrl: ${appConfig.cdsFileUploadFrontendInternalBaseUrl} cdsFileUploadFrontendPublicBaseUrl = ${appConfig.cdsFileUploadFrontendPublicBaseUrl}")
+    logger.info(s"sfusFrontendBaseUrl: $sfusFrontendBaseUrl sequenceNo = $sequenceNo")
+
     Waiting(
       UploadRequest(
         href = s"${sfusFrontendBaseUrl}/cds-file-upload-service/test-only/s3-bucket",
