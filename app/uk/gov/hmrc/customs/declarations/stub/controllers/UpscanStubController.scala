@@ -92,7 +92,7 @@ class UpscanStubController @Inject() (appConfig: AppConfig, httpClient: HttpClie
     val resp = FileUploadResponse(fileUploads)
     val xmlResp = XmlHelper.toXml(resp)
 
-    logger.info(s"Batch file upload response: $xmlResp")
+    logger.debug(s"Batch file upload response: $xmlResp")
 
     Ok(xmlResp).as(ContentTypes.XML)
   }
