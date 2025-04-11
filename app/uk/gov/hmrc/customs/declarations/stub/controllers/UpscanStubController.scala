@@ -80,12 +80,16 @@ class UpscanStubController @Inject() (appConfig: AppConfig, httpClient: HttpClie
     val files = (scala.xml.XML.loadString(xmlBodyString) \\ "File").toSeq
 
     val fileUploads = files.zipWithIndex.map { case (node, idx) =>
-      logger.info(s"sequence number: s$idx")
-      val fileReference = UUID.randomUUID().toString
+      var fileReference = UUID.randomUUID().toString
+      if (idx < 10) {
+        fileReference = idx.toString + fileReference.substring(1)
+      } else {
+        fileReference = "a" + idx.toString + fileReference.substring(3)
+      }
       FileUpload(fileReference, waiting(fileReference, idx), id = fileReference)
     }.toList
 
-    val resp = FileUploadResponse(fileUploads.toList)
+    val resp = FileUploadResponse(fileUploads)
     val xmlResp = XmlHelper.toXml(resp)
 
     logger.info(s"Batch file upload response: $xmlResp")
