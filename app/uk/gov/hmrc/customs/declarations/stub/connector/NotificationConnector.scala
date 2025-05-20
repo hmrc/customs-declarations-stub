@@ -24,7 +24,8 @@ import uk.gov.hmrc.customs.declarations.stub.generators.NotificationGenerator
 import uk.gov.hmrc.customs.declarations.stub.generators.NotificationGenerator._
 import uk.gov.hmrc.customs.declarations.stub.models.Client
 import uk.gov.hmrc.http.HttpReads.Implicits.readRaw
-import uk.gov.hmrc.http.{HeaderCarrier, HttpClient, HttpReads, HttpResponse}
+import uk.gov.hmrc.http.client.HttpClientV2
+import uk.gov.hmrc.http.{HeaderCarrier, HttpReads, HttpResponse, StringContextOps}
 import uk.gov.hmrc.wco.dec.{Declaration, MetaData}
 
 import java.time.{ZoneId, ZonedDateTime}
@@ -32,10 +33,10 @@ import java.util.{Timer, TimerTask}
 import javax.inject.{Inject, Singleton}
 import scala.concurrent.ExecutionContext
 import scala.concurrent.duration.{Duration, _}
-import scala.util.Random
+import scala.util.{Failure, Random, Success}
 
 @Singleton
-class NotificationConnector @Inject() (http: HttpClient, generator: NotificationGenerator)(
+class NotificationConnector @Inject() (http: HttpClientV2, generator: NotificationGenerator)(
   implicit val appConfig: AppConfig,
   ec: ExecutionContext,
   actorSystem: ActorSystem
@@ -226,10 +227,16 @@ class NotificationConnector @Inject() (http: HttpClient, generator: Notification
 
         def run: Unit =
           http
-            .POSTString(client.callbackUrl, xml, payload)(rds, HeaderCarrier(), ec)
-            .onComplete(_ => logger.info("Exiting async request notification"))
-
+            .post(url"${client.callbackUrl}")(HeaderCarrier())
+            .setHeader(payload: _*)
+            .withBody(xml)
+            .execute[HttpResponse](rds, ec)
+            .onComplete {
+              case Success(_)  => logger.info("Exiting async request notification")
+              case Failure(ex) => logger.error("Async request notification failed", ex)
+            }
       },
       delay.toMillis
     )
+
 }
