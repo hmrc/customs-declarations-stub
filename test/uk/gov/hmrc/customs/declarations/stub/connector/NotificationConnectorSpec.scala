@@ -16,60 +16,84 @@
 
 package uk.gov.hmrc.customs.declarations.stub.connector
 
-import org.apache.pekko.actor.ActorSystem
-import org.mockito.ArgumentCaptor
-import org.mockito.ArgumentMatchers.{any, anyString}
-import org.mockito.MockitoSugar.{mock, reset, times, verify, when}
-import org.mockito.stubbing.ScalaOngoingStubbing
+import com.github.tomakehurst.wiremock.client.WireMock.{aResponse, equalTo, post, postRequestedFor, urlEqualTo}
+import org.mockito.ArgumentMatchers.any
+import org.mockito.Mockito.{doAnswer, spy}
+import org.scalatest.BeforeAndAfterAll
+import org.scalatestplus.play.guice.GuiceOneAppPerSuite
+import play.api
+import play.api.Application
+import play.api.http.HeaderNames
+import play.api.inject.guice.GuiceApplicationBuilder
 import uk.gov.hmrc.customs.declarations.stub.base.UnitTestSpec
-import uk.gov.hmrc.customs.declarations.stub.config.AppConfig
-import uk.gov.hmrc.customs.declarations.stub.generators.{NotificationGenerator, NotificationValueGenerator}
 import uk.gov.hmrc.customs.declarations.stub.models.Client
-import uk.gov.hmrc.http.{HeaderCarrier, HttpClient, HttpReads, HttpResponse}
+import uk.gov.hmrc.http.test.{HttpClientV2Support, WireMockSupport}
 import uk.gov.hmrc.wco.dec.{Declaration, MetaData}
+import play.api.http.Status._
+import uk.gov.hmrc.http.client.HttpClientV2
 
 import java.util.UUID
-import scala.concurrent.ExecutionContext.Implicits.global
-import scala.concurrent.duration.Duration
-import scala.concurrent.{ExecutionContext, Future}
-import scala.xml.Source
+import scala.concurrent.duration.{Duration, FiniteDuration}
 
-class NotificationConnectorSpec extends UnitTestSpec {
+class NotificationConnectorSpec extends UnitTestSpec with GuiceOneAppPerSuite with BeforeAndAfterAll with WireMockSupport with HttpClientV2Support {
 
-  val mockHttpClient: HttpClient = mock[HttpClient]
+  val spyHttpClient: HttpClientV2 = spy(httpClientV2)
 
-  trait SetUp {
-    implicit val mockAppConfig: AppConfig = mock[AppConfig]
-    val mockNotificationGenerator = new NotificationGenerator(new NotificationValueGenerator())
-    implicit val system: ActorSystem = ActorSystem("test")
+  val appBuilder: GuiceApplicationBuilder = GuiceApplicationBuilder()
+    .overrides(api.inject.bind[HttpClientV2].toInstance(spyHttpClient))
+    .configure(
+      Map[String, Any](
+        "microservice.services.client.host" -> wireMockHost,
+        "microservice.services.client.port" -> wireMockPort,
+        "microservice.services.client.uri" -> "/customs-declare-exports/notify",
+        "microservice.services.client.token" -> "token"
+      )
+    )
 
-    val testObj = new NotificationConnector(mockHttpClient, mockNotificationGenerator)
-    reset(mockHttpClient)
-  }
+  val notificationConnector: NotificationConnector = appBuilder.injector().instanceOf[NotificationConnector]
+
+  private lazy val connector: NotificationConnector = spy(notificationConnector)
+
+  override implicit lazy val app: Application = appBuilder.overrides(api.inject.bind[NotificationConnector].toInstance(connector)).build()
 
   "NotificationConnector" should {
 
-    "return Accepted and call use the default notification Body" in new SetUp {
-      val client = Client("clientId", "callBackUrl", "token")
+    "return Accepted and call use the default notification Body" in {
+      val client = Client("clientId", s"http://$wireMockHost:$wireMockPort/customs-declare-exports/notify", "token")
+
       val metaData: MetaData = MetaData(declaration = Some(Declaration(functionalReferenceId = Some("BLRN"), typeCode = Some("ABC"))))
 
-      returnResponseForRequest(Future.successful(mock[HttpResponse]))
+      var capturedReturn: (FiniteDuration, String, Option[String]) = null
+      doAnswer { invocation =>
+        val result = invocation.callRealMethod().asInstanceOf[(FiniteDuration, String, Option[String])]
+        capturedReturn = result
+        result
+      }.when(connector).generate(any(), any(), any())
+
+      returnResponseForRequest()
 
       val conversationId = UUID.randomUUID.toString
-      val result = testObj.notifyInDueCourse("submit", conversationId, None, client, metaData, Duration(500, "ms"))
+      val result: Unit = connector.notifyInDueCourse("submit", conversationId, None, client, metaData, Duration(100, "ms"))
 
-      Thread.sleep(2000)
+      Thread.sleep(1000)
+
+      val actualPayload = if (capturedReturn._2.trim.nonEmpty) capturedReturn._2 else capturedReturn._3.get
+
       result shouldBe ((): Unit)
-
-      val payloadCaptor = ArgumentCaptor.forClass(classOf[String])
-      verify(mockHttpClient, times(1)).POSTString(any(), payloadCaptor.capture(), any())(any(), any(), any())
-      scala.xml.XML.load(Source.fromString(payloadCaptor.getValue))
+      wireMockServer.verify(
+        postRequestedFor(urlEqualTo("/customs-declare-exports/notify"))
+          .withRequestBody(equalTo(actualPayload))
+          .withHeader(HeaderNames.CONTENT_TYPE, equalTo("application/xml; charset=utf-8"))
+          .withHeader(HeaderNames.AUTHORIZATION, equalTo("Bearer token"))
+          .withHeader("X-Conversation-ID", equalTo(conversationId))
+      )
     }
   }
 
-  private def returnResponseForRequest(eventualResponse: Future[HttpResponse]): ScalaOngoingStubbing[Future[HttpResponse]] =
-    when(
-      mockHttpClient
-        .POSTString(anyString(), anyString(), any[Seq[(String, String)]])(any[HttpReads[HttpResponse]](), any[HeaderCarrier](), any[ExecutionContext])
-    ).thenReturn(eventualResponse)
+  private def returnResponseForRequest(): Unit =
+    wireMockServer.stubFor(
+      post(urlEqualTo("/customs-declare-exports/notify"))
+        willReturn aResponse()
+          .withStatus(OK)
+    )
 }

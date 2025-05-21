@@ -22,7 +22,6 @@ import play.api.Logging
 import uk.gov.hmrc.customs.declarations.stub.config.AppConfig
 import uk.gov.hmrc.customs.declarations.stub.models.upscan._
 import uk.gov.hmrc.customs.declarations.stub.models.upscan.Field._
-import uk.gov.hmrc.http.HttpClient
 import uk.gov.hmrc.play.bootstrap.backend.controller.BackendController
 
 import java.util.UUID
@@ -31,8 +30,7 @@ import scala.concurrent.ExecutionContext
 import scala.xml._
 
 @Singleton
-class UpscanStubController @Inject() (appConfig: AppConfig, httpClient: HttpClient, mcc: MessagesControllerComponents)
-    extends BackendController(mcc) with Logging {
+class UpscanStubController @Inject() (appConfig: AppConfig, mcc: MessagesControllerComponents) extends BackendController(mcc) with Logging {
 
   implicit val ec: ExecutionContext = mcc.executionContext
 
