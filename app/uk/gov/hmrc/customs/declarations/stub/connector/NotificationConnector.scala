@@ -86,7 +86,7 @@ class NotificationConnector @Inject() (http: HttpClientV2, generator: Notificati
   private val validPrompts = List('B', 'C', 'D', 'G', 'I', 'J', 'K', 'L', 'N', 'P', 'Q', 'R', 'U', 'X')
 
   // scalastyle:off
-  private def generate(default: String, operation: String, declaration: Declaration): (FiniteDuration, String, Option[String]) = {
+  def generate(default: String, operation: String, declaration: Declaration): (FiniteDuration, String, Option[String]) = {
     val mrn = extractMrn(declaration)
     val maybeLrn = declaration.functionalReferenceId
     val maybeBorderTransportId = declaration.borderTransportMeans.flatMap(_.id)
