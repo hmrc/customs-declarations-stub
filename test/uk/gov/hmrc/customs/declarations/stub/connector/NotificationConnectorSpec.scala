@@ -40,15 +40,15 @@ class NotificationConnectorSpec extends UnitTestSpec with GuiceOneAppPerSuite wi
   val spyHttpClient: HttpClientV2 = spy(httpClientV2)
 
   val appBuilder: GuiceApplicationBuilder = GuiceApplicationBuilder()
-    .overrides(
-      api.inject.bind[HttpClientV2].toInstance(spyHttpClient),
+    .overrides(api.inject.bind[HttpClientV2].toInstance(spyHttpClient))
+    .configure(
+      Map[String, Any](
+        "microservice.services.client.host" -> wireMockHost,
+        "microservice.services.client.port" -> wireMockPort,
+        "microservice.services.client.uri" -> "/customs-declare-exports/notify",
+        "microservice.services.client.token" -> "token"
+      )
     )
-    .configure(Map[String, Any](
-      "microservice.services.client.host" -> wireMockHost,
-      "microservice.services.client.port" -> wireMockPort,
-      "microservice.services.client.uri" -> "/customs-declare-exports/notify",
-      "microservice.services.client.token" -> "token"
-    ))
 
   val notificationConnector: NotificationConnector = appBuilder.injector().instanceOf[NotificationConnector]
 
@@ -64,11 +64,11 @@ class NotificationConnectorSpec extends UnitTestSpec with GuiceOneAppPerSuite wi
       val metaData: MetaData = MetaData(declaration = Some(Declaration(functionalReferenceId = Some("BLRN"), typeCode = Some("ABC"))))
 
       var capturedReturn: (FiniteDuration, String, Option[String]) = null
-      doAnswer(invocation => {
+      doAnswer { invocation =>
         val result = invocation.callRealMethod().asInstanceOf[(FiniteDuration, String, Option[String])]
         capturedReturn = result
         result
-      }).when(connector).generate(any(), any(), any())
+      }.when(connector).generate(any(), any(), any())
 
       returnResponseForRequest()
 
@@ -77,19 +77,23 @@ class NotificationConnectorSpec extends UnitTestSpec with GuiceOneAppPerSuite wi
 
       Thread.sleep(1000)
 
-      val actualPayload = if(capturedReturn._2.trim.nonEmpty) capturedReturn._2 else capturedReturn._3.get
+      val actualPayload = if (capturedReturn._2.trim.nonEmpty) capturedReturn._2 else capturedReturn._3.get
 
       result shouldBe ((): Unit)
-      wireMockServer.verify(postRequestedFor(urlEqualTo("/customs-declare-exports/notify"))
-        .withRequestBody(equalTo(actualPayload))
-        .withHeader(HeaderNames.CONTENT_TYPE, equalTo("application/xml; charset=utf-8"))
-        .withHeader(HeaderNames.AUTHORIZATION, equalTo("Bearer token"))
-        .withHeader("X-Conversation-ID", equalTo(conversationId)))
+      wireMockServer.verify(
+        postRequestedFor(urlEqualTo("/customs-declare-exports/notify"))
+          .withRequestBody(equalTo(actualPayload))
+          .withHeader(HeaderNames.CONTENT_TYPE, equalTo("application/xml; charset=utf-8"))
+          .withHeader(HeaderNames.AUTHORIZATION, equalTo("Bearer token"))
+          .withHeader("X-Conversation-ID", equalTo(conversationId))
+      )
     }
   }
 
   private def returnResponseForRequest(): Unit =
-    wireMockServer.stubFor(post(urlEqualTo("/customs-declare-exports/notify"))
-      willReturn aResponse()
-      .withStatus(OK))
+    wireMockServer.stubFor(
+      post(urlEqualTo("/customs-declare-exports/notify"))
+        willReturn aResponse()
+          .withStatus(OK)
+    )
 }

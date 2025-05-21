@@ -30,8 +30,7 @@ import scala.concurrent.ExecutionContext
 import scala.xml._
 
 @Singleton
-class UpscanStubController @Inject() (appConfig: AppConfig, mcc: MessagesControllerComponents)
-    extends BackendController(mcc) with Logging {
+class UpscanStubController @Inject() (appConfig: AppConfig, mcc: MessagesControllerComponents) extends BackendController(mcc) with Logging {
 
   implicit val ec: ExecutionContext = mcc.executionContext
 
