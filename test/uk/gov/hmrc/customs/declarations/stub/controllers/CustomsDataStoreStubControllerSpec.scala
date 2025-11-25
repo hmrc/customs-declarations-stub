@@ -26,12 +26,8 @@ class CustomsDataStoreStubControllerSpec extends UnitTestSpec {
   private val controller = new CustomsDataStoreStubController(stubControllerComponents())
   private val request = FakeRequest()
 
-  def createThirdPartyEmailVerifiedBody(
-                                       eori: String
-                                       ): JsValue = {
-    Json.obj(
-      "eori" -> eori)
-  }
+  def createThirdPartyEmailVerifiedBody(eori: String): JsValue =
+    Json.obj("eori" -> eori)
 
   "GET emailIfVerified" should {
 
