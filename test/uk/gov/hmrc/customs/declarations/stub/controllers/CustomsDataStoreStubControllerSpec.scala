@@ -16,6 +16,7 @@
 
 package uk.gov.hmrc.customs.declarations.stub.controllers
 
+import play.api.libs.json.{JsValue, Json}
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import uk.gov.hmrc.customs.declarations.stub.base.UnitTestSpec
@@ -24,6 +25,13 @@ class CustomsDataStoreStubControllerSpec extends UnitTestSpec {
 
   private val controller = new CustomsDataStoreStubController(stubControllerComponents())
   private val request = FakeRequest()
+
+  def createThirdPartyEmailVerifiedBody(
+                                       eori: String
+                                       ): JsValue = {
+    Json.obj(
+      "eori" -> eori)
+  }
 
   "GET emailIfVerified" should {
 
@@ -44,6 +52,36 @@ class CustomsDataStoreStubControllerSpec extends UnitTestSpec {
     "return a 404(NOT_FOUND) for an EORI number ending in '99'" in {
       val eori = "GB1234567899"
       val result = controller.emailIfVerified(eori)(request)
+      status(result) shouldBe NOT_FOUND
+    }
+  }
+
+  "POST thirdPartyEmailVerified" should {
+
+    "return a 200(OK) payload with the expected payload for an EORI number not ending in '99' or '98'" in {
+      val eori = "GB1234567890"
+
+      val postRequest = FakeRequest("POST", routes.CustomsDataStoreStubController.thirdPartyEmailVerified.url)
+        .withBody(createThirdPartyEmailVerifiedBody(eori))
+      val result = controller.thirdPartyEmailVerified()(postRequest)
+      status(result) shouldBe OK
+      contentAsString(result) shouldBe controller.verified
+    }
+
+    "return a 200(OK) payload with the expected payload for an EORI number ending in '98'" in {
+      val eori = "GB1234567898"
+      val postRequest = FakeRequest("POST", routes.CustomsDataStoreStubController.thirdPartyEmailVerified.url)
+        .withBody(createThirdPartyEmailVerifiedBody(eori))
+      val result = controller.thirdPartyEmailVerified()(postRequest)
+      status(result) shouldBe OK
+      contentAsString(result) shouldBe controller.undeliverable
+    }
+
+    "return a 404(NOT_FOUND) for an EORI number ending in '99'" in {
+      val eori = "GB1234567899"
+      val postRequest = FakeRequest("POST", routes.CustomsDataStoreStubController.thirdPartyEmailVerified.url)
+        .withBody(createThirdPartyEmailVerifiedBody(eori))
+      val result = controller.thirdPartyEmailVerified()(postRequest)
       status(result) shouldBe NOT_FOUND
     }
   }
