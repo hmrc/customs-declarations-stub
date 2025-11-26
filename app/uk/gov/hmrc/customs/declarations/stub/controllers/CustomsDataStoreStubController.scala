@@ -16,6 +16,8 @@
 
 package uk.gov.hmrc.customs.declarations.stub.controllers
 
+import play.api.libs.json.JsValue
+
 import javax.inject.{Inject, Singleton}
 import play.api.mvc.{Action, AnyContent, ControllerComponents}
 import uk.gov.hmrc.play.bootstrap.backend.controller.BackendController
@@ -50,6 +52,20 @@ class CustomsDataStoreStubController @Inject() (cc: ControllerComponents) extend
       case "99" => NotFound("The email address is not verified")
       case "98" => Ok(undeliverable)
       case _    => Ok(verified)
+    }
+  }
+
+  def thirdPartyEmailVerified: Action[JsValue] = Action(parse.json) { request =>
+    val requestBody = request.body
+    (requestBody \ "eori").asOpt[String] match {
+      case Some(eori) =>
+        eori.takeRight(2) match {
+          case "99" => NotFound("The email address is not verified")
+          case "98" => Ok(undeliverable)
+          case _    => Ok(verified)
+        }
+      case None =>
+        BadRequest("Missing 'eori' field in JSON Body")
     }
   }
 }
