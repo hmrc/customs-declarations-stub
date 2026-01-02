@@ -17,7 +17,7 @@
 package uk.gov.hmrc.customs.declarations.stub.controllers
 
 import org.mockito.ArgumentMatchers.{anyString, eq => eqTo}
-import org.mockito.Mockito.{ verify, when, reset}
+import org.mockito.Mockito.{reset, verify, when}
 import org.scalatestplus.mockito.MockitoSugar.mock
 import play.api.test.FakeRequest
 import play.api.test.Helpers._

@@ -31,12 +31,12 @@ object FileUpload {
   implicit val format: OFormat[FileUpload] = Json.format[FileUpload]
 }
 
- case class FileUploadResponse(uploads: List[FileUpload])
+case class FileUploadResponse(uploads: List[FileUpload])
 
 object FileUploadResponse extends Logging {
   implicit val format: OFormat[FileUploadResponse] = Json.format[FileUploadResponse]
 
-  def apply(files: List[FileUpload]): FileUploadResponse = new FileUploadResponse(files.sortBy(_.reference)) 
+  def apply(files: List[FileUpload]): FileUploadResponse = new FileUploadResponse(files.sortBy(_.reference))
 }
 
 abstract class Field(value: String) {
@@ -44,17 +44,17 @@ abstract class Field(value: String) {
 }
 
 object Field {
-   case object ContentType extends Field("Content-Type")
-   case object ACL extends Field("acl")
-   case object Key extends Field("key")
-   case object Policy extends Field("policy")
-   case object Algorithm extends Field("x-amz-algorithm")
-   case object Credentials extends Field("x-amz-credential")
-   case object Date extends Field("x-amz-date")
-   case object Callback extends Field("x-amz-meta-callback-url")
-   case object Signature extends Field("x-amz-signature")
-   case object SuccessRedirect extends Field("success_action_redirect")
-   case object ErrorRedirect extends Field("error_action_redirect")
+  case object ContentType extends Field("Content-Type")
+  case object ACL extends Field("acl")
+  case object Key extends Field("key")
+  case object Policy extends Field("policy")
+  case object Algorithm extends Field("x-amz-algorithm")
+  case object Credentials extends Field("x-amz-credential")
+  case object Date extends Field("x-amz-date")
+  case object Callback extends Field("x-amz-meta-callback-url")
+  case object Signature extends Field("x-amz-signature")
+  case object SuccessRedirect extends Field("success_action_redirect")
+  case object ErrorRedirect extends Field("error_action_redirect")
 
-   val values: Set[Field] = Set(ContentType, ACL, Key, Policy, Algorithm, Credentials, Date, Signature, Callback)
+  val values: Set[Field] = Set(ContentType, ACL, Key, Policy, Algorithm, Credentials, Date, Signature, Callback)
 }

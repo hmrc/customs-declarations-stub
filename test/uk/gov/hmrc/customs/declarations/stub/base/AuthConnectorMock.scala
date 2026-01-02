@@ -17,7 +17,7 @@
 package uk.gov.hmrc.customs.declarations.stub.base
 
 import org.mockito.ArgumentMatchers.any
-import org.mockito.Mockito.{ when, reset}
+import org.mockito.Mockito.{reset, when}
 import org.scalatest.{BeforeAndAfterEach, Suite}
 import org.scalatestplus.mockito.MockitoSugar.mock
 import play.api.test.Helpers.*
