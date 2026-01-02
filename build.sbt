@@ -7,7 +7,7 @@ lazy val microservice = Project(appName, file("."))
   .enablePlugins(play.sbt.PlayScala, SbtDistributablesPlugin)
   .settings(
     majorVersion := 0,
-    scalaVersion := "2.13.16",
+    scalaVersion := "3.3.7",
     scalacOptions ++= scalacFlags,
     libraryDependencies ++= AppDependencies.compile ++ AppDependencies.test
   )
@@ -18,7 +18,10 @@ lazy val scalacFlags = Seq(
   "-encoding", "UTF-8",      // source files are in UTF-8
   "-feature",                // warn about misused language features
   "-unchecked",              // warn about unchecked type parameters
-  "-Ywarn-numeric-widen",
   "-Xfatal-warnings",        // warnings are fatal!!
-  "-Wconf:cat=unused-imports&src=routes/.*:s"  // silent "unused import" warnings from Play routes
+  "-Wconf:src=routes/.*&msg=unused import:silent", // silent "unused import" warnings from Play routes
+  "-Wconf:src=routes/.*&msg=unused private member:silent",
+  "-Wconf:src=routes/.*&msg=unused pattern variable:silent",
+  "-Wconf:src=app/repositories/.*&msg=unused explicit parameter:silent",
+  "-Wconf:msg=Flag.*repeatedly:s"
 )

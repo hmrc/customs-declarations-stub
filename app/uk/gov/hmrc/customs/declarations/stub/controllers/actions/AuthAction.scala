@@ -39,7 +39,7 @@ class AuthActionImpl @Inject() (override val authConnector: AuthConnector, cc: C
     implicit val hc: HeaderCarrier = HeaderCarrierConverter.fromRequest(request)
 
     authorised(Enrolment(hmrcCusOrgEnrolmentKey))
-      .retrieve(allEnrolments) { allEnrolments: Enrolments =>
+      .retrieve(allEnrolments) { (allEnrolments: Enrolments) =>
         val eori = getEoriEnrolment(allEnrolments)
 
         if (eori.isEmpty) {

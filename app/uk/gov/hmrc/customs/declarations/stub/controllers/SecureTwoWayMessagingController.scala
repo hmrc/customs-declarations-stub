@@ -18,6 +18,7 @@ package uk.gov.hmrc.customs.declarations.stub.controllers
 
 import play.api.mvc.{Action, AnyContent, AnyContentAsFormUrlEncoded, ControllerComponents, Cookie, Request}
 import uk.gov.hmrc.play.bootstrap.backend.controller.BackendController
+import scala.annotation.unused
 
 import javax.inject.Inject
 
@@ -30,11 +31,11 @@ class SecureTwoWayMessagingController @Inject() (cc: ControllerComponents) exten
     Ok(messagesResponse(langCookieValue))
   }
 
-  def conversation(client: String, conversationId: String): Action[AnyContent] = Action { implicit request =>
+  def conversation( @unused client: String,  @unused conversationId: String): Action[AnyContent] = Action { implicit request =>
     Ok(conversation200Response(langCookieValue))
   }
 
-  def reply(client: String, conversationId: String): Action[AnyContent] = Action { implicit request =>
+  def reply( @unused client: String,  @unused conversationId: String): Action[AnyContent] = Action { implicit request =>
     val formUrlEncodedBody = request.body.asInstanceOf[AnyContentAsFormUrlEncoded]
     if (formUrlEncodedBody.data.get("content").flatMap(_.headOption).map(_.isBlank).getOrElse(true))
       BadRequest(conversation400Response(langCookieValue))
@@ -42,7 +43,7 @@ class SecureTwoWayMessagingController @Inject() (cc: ControllerComponents) exten
       Ok("")
   }
 
-  def replyResult(client: String, conversationId: String): Action[AnyContent] = Action { implicit request =>
+  def replyResult( @unused client: String,  @unused conversationId: String): Action[AnyContent] = Action { implicit request =>
     Ok(replySubmissionResult(langCookieValue))
   }
 }
