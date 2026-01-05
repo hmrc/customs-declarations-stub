@@ -77,7 +77,7 @@ class UpscanStubController @Inject() (appConfig: AppConfig, mcc: MessagesControl
 
     val files = (scala.xml.XML.loadString(xmlBodyString) \\ "File").toSeq
 
-    val fileUploads = files.zipWithIndex.map { case (node, idx) =>
+    val fileUploads = files.zipWithIndex.map { case (_, idx) =>
       var fileReference = UUID.randomUUID().toString
       if (idx < 10) {
         fileReference = idx.toString + fileReference.substring(1)

@@ -17,7 +17,8 @@
 package uk.gov.hmrc.customs.declarations.stub.base
 
 import org.apache.pekko.actor.ActorSystem
-import org.mockito.MockitoSugar.{mock, reset}
+import org.mockito.Mockito.reset
+import org.scalatestplus.mockito.MockitoSugar.mock
 import org.scalatestplus.play.guice.GuiceOneAppPerSuite
 import play.api.Application
 import play.api.inject.bind

@@ -27,6 +27,7 @@ import uk.gov.hmrc.http.HttpReads.Implicits.readRaw
 import uk.gov.hmrc.http.client.HttpClientV2
 import uk.gov.hmrc.http.{HeaderCarrier, HttpReads, HttpResponse, StringContextOps}
 import uk.gov.hmrc.wco.dec.{Declaration, MetaData}
+import play.api.libs.ws.DefaultBodyWritables.writeableOf_String
 
 import java.time.{ZoneId, ZonedDateTime}
 import java.util.{Timer, TimerTask}

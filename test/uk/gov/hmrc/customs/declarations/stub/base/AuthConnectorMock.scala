@@ -17,10 +17,11 @@
 package uk.gov.hmrc.customs.declarations.stub.base
 
 import org.mockito.ArgumentMatchers.any
-import org.mockito.MockitoSugar.{mock, reset, when}
+import org.mockito.Mockito.{reset, when}
 import org.scalatest.{BeforeAndAfterEach, Suite}
-import play.api.test.Helpers._
-import uk.gov.hmrc.auth.core._
+import org.scalatestplus.mockito.MockitoSugar.mock
+import play.api.test.Helpers.*
+import uk.gov.hmrc.auth.core.*
 import uk.gov.hmrc.auth.core.authorise.Predicate
 import uk.gov.hmrc.auth.core.retrieve.Retrieval
 import uk.gov.hmrc.customs.declarations.stub.controllers.actions.AuthActionImpl
