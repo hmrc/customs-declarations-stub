@@ -569,7 +569,7 @@ object ErrorsGenerator {
     </_2_1:Pointer>
   </_2_1:Error>
 
-  val CDS12171 =  <_2_1:Error>
+  val CDS12171 = <_2_1:Error>
     <_2_1:ValidationCode>CDS12171</_2_1:ValidationCode>
     <_2_1:Pointer>
       <_2_1:DocumentSectionCode>42A</_2_1:DocumentSectionCode>
