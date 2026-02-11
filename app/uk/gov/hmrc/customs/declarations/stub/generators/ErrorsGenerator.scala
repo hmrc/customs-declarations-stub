@@ -569,6 +569,38 @@ object ErrorsGenerator {
     </_2_1:Pointer>
   </_2_1:Error>
 
+  val CDS12171 = <_2_1:Error>
+    <_2_1:ValidationCode>CDS12171</_2_1:ValidationCode>
+    <_2_1:Pointer>
+      <_2_1:DocumentSectionCode>42A</_2_1:DocumentSectionCode>
+    </_2_1:Pointer>
+    <_2_1:Pointer>
+      <_2_1:DocumentSectionCode>67A</_2_1:DocumentSectionCode>
+    </_2_1:Pointer>
+    <_2_1:Pointer>
+      <_2_1:SequenceNumeric>1</_2_1:SequenceNumeric>
+      <_2_1:DocumentSectionCode>68A</_2_1:DocumentSectionCode>
+    </_2_1:Pointer>
+    <_2_1:Pointer>
+      <_2_1:DocumentSectionCode>70A</_2_1:DocumentSectionCode>
+      <_2_1:TagID>166</_2_1:TagID>
+    </_2_1:Pointer>
+  </_2_1:Error>
+    <_2_1:Error>
+      <_2_1:ValidationCode>CDS12171</_2_1:ValidationCode>
+      <_2_1:Pointer>
+        <_2_1:DocumentSectionCode>42A</_2_1:DocumentSectionCode>
+      </_2_1:Pointer>
+      <_2_1:Pointer>
+        <_2_1:DocumentSectionCode>67A</_2_1:DocumentSectionCode>
+      </_2_1:Pointer>
+      <_2_1:Pointer>
+        <_2_1:SequenceNumeric>1</_2_1:SequenceNumeric>
+        <_2_1:DocumentSectionCode>68A</_2_1:DocumentSectionCode>
+        <_2_1:TagID>114</_2_1:TagID>
+      </_2_1:Pointer>
+    </_2_1:Error>
+
   val errors: Map[String, NodeSeq] = Map(
     "CDS10010" -> CDS10010,
     "CDS10001" -> CDS10001,
@@ -589,6 +621,7 @@ object ErrorsGenerator {
     "CDS90004" -> CDS90004,
     "CDSCOM01" -> (CDS10020 ++ CDS12056 ++ CDS12062 ++ CDS12119),
     "CDSCOM02" -> errorsSet1,
-    "CDSCOM03" -> errorsSet2
+    "CDSCOM03" -> errorsSet2,
+    "CDS12171" -> CDS12171
   )
 }
