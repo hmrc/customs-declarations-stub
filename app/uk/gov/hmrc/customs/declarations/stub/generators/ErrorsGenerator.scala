@@ -569,7 +569,7 @@ object ErrorsGenerator {
     </_2_1:Pointer>
   </_2_1:Error>
 
-  val CDS12171: NodeSeq = <_2_1:Error>
+  val CDS12171 =  <_2_1:Error>
     <_2_1:ValidationCode>CDS12171</_2_1:ValidationCode>
     <_2_1:Pointer>
       <_2_1:DocumentSectionCode>42A</_2_1:DocumentSectionCode>
@@ -582,12 +582,8 @@ object ErrorsGenerator {
       <_2_1:DocumentSectionCode>68A</_2_1:DocumentSectionCode>
     </_2_1:Pointer>
     <_2_1:Pointer>
-      <_2_1:DocumentSectionCode>23A</_2_1:DocumentSectionCode>
-    </_2_1:Pointer>
-    <_2_1:Pointer>
-      <_2_1:SequenceNumeric>1</_2_1:SequenceNumeric>
-      <_2_1:DocumentSectionCode>50A</_2_1:DocumentSectionCode>
-      <_2_1:TagID>164</_2_1:TagID>
+      <_2_1:DocumentSectionCode>70A</_2_1:DocumentSectionCode>
+      <_2_1:TagID>166</_2_1:TagID>
     </_2_1:Pointer>
   </_2_1:Error>
     <_2_1:Error>
@@ -601,28 +597,7 @@ object ErrorsGenerator {
       <_2_1:Pointer>
         <_2_1:SequenceNumeric>1</_2_1:SequenceNumeric>
         <_2_1:DocumentSectionCode>68A</_2_1:DocumentSectionCode>
-      </_2_1:Pointer>
-      <_2_1:Pointer>
-        <_2_1:DocumentSectionCode>92A</_2_1:DocumentSectionCode>
-        <_2_1:TagID>501</_2_1:TagID>
-      </_2_1:Pointer>
-    </_2_1:Error>
-    <_2_1:Error>
-      <_2_1:ValidationCode>CDS12171</_2_1:ValidationCode>
-      <_2_1:Pointer>
-        <_2_1:DocumentSectionCode>42A</_2_1:DocumentSectionCode>
-      </_2_1:Pointer>
-      <_2_1:Pointer>
-        <_2_1:DocumentSectionCode>67A</_2_1:DocumentSectionCode>
-      </_2_1:Pointer>
-      <_2_1:Pointer>
-        <_2_1:SequenceNumeric>1</_2_1:SequenceNumeric>
-        <_2_1:DocumentSectionCode>68A</_2_1:DocumentSectionCode>
-      </_2_1:Pointer>
-      <_2_1:Pointer>
-        <_2_1:SequenceNumeric>1</_2_1:SequenceNumeric>
-        <_2_1:DocumentSectionCode>92A</_2_1:DocumentSectionCode>
-        <_2_1:TagID>501</_2_1:TagID>
+        <_2_1:TagID>114</_2_1:TagID>
       </_2_1:Pointer>
     </_2_1:Error>
 
