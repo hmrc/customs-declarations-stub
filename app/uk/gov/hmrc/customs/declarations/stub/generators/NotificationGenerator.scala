@@ -16,7 +16,16 @@
 
 package uk.gov.hmrc.customs.declarations.stub.generators
 
-import uk.gov.hmrc.customs.declarations.stub.generators.NotificationGenerator.{Amended, DetainedNotificationMessage, FunctionCode, UndetainedNotificationMessage, additionalInformation, detainmentInformation, externalAmendment, undetainmentInformation}
+import uk.gov.hmrc.customs.declarations.stub.generators.NotificationGenerator.{
+  additionalInformation,
+  detainmentInformation,
+  externalAmendment,
+  undetainmentInformation,
+  Amended,
+  DetainedNotificationMessage,
+  FunctionCode,
+  UndetainedNotificationMessage
+}
 
 import java.time.{ZoneId, ZonedDateTime}
 import java.time.format.DateTimeFormatter
