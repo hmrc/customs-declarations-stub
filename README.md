@@ -27,6 +27,8 @@ If LRN starts with:
 - 'Q' - Stub will send a 'Query Notification Message' notification
 - 'R' - Stub will send a 'Received' notification
 - 'U' - Stub will send an 'Undergoing Physical Check' notification
+- 'V' - Stub will send a 'Detained' notification
+- 'W' - Stub will send a 'Undetained' notification
 - 'X' - Stub will send a 'Goods Have Exited The Community' notification
 - other letters will invoke default behaviour which is Accepted notification
 

@@ -84,7 +84,7 @@ class NotificationConnector @Inject() (http: HttpClientV2, generator: Notificati
       }
     }
 
-  private val validPrompts = List('B', 'C', 'D', 'G', 'I', 'J', 'K', 'L', 'N', 'P', 'Q', 'R', 'U', 'X')
+  private val validPrompts = List('B', 'C', 'D', 'G', 'I', 'J', 'K', 'L', 'N', 'P', 'Q', 'R', 'U', 'V', 'W', 'X')
 
   // scalastyle:off
   def generate(default: String, operation: String, declaration: Declaration): (FiniteDuration, String, Option[String]) = {
@@ -179,6 +179,8 @@ class NotificationConnector @Inject() (http: HttpClientV2, generator: Notificati
       case 'Q' => preliminaryNotifications :+ QueryNotificationMessage
       case 'R' => List(Received)
       case 'U' => preliminaryNotifications :+ UndergoingPhysicalCheck
+      case 'V' => preliminaryNotifications :+ DetainedNotificationMessage
+      case 'W' => preliminaryNotifications :+ UndetainedNotificationMessage
       case 'X' => preliminaryNotifications ++ List(Cleared, GoodsHaveExitedTheCommunity)
     }
   }

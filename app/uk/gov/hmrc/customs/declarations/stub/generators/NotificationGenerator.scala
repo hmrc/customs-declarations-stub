@@ -16,7 +16,7 @@
 
 package uk.gov.hmrc.customs.declarations.stub.generators
 
-import uk.gov.hmrc.customs.declarations.stub.generators.NotificationGenerator.{additionalInformation, externalAmendment, Amended, FunctionCode}
+import uk.gov.hmrc.customs.declarations.stub.generators.NotificationGenerator.{Amended, DetainedNotificationMessage, FunctionCode, UndetainedNotificationMessage, additionalInformation, detainmentInformation, externalAmendment, undetainmentInformation}
 
 import java.time.{ZoneId, ZonedDateTime}
 import java.time.format.DateTimeFormatter
@@ -79,6 +79,7 @@ class NotificationGenerator @Inject() (notificationValueGenerator: NotificationV
   private def notificationResponse(code: FunctionCode, mrn: String, acceptanceDateTime: NodeSeq, issuedAt: ZonedDateTime, lrn: String): Elem = {
     val functionalReference = UUID.randomUUID().toString.replace("-", "")
     val hasAdditionalInformationNode = lrn.startsWith("Q") && code != Amended
+    val hasDetainmentInformation = lrn.startsWith("V") || lrn.startsWith("W")
 
     val errorNode = if (lrn.startsWith("BCDS")) {
       val CDSErrorCode = lrn.substring(1, 9)
@@ -95,6 +96,8 @@ class NotificationGenerator @Inject() (notificationValueGenerator: NotificationV
         <p2:DateTimeString xmlns:p2="urn:wco:datamodel:WCO:Response_DS:DMS:2" formatCode="304">{format304.format(issuedAt)}</p2:DateTimeString>
       </p:IssueDateTime>
       {if (hasAdditionalInformationNode) additionalInformation else NodeSeq.Empty}
+      {if (hasDetainmentInformation && code == DetainedNotificationMessage) detainmentInformation else NodeSeq.Empty}
+      {if (hasDetainmentInformation && code == UndetainedNotificationMessage) undetainmentInformation else NodeSeq.Empty}
       {nameCode(code)}
       <p:Declaration>
         {acceptanceDateTime}
@@ -207,6 +210,20 @@ object NotificationGenerator {
           <_2_1:TagID>465</_2_1:TagID>
         </_2_1:Pointer>
       </_2_1:Amendment>
+
+  val detainmentInformation: NodeSeq =
+    <_2_1:AdditionalInformation>
+      <_2_1:StatementCode>Q01</_2_1:StatementCode>
+      <_2_1:StatementDescription>detained</_2_1:StatementDescription>
+      <_2_1:StatementTypeCode>DET</_2_1:StatementTypeCode>
+    </_2_1:AdditionalInformation>
+
+  val undetainmentInformation: NodeSeq =
+    <_2_1:AdditionalInformation>
+      <_2_1:StatementCode>Q01</_2_1:StatementCode>
+      <_2_1:StatementDescription>undetained</_2_1:StatementDescription>
+      <_2_1:StatementTypeCode>DET</_2_1:StatementTypeCode>
+    </_2_1:AdditionalInformation>
 
   val characterValue: Map[Char, Int] = Map(
     '0' -> 0,
@@ -375,5 +392,19 @@ object NotificationGenerator {
     val isError = false
 
     override def toString(): String = "Query Notification Message"
+  }
+
+  case object DetainedNotificationMessage extends FunctionCode {
+    val fullCode: String = "52detained"
+    val isError = false
+
+    override def toString(): String = "Detained Notification Message"
+  }
+
+  case object UndetainedNotificationMessage extends FunctionCode {
+    val fullCode: String = "52undetained"
+    val isError = false
+
+    override def toString(): String = "Undetained Notification Message"
   }
 }
