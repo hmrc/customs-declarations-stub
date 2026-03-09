@@ -180,7 +180,6 @@ class NotificationConnector @Inject() (http: HttpClientV2, generator: Notificati
       case 'R' => List(Received)
       case 'U' => preliminaryNotifications :+ UndergoingPhysicalCheck
       case 'V' => preliminaryNotifications :+ DetainedNotificationMessage
-      case 'W' => preliminaryNotifications :+ UndetainedNotificationMessage
       case 'X' => preliminaryNotifications ++ List(Cleared, GoodsHaveExitedTheCommunity)
     }
   }

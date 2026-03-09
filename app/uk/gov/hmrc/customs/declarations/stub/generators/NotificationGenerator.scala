@@ -20,11 +20,9 @@ import uk.gov.hmrc.customs.declarations.stub.generators.NotificationGenerator.{
   additionalInformation,
   detainmentInformation,
   externalAmendment,
-  undetainmentInformation,
   Amended,
   DetainedNotificationMessage,
-  FunctionCode,
-  UndetainedNotificationMessage
+  FunctionCode
 }
 
 import java.time.{ZoneId, ZonedDateTime}
@@ -88,7 +86,7 @@ class NotificationGenerator @Inject() (notificationValueGenerator: NotificationV
   private def notificationResponse(code: FunctionCode, mrn: String, acceptanceDateTime: NodeSeq, issuedAt: ZonedDateTime, lrn: String): Elem = {
     val functionalReference = UUID.randomUUID().toString.replace("-", "")
     val hasAdditionalInformationNode = lrn.startsWith("Q") && code != Amended
-    val hasDetainmentInformation = lrn.startsWith("V") || lrn.startsWith("W")
+    val hasDetainmentInformation = lrn.startsWith("V")
 
     val errorNode = if (lrn.startsWith("BCDS")) {
       val CDSErrorCode = lrn.substring(1, 9)
@@ -106,7 +104,6 @@ class NotificationGenerator @Inject() (notificationValueGenerator: NotificationV
       </p:IssueDateTime>
       {if (hasAdditionalInformationNode) additionalInformation else NodeSeq.Empty}
       {if (hasDetainmentInformation && code == DetainedNotificationMessage) detainmentInformation else NodeSeq.Empty}
-      {if (hasDetainmentInformation && code == UndetainedNotificationMessage) undetainmentInformation else NodeSeq.Empty}
       {nameCode(code)}
       <p:Declaration>
         {acceptanceDateTime}
@@ -224,13 +221,6 @@ object NotificationGenerator {
     <_2_1:AdditionalInformation>
       <_2_1:StatementCode>Q01</_2_1:StatementCode>
       <_2_1:StatementDescription>detained</_2_1:StatementDescription>
-      <_2_1:StatementTypeCode>DET</_2_1:StatementTypeCode>
-    </_2_1:AdditionalInformation>
-
-  val undetainmentInformation: NodeSeq =
-    <_2_1:AdditionalInformation>
-      <_2_1:StatementCode>Q01</_2_1:StatementCode>
-      <_2_1:StatementDescription>undetained</_2_1:StatementDescription>
       <_2_1:StatementTypeCode>DET</_2_1:StatementTypeCode>
     </_2_1:AdditionalInformation>
 
