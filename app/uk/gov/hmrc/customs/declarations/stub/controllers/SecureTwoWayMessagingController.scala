@@ -131,7 +131,7 @@ object SecureTwoWayMessagingController {
         |<div class="govuk-body">
         |   <table class="govuk-table">
         |      <caption class="govuk-table__caption govuk-table__caption--m">
-        |         <span class="govuk-visually-hidden">0 o negeseuon heb eu darllen, 19 mewn cyfanswm. Mae pob neges yn y rhestr yn cynnwys ei statws (naill ai heb ei darllen neu gwelwyd eisoes), ac enw’r anfonwr, y pwnc, a’r amser neu ddyddiad anfon. Os yw neges yn cynnwys atebion, yna mae ei phwnc yn nodi nifer y negeseuon yn y sgwrs honno.</span>
+        |         <span class="govuk-visually-hidden">0 o negeseuon heb eu darllen, 1 mewn cyfanswm. Mae pob neges yn y rhestr yn cynnwys ei statws (naill ai heb ei darllen neu gwelwyd eisoes), ac enw’r anfonwr, y pwnc, a’r amser neu ddyddiad anfon. Os yw neges yn cynnwys atebion, yna mae ei phwnc yn nodi nifer y negeseuon yn y sgwrs honno.</span>
         |      </caption>
         |      <thead class="govuk-table__head">
         |         <tr class="govuk-table__row">
@@ -246,7 +246,7 @@ object SecureTwoWayMessagingController {
          |   <div class="govuk-body">
          |      <table class="govuk-table">
          |         <caption class="govuk-table__caption govuk-table__caption--m">
-         |            <span class="govuk-visually-hidden">0 unread, 19 in total. Each message in the list includes its status (either unread or previously viewed), and its sender name, subject, and send time or date. If a message includes replies, then its subject says the number of messages in that conversation.</span>
+         |            <span class="govuk-visually-hidden">0 unread, 1 in total. Each message in the list includes its status (either unread or previously viewed), and its sender name, subject, and send time or date. If a message includes replies, then its subject says the number of messages in that conversation.</span>
          |         </caption>
          |         <thead class="govuk-table__head">
          |            <tr class="govuk-table__row">
