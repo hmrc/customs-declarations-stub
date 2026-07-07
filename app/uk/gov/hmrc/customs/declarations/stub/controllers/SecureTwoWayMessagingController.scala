@@ -147,18 +147,15 @@ object SecureTwoWayMessagingController {
         |               <span class="govuk-visually-hidden">Neges a welwyd eisoes.&nbsp;</span>
         |            </td>
         |            <td class="govuk-table__cell">
-        |               <a href="/cds-file-upload-service/conversation/CDCM/Y29udmVyc2F0aW9uLzY3NGYxZDJhMGUzNDZmNWFjYzBiOTVlYQ==" class="govuk-!-font-weight-bold hover-effect" style="font-weight:400; text-decoration: none;" data-sso="false">
-        |               <span class="govuk-visually-hidden">oddi wrth:</span><span style="font-weight:400; text-decoration: none;">National Clearance Hub yet<span class="govuk-visually-hidden">.&nbsp;</span></span>
-        |               </a>
-        |               <br>
-        |               <div class="govuk-task-list__name-and-hint black-text">
-        |                  <a class="govuk-link" href="/cds-file-upload-service/conversation/CDCM/Y29udmVyc2F0aW9uLzY3NGYxZDJhMGUzNDZmNWFjYzBiOTVlYQ==" aria-describedby="company-details-1-status" data-sso="false">
-        |                  <span class="govuk-visually-hidden">Pwnc:</span><span class="black-text no--underline">MRN123456789098765 needs some action</span><span class="govuk-visually-hidden">,&nbsp;</span>
-        |                  </a>
-        |               </div>
+        |              <span class="govuk-visually-hidden">From:</span><span>National Clearance Hub yet test</span>
+        |              <div>
+        |                <a class="govuk-link" href="/cds-file-upload-service/conversation/CDCM/Y29udmVyc2F0aW9uLzY3NGYxZDJhMGUzNDZmNWFjYzBiOTVlYQ==" aria-describedby="company-details-1-status" data-sso="false">
+        |                  <span class="govuk-visually-hidden">Subject:</span>MRN123456789098765 needs some action
+        |                </a>
+        |              </div>
         |            </td>
         |            <td class="govuk-table__cell mob-align-right">
-        |               <span class="">3:00yh</span>
+        |               <span>3:00yh</span>
         |               <span class="govuk-visually-hidden">3:00yh</span>
         |            </td>
         |         </tr>
@@ -262,18 +259,15 @@ object SecureTwoWayMessagingController {
          |                  <span class="govuk-visually-hidden">Previously viewed message.&nbsp;</span>
          |               </td>
          |               <td class="govuk-table__cell">
-         |                  <a href="/cds-file-upload-service/conversation/CDCM/Y29udmVyc2F0aW9uLzY3NGYxZDJhMGUzNDZmNWFjYzBiOTVlYQ==" class="govuk-!-font-weight-bold hover-effect" style="font-weight:400; text-decoration: none;" data-sso="false">
-         |                  <span class="govuk-visually-hidden">from:</span><span style="font-weight:400; text-decoration: none;">National Clearance Hub yet<span class="govuk-visually-hidden">.&nbsp;</span></span>
-         |                  </a>
-         |                  <br>
-         |                  <div class="govuk-task-list__name-and-hint black-text">
-         |                     <a class="govuk-link" href="/cds-file-upload-service/conversation/CDCM/Y29udmVyc2F0aW9uLzY3NGYxZDJhMGUzNDZmNWFjYzBiOTVlYQ==" aria-describedby="company-details-1-status" data-sso="false">
-         |                     <span class="govuk-visually-hidden">Subject:</span><span class="black-text no--underline">MRN123456789098765 needs some action</span><span class="govuk-visually-hidden">,&nbsp;</span>
-         |                     </a>
-         |                  </div>
+         |                 <span class="govuk-visually-hidden">From:</span><span>National Clearance Hub yet test</span>
+         |                 <div>
+         |                   <a class="govuk-link" href="/cds-file-upload-service/conversation/CDCM/Y29udmVyc2F0aW9uLzY3NGYxZDJhMGUzNDZmNWFjYzBiOTVlYQ==" aria-describedby="company-details-1-status" data-sso="false">
+         |                     <span class="govuk-visually-hidden">Subject:</span>MRN123456789098765 needs some action
+         |                   </a>
+         |                 </div>
          |               </td>
          |               <td class="govuk-table__cell mob-align-right">
-         |                  <span class="">3:00pm</span>
+         |                  <span>3:00pm</span>
          |                  <span class="govuk-visually-hidden">3:00pm</span>
          |               </td>
          |            </tr>
