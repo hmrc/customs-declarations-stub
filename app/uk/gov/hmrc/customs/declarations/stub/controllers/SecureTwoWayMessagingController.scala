@@ -155,7 +155,7 @@ object SecureTwoWayMessagingController {
         |              </div>
         |            </td>
         |            <td class="govuk-table__cell mob-align-right">
-        |               <span class="">3:00yh</span>
+        |               <span>3:00yh</span>
         |               <span class="govuk-visually-hidden">3:00yh</span>
         |            </td>
         |         </tr>
