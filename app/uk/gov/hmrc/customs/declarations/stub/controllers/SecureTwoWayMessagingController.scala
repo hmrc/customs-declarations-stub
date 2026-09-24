@@ -27,9 +27,19 @@ class SecureTwoWayMessagingController @Inject() (cc: ControllerComponents) exten
 
   private def langCookieValue(implicit request: Request[AnyContent]) = request.cookies.get("PLAY_LANG").getOrElse(Cookie("", "")).value
 
+  private val repeat = sys.props.get("stub.repeat").flatMap(_.toIntOption).getOrElse(1)
+
   val messages: Action[AnyContent] = Action { implicit request =>
-    Ok(messagesResponse(langCookieValue))
+    Ok(repeatRows(messagesResponse(langCookieValue), repeat))
   }
+
+  private def repeatRows(body: String, n: Int): String =
+    if (n <= 1) body
+    else {
+      val start = body.indexOf("""<tr class="govuk-table__row message-row">""")
+      val end = body.indexOf("</tr>", start) + "</tr>".length
+      body.substring(0, start) + (body.substring(start, end) * n) + body.substring(end)
+    }
 
   def conversation(@unused client: String, @unused conversationId: String): Action[AnyContent] = Action { implicit request =>
     Ok(conversation200Response(langCookieValue))
