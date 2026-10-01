@@ -1,11 +1,15 @@
-
 # customs-declarations-stub
-
- [ ![Download](https://api.bintray.com/packages/hmrc/releases/customs-declarations-stub/images/download.svg) ](https://bintray.com/hmrc/releases/customs-declarations-stub/_latestVersion)
 
 This application provides a stubs for the following services:
 * Customs Declarations API service - that enables frontend services that use Customs Declarations API with a stub to develop locally without depending on the API. 
 * Customs Data Store service - just for the email verification endpoint (no other endpoints are stubbed here)
+
+## How to start the service locally
+```bash
+ sbt run
+```
+
+# What Data This Stub Provides
 
 ## Customs Declarations API service
 
@@ -48,8 +52,6 @@ Note that, frontend side, the **content** of the "Confirmation" page displayed a
 
 For any other LRN's initial letter the "Confirmation" page will show the "**Declaration accepted**" page.
 
--
-
 #### Cancellations
 The third character can be used to determine the notification response of a cancellation request:
 - 'S' - Stub sends 'Customs Position Granted' indicating successful cancellation
@@ -88,11 +90,9 @@ However, the SFUS service itself (not the user's browser) uploads the generated 
 This stub therefore has special logic that returns the first S3 url pointing to the internal DNS 'cds-file-upload-frontend.public.mdtp' (for the contacts file) 
 and all subsequent urls point to the external public DNS 'www.development.tax.service.gov.uk'
 
-
 ### Schema Validation
 By default, the stub validates all XML payloads it receives with the corresponding schema. However, in performance test scenarios this can
 slow down the operation of the stub so there is a feature flag to disable the Schema validation work to speed up response times:
-
 `sbt "run -Dmicroservice.services.features.schemaValidation=disabled"`
 
 ## Customs Declarations Information stubbing
@@ -106,7 +106,6 @@ MRN is part of the url, but EORI is taken from Auth service using `Authorization
 ```
 This endpoint returns mocked XML with dynamic EORI, declaration version and MRN taken from the request.
 MRN nd dec version are part of the url, but EORI is taken from Auth service using `Authorization` token.
-
 
 By default the response is successful.
 
@@ -145,12 +144,12 @@ Or, if the EORI's email address is undeliverable (bounced) the 200(OK) response'
         }
      }
 }
+
 ```
 otherwise a 404(NOT_FOUND) response is returned.
 
 Note that for any given EORI number ending in `99`, the associated email address will always be considered **unverified**, resulting accordingly in a 404(NOT_FOUND) response.
 For an EORI number inding in '98', the associated email address will always be considered **undeliverable**, resulting accordingly in an OK response with the above payload.
-
 
 ## SECURE TWO WAY MESSAGING
 Endpoints used by the CDS Exports service to simulate the secure-message-frontend service (which provides partial html components displayed in the SFUS service).
@@ -174,6 +173,37 @@ Send the form post of the user's message in reply
 GET           /secure-message-frontend/cds-file-upload-service/conversation/:client/:conversationId/result
 ```
 Retrieve the html partial for the reply sent receipt page
+
+## How to run Tests
+```bash
+ sbt test 
+```
+
+you may also need to do the following before hand: 
+
+```bash
+ sbt clean compile
+```
+
+## Scalafmt
+
+Check all project files are formatted as expected as follows:
+
+```bash
+ sbt scalafmtCheckAll scalafmtCheck
+```
+
+Format `*.sbt` and `project/*.scala` files as follows:
+
+```bash
+ sbt scalafmtSbt
+```
+
+Format all project files as follows:
+
+```bash
+ sbt scalafmtAll
+```
 
 ## License
 
