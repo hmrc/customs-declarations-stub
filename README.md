@@ -9,12 +9,12 @@ This application provides a stubs for the following services:
  sbt run
 ```
 
-# What Data This Stub Provides
+## Technical documentation
 
-## Customs Declarations API service
-
+### Customs Declarations API service
 ### How to deliver custom notifications
 #### Submissions
+
 If you send a declaration with specific letter at the beginning of the LRN you can control what notifications you receive.
 
 If LRN starts with:
