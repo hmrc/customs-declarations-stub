@@ -174,7 +174,7 @@ GET           /secure-message-frontend/cds-file-upload-service/conversation/:cli
 ```
 Retrieve the html partial for the reply sent receipt page
 
-## How to run Tests
+### Running the test suite
 ```bash
  sbt test 
 ```
@@ -185,7 +185,7 @@ you may also need to do the following before hand:
  sbt clean compile
 ```
 
-## Scalafmt
+### Scalafmt
 
 Check all project files are formatted as expected as follows:
 
