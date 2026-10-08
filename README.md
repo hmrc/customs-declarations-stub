@@ -1,18 +1,40 @@
 # customs-declarations-stub
 
+## About
 This application provides a stubs for the following services:
 * Customs Declarations API service - that enables frontend services that use Customs Declarations API with a stub to develop locally without depending on the API. 
 * Customs Data Store service - just for the email verification endpoint (no other endpoints are stubbed here)
 
-## How to start the service locally
+## How to Run this Service
+
+To run the service locally you can use:
 ```bash
  sbt run
 ```
 
-## Technical documentation
+To host the service (or stop the service) in service manager, please use:
 
-### Customs Declarations API service
-### How to deliver custom notifications
+    sm2 --stop CUSTOMS_DECLARATIONS_STUB
+    sm2 --start CUSTOMS_DECLARATIONS_STUB
+
+## How to Test this Service
+### Local
+
+To run the service locally you can use the following commands:
+
+```bash
+ sbt clean compile
+```
+
+```bash
+ sbt run
+```
+
+### Staging 
+Please note Customs-declarations-stub is not deployed to QA, ET or Prod.
+It only exists in Local and Staging.
+
+### Customs Declarations API
 #### Submissions
 
 If you send a declaration with specific letter at the beginning of the LRN you can control what notifications you receive.
@@ -52,12 +74,12 @@ Note that, frontend side, the **content** of the "Confirmation" page displayed a
 
 For any other LRN's initial letter the "Confirmation" page will show the "**Declaration accepted**" page.
 
-#### Cancellations
+### Cancellations
 The third character can be used to determine the notification response of a cancellation request:
 - 'S' - Stub sends 'Customs Position Granted' indicating successful cancellation
 - Any other letter - Stub sends 'Customs Position Denied' indicated a denied cancellation request
 
-#### Amendments
+### Amendments
 The ID field of Means of Border Transport can determine the response of an amendment request (This field is modified by adding a vehicle ID on /border-transport):
 - 'DENIED' - Return a 'Customs Position Denied' notification to indicate a denied request (Declaration in holding state).
 - 'EXTERNAL AMEND' Return an 'External Amendment' notification to indicate that the "Customs" made a modification to the declaration
@@ -71,7 +93,7 @@ The endpoint **/external-amendment/:lrn/:mrn/:actionId**, where **actionId** is 
 e.g. (with httpie) =>
 > $ http :6790/external-amendment/CSLRN5317100/24GB1955OS54767262/430f51dc-7d38-40a1-9a52-592f8da99510
 
-#### No Notifications
+### No Notifications
 Sometimes you may wish to test the behaviour of a service when no notifications are returned by DMS. 
 
 To achieve this you can set the ID field of Means of Border Transport (This field is modified by adding a vehicle ID on /border-transport) to the value "NONOTIFY". 
@@ -95,25 +117,28 @@ By default, the stub validates all XML payloads it receives with the correspondi
 slow down the operation of the stub so there is a feature flag to disable the Schema validation work to speed up response times:
 `sbt "run -Dmicroservice.services.features.schemaValidation=disabled"`
 
-## Customs Declarations Information stubbing
-```
-    GET    /mrn/:mrn/status
-```
-This endpoint returns mocked DeclarationStatusResponse with dynamic EORI and MRN taken from the request.
-MRN is part of the url, but EORI is taken from Auth service using `Authorization` token.
-```
-    GET    /mrn/:mrn/full
-```
-This endpoint returns mocked XML with dynamic EORI, declaration version and MRN taken from the request.
-MRN nd dec version are part of the url, but EORI is taken from Auth service using `Authorization` token.
+## Service Catalogue
+- You can find this repo in the MDTP catalogue here: [customs-declarations-stub](https://catalogue.tax.service.gov.uk/repositories/customs-declarations-stub)
 
-By default the response is successful.
+## Jenkins Pipeline
+- [customs-declarations-stub build](https://build.tax.service.gov.uk/job/BordersAndTradeLiveServices/job/CDSExports/job/customs-declarations-stub/)
+- [customs-declarations-stub pipeline](https://build.tax.service.gov.uk/job/BordersAndTradeLiveServices/job/CDSExports/job/customs-declarations-stub-pipeline/)
+- [customs-declarations-stub PR Builder](https://build.tax.service.gov.uk/job/BordersAndTradeLiveServices/job/CDSExports/job/customs-declarations-stub-pr-builder/)
 
-In case you need unsuccessful response to be returned, these can be triggered by providing MRN or EORI as per rules below:
-- ends with '8888' - Not Found (404) response
+## Service Manager Profiles
+These profiles are defined in [service-manager-config](https://github.com/hmrc/service-manager-config).
+Depending on what you wish to run, you may need to use a different profile Customs-Declarations-Stub are include in:
 
-## Customs Data Store service
-### eMail Address Verification
+ - CDS_EXPORTS_DECLARATION_ALL
+ - CDS_EXPORTS_DECLARATION_ATS
+ - CDS_EXPORTS_ALL
+ - CDS_FUF_ALL
+ - CUSTOMS_DECLARATIONS_STUB
+
+
+## Endpoints
+### Customs Data Store service
+#### eMail Address Verification
 ```
     GET    /eori/<EORI>/verified-email
 ```
@@ -151,7 +176,7 @@ otherwise a 404(NOT_FOUND) response is returned.
 Note that for any given EORI number ending in `99`, the associated email address will always be considered **unverified**, resulting accordingly in a 404(NOT_FOUND) response.
 For an EORI number inding in '98', the associated email address will always be considered **undeliverable**, resulting accordingly in an OK response with the above payload.
 
-## SECURE TWO WAY MESSAGING
+#### SECURE TWO WAY MESSAGING
 Endpoints used by the CDS Exports service to simulate the secure-message-frontend service (which provides partial html components displayed in the SFUS service).
 
 ```
@@ -174,20 +199,27 @@ GET           /secure-message-frontend/cds-file-upload-service/conversation/:cli
 ```
 Retrieve the html partial for the reply sent receipt page
 
-### Running the test suite
-```bash
- sbt test 
+#### Customs Declarations Information stubbing
 ```
-
-you may also need to do the following before hand: 
-
-```bash
- sbt clean compile
+    GET    /mrn/:mrn/status
 ```
+This endpoint returns mocked DeclarationStatusResponse with dynamic EORI and MRN taken from the request.
+MRN is part of the url, but EORI is taken from Auth service using `Authorization` token.
+```
+    GET    /mrn/:mrn/full
+```
+This endpoint returns mocked XML with dynamic EORI, declaration version and MRN taken from the request.
+MRN nd dec version are part of the url, but EORI is taken from Auth service using `Authorization` token.
+
+By default the response is successful.
+
+In case you need unsuccessful response to be returned, these can be triggered by providing MRN or EORI as per rules below:
+- ends with '8888' - Not Found (404) response
 
 ### Scalafmt
 
-Check all project files are formatted as expected as follows:
+The code is formatted with [sbt-scalafmt](https://scalameta.org/scalafmt/docs/installation.html#sbt), using the rules in `.scalafmt.conf`.
+To check all project files are formatted as expected use the following commands:
 
 ```bash
  sbt scalafmtCheckAll scalafmtCheck
