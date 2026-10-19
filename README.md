@@ -1,23 +1,44 @@
 # customs-declarations-stub
 
-This application provides a stubs for the following services:
-* Customs Declarations API service - that enables frontend services that use Customs Declarations API with a stub to develop locally without depending on the API. 
-* Customs Data Store service - just for the email verification endpoint (no other endpoints are stubbed here)
+## About
+This service provides endpoint stubs for the following services:
+* Customs Declarations API: provides frontend services that use the Customs Declarations API with a stub to develop locally, without depending on the API.
+* Customs Data Store: provides a stub for the email verification endpoint only (no other endpoints are stubbed here).
 
-## How to start the service locally
+## How to Run this Service
+
+To run the service locally, you can use:
 ```bash
  sbt run
 ```
 
-## Technical documentation
+To start or stop the service in service manager:
 
-### Customs Declarations API service
-### How to deliver custom notifications
+    sm2 --stop CUSTOMS_DECLARATIONS_STUB
+    sm2 --start CUSTOMS_DECLARATIONS_STUB
+
+## How to Test this Service
+### Local
+
+To run the service locally, you can use the following commands:
+
+```bash
+ sbt clean compile
+```
+
+```bash
+ sbt run
+```
+
+### Staging 
+Please note that the customs-declarations-stub is not deployed in the QA, external test or production environments.
+It is only used in the local and staging environments.
+
+### Customs Declarations API
 #### Submissions
+For 'Rejected' notifications, it is possible to control which error codes are returned by the stub. If an LRN starts with 'BCDS' then the stub will treat the next five digits as the
 
-If you send a declaration with specific letter at the beginning of the LRN you can control what notifications you receive.
-
-If LRN starts with:
+If the LRN starts with:
 - 'B' - Stub will send a 'Rejected' notification (see section below on how to specify what error code is returned)
 - 'C' - Stub will send a 'Cleared' notification
 - 'D' - Stub will send an 'Accepted' and an 'Additional Documents Required' notifications
@@ -33,13 +54,24 @@ If LRN starts with:
 - 'U' - Stub will send an 'Undergoing Physical Check' notification
 - 'V' - Stub will send a 'Detained' notification
 - 'X' - Stub will send a 'Goods Have Exited The Community' notification
-- other letters will invoke default behaviour which is Accepted notification
+- Other letters will invoke the default behaviour, which is an 'Accepted' notification.
 
-In addition, if the 2nd character of the LRN is a digit (0-9) you can control the delay in seconds of the notification delivery.
+If the second character of the LRN is a digit (0-9), you can control the delay (in seconds) of the notification delivery.
 
-For 'Rejected' notifications it is possible to control what error codes are returned by the stub. If LRN starts with 'BCDS' then the stub will treat the next five digits as the
-CDS error code you want it to return. Not all error codes are supported, if the code requested is not supported then the stub by default will return a CDS10020 error. Currently
-supported codes are: CDS10010, CDS10020, CDS12046, CDS12056, CDS12062, CDS12070,CDS12075, CDS12077, CDS12119 & CDS12120
+For 'Rejected' notifications, it is possible to control what error codes are returned by the stub. If an LRN starts with 'BCDS' then the stub will treat the next five digits as the CDS error code that you want it to return.
+Not all error codes are supported. If the code requested is not supported then the stub, by default, will return a `CDS10020` error.
+
+Currently supported codes are:
+- CDS10010
+- CDS10020
+- CDS12046
+- CDS12056
+- CDS12062
+- CDS12070
+- CDS12075
+- CDS12077
+- CDS12119
+- CDS12120
 
 Note that, frontend side, the **content** of the "Confirmation" page displayed after the declaration submission will be specific only for the following LRN's initials:
 - 'C' - 'Cleared' status (only if an 'Arrived' declaration) => "**Declaration accepted, goods have permission to progress**" content
@@ -50,17 +82,17 @@ Note that, frontend side, the **content** of the "Confirmation" page displayed a
 - 'U' - 'Undergoing Physical Check' status => "**Your declaration needs documents attached**" content
 - 'X' - 'Goods Have Exited The Community' status => "**Your declaration is still being checked**" content
 
-For any other LRN's initial letter the "Confirmation" page will show the "**Declaration accepted**" page.
+For LRNs that have any other initial letter, the "Confirmation" page will show the "**Declaration accepted**" page.
 
-#### Cancellations
+### Cancellations
 The third character can be used to determine the notification response of a cancellation request:
-- 'S' - Stub sends 'Customs Position Granted' indicating successful cancellation
-- Any other letter - Stub sends 'Customs Position Denied' indicated a denied cancellation request
+- 'S' - Stub sends 'Customs Position Granted', indicating successful cancellation
+- Any other letter - Stub sends 'Customs Position Denied', indicating a denied cancellation request
 
-#### Amendments
-The ID field of Means of Border Transport can determine the response of an amendment request (This field is modified by adding a vehicle ID on /border-transport):
+### Amendments
+The `ID` field of Means of Border Transport can determine the response of an amendment request (this field is modified by adding a vehicle ID on `/border-transport`):
 - 'DENIED' - Return a 'Customs Position Denied' notification to indicate a denied request (Declaration in holding state).
-- 'EXTERNAL AMEND' Return an 'External Amendment' notification to indicate that the "Customs" made a modification to the declaration
+- 'EXTERNAL AMEND' - Return an 'External Amendment' notification to indicate that the "Customs" made a modification to the declaration
 - 'PENDING' - Does not return any notification. Just accept the submission.
 - 'REJECTED' - Return a 'Rejected' notification to indicate a rejected amendment that has errors.
 - Any other value - Return a 'Customs Position Granted' indicating a successful amendment.
@@ -71,7 +103,7 @@ The endpoint **/external-amendment/:lrn/:mrn/:actionId**, where **actionId** is 
 e.g. (with httpie) =>
 > $ http :6790/external-amendment/CSLRN5317100/24GB1955OS54767262/430f51dc-7d38-40a1-9a52-592f8da99510
 
-#### No Notifications
+### No Notifications
 Sometimes you may wish to test the behaviour of a service when no notifications are returned by DMS. 
 
 To achieve this you can set the ID field of Means of Border Transport (This field is modified by adding a vehicle ID on /border-transport) to the value "NONOTIFY". 
@@ -95,25 +127,26 @@ By default, the stub validates all XML payloads it receives with the correspondi
 slow down the operation of the stub so there is a feature flag to disable the Schema validation work to speed up response times:
 `sbt "run -Dmicroservice.services.features.schemaValidation=disabled"`
 
-## Customs Declarations Information stubbing
-```
-    GET    /mrn/:mrn/status
-```
-This endpoint returns mocked DeclarationStatusResponse with dynamic EORI and MRN taken from the request.
-MRN is part of the url, but EORI is taken from Auth service using `Authorization` token.
-```
-    GET    /mrn/:mrn/full
-```
-This endpoint returns mocked XML with dynamic EORI, declaration version and MRN taken from the request.
-MRN nd dec version are part of the url, but EORI is taken from Auth service using `Authorization` token.
+## Service Catalogue
+- You can find this repo in the MDTP catalogue here: [customs-declarations-stub](https://catalogue.tax.service.gov.uk/repositories/customs-declarations-stub)
 
-By default the response is successful.
+## Jenkins Pipeline
+- [customs-declarations-stub build](https://build.tax.service.gov.uk/job/BordersAndTradeLiveServices/job/CDSExports/job/customs-declarations-stub/)
+- [customs-declarations-stub pipeline](https://build.tax.service.gov.uk/job/BordersAndTradeLiveServices/job/CDSExports/job/customs-declarations-stub-pipeline/)
+- [customs-declarations-stub PR Builder](https://build.tax.service.gov.uk/job/BordersAndTradeLiveServices/job/CDSExports/job/customs-declarations-stub-pr-builder/)
 
-In case you need unsuccessful response to be returned, these can be triggered by providing MRN or EORI as per rules below:
-- ends with '8888' - Not Found (404) response
+## Service Manager Profiles
+These profiles are defined in [service-manager-config](https://github.com/hmrc/service-manager-config).
+Depending on what you wish to run, you can use one of these profiles (which include the CUSTOMS_DECLARATIONS_STUB service):
 
-## Customs Data Store service
-### eMail Address Verification
+ - CDS_EXPORTS_DECLARATION_ALL
+ - CDS_EXPORTS_DECLARATION_ATS
+ - CDS_EXPORTS_ALL
+ - CDS_FUF_ALL
+
+## Endpoints
+### Customs Data Store service
+#### Email Address Verification
 ```
     GET    /eori/<EORI>/verified-email
 ```
@@ -151,18 +184,18 @@ otherwise a 404(NOT_FOUND) response is returned.
 Note that for any given EORI number ending in `99`, the associated email address will always be considered **unverified**, resulting accordingly in a 404(NOT_FOUND) response.
 For an EORI number inding in '98', the associated email address will always be considered **undeliverable**, resulting accordingly in an OK response with the above payload.
 
-## SECURE TWO WAY MESSAGING
-Endpoints used by the CDS Exports service to simulate the secure-message-frontend service (which provides partial html components displayed in the SFUS service).
+#### Secure Two-Way Messaging
+Endpoints used by the CDS Exports service to simulate the secure-message-frontend service (which provides partial HTML components displayed in the SFUS service).
 
 ```
 GET           /secure-message-frontend/cds-file-upload-service/messages
 ```
-Retrieve the html partial for the user's inbox
+Retrieve the HTML partial for the user's inbox
 
 ```
 GET           /secure-message-frontend/cds-file-upload-service/conversation/:client/:conversationId
 ```
-Retrieve the html partial for a specific message's content
+Retrieve the HTML partial for a specific message's content
 
 ```
 POST          /secure-message-frontend/cds-file-upload-service/conversation/:client/:conversationId
@@ -172,22 +205,30 @@ Send the form post of the user's message in reply
 ```
 GET           /secure-message-frontend/cds-file-upload-service/conversation/:client/:conversationId/result
 ```
-Retrieve the html partial for the reply sent receipt page
+Retrieve the HTML partial for the reply sent receipt page
 
-### Running the test suite
-```bash
- sbt test 
+#### Customs Declarations Information stubbing
 ```
-
-you may also need to do the following before hand: 
-
-```bash
- sbt clean compile
+    GET    /mrn/:mrn/status
 ```
+This endpoint returns a mocked DeclarationStatusResponse, with a dynamic EORI and MRN taken from the request.
+The MRN is part of the URL, but the EORI is taken from the Auth service using an `Authorization` token.
+
+```
+    GET    /mrn/:mrn/full
+```
+This endpoint returns mocked XML with a dynamic EORI, declaration version and MRN taken from the request.
+The MRN and declaration version are part of the URL, but the EORI is taken from the Auth service using an `Authorization` token.
+
+By default the response is successful.
+
+If you need an unsuccessful response to be returned, these can be triggered by providing an MRN or EORI as per this rule:
+- ends with '8888' - Not Found (404) response
 
 ### Scalafmt
 
-Check all project files are formatted as expected as follows:
+The code is formatted with [sbt-scalafmt](https://scalameta.org/scalafmt/docs/installation.html#sbt), using the rules in `.scalafmt.conf`.
+To check all project files are formatted as expected use the following commands:
 
 ```bash
  sbt scalafmtCheckAll scalafmtCheck
